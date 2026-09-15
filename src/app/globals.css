@@ -39,6 +39,13 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #202020;
   --sidebar-ring: #d4d4d4;
+  --rz-black: #030303;
+  --rz-panel: #0b0b0d;
+  --rz-panel-raised: #111114;
+  --rz-gold: #c9a96e;
+  --rz-magenta: #ff2d78;
+  --rz-cyan: #66f7ff;
+  --rz-ivory: #f2f2ec;
 }
 
 @theme inline {
