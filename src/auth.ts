@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { decode, encode } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { UserRole } from "@/generated/prisma/client";
@@ -8,11 +9,26 @@ import { verifyPassword } from "@/features/identity/password";
 const credentialsSchema = z.object({
   username: z.string().trim().min(1).max(50),
   password: z.string().min(1).max(128),
+  remember: z.enum(["on", "off"]),
 });
+
+export const DEFAULT_SESSION_MAX_AGE = 8 * 60 * 60;
+export const REMEMBERED_SESSION_MAX_AGE = 30 * 24 * 60 * 60;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: "/login" },
-  session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
+  session: { strategy: "jwt", maxAge: REMEMBERED_SESSION_MAX_AGE },
+  jwt: {
+    async encode(params) {
+      return encode({
+        ...params,
+        maxAge: params.token?.rememberLogin
+          ? REMEMBERED_SESSION_MAX_AGE
+          : DEFAULT_SESSION_MAX_AGE,
+      });
+    },
+    decode,
+  },
   providers: [
     Credentials({
       credentials: {
@@ -32,6 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.username,
           role: user.role,
           sessionVersion: user.sessionVersion,
+          rememberLogin: parsed.data.remember === "on",
         };
       },
     }),
@@ -42,6 +59,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.userId = user.id;
         token.role = user.role;
         token.sessionVersion = user.sessionVersion;
+        token.rememberLogin = user.rememberLogin;
       }
       return token;
     },

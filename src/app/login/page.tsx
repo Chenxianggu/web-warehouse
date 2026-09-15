@@ -6,10 +6,7 @@ import {
   RadioTower,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { loginAction } from "./actions";
+import { LoginForm } from "./login-form";
 import styles from "./login.module.css";
 
 export default async function LoginPage({
@@ -103,43 +100,7 @@ export default async function LoginPage({
               </Alert>
             )}
 
-            <form action={loginAction} className={styles.form}>
-              <div className={styles.field}>
-                <div className={styles.fieldHeader}>
-                  <span>01</span>
-                  <Label htmlFor="username">用户名</Label>
-                </div>
-                <Input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  placeholder="输入用户名"
-                  required
-                  autoFocus
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.field}>
-                <div className={styles.fieldHeader}>
-                  <span>02</span>
-                  <Label htmlFor="password">密码</Label>
-                </div>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="输入密码"
-                  required
-                  className={styles.input}
-                />
-              </div>
-              <Button type="submit" size="lg" className={styles.submitButton}>
-                <span>确认登录</span>
-                <span className={styles.buttonCode}>ENTER_01</span>
-              </Button>
-            </form>
+            <LoginForm />
 
             <div className={styles.accessNote}>
               <LockKeyhole aria-hidden="true" />

@@ -417,6 +417,130 @@
   box-shadow: inset 0 0 0 1px var(--gold), 0 0 13px rgb(201 169 110 / 13%);
 }
 
+.passwordField {
+  position: relative;
+}
+
+.passwordInput {
+  padding-right: 52px;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  display: grid;
+  width: 38px;
+  height: 36px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: rgb(242 242 236 / 38%);
+  cursor: pointer;
+  transition: color 150ms ease, background-color 150ms ease, filter 150ms ease;
+}
+
+.passwordToggle::before {
+  position: absolute;
+  top: 7px;
+  bottom: 7px;
+  left: 0;
+  width: 1px;
+  background: rgb(242 242 236 / 12%);
+  content: "";
+}
+
+.passwordToggle:hover,
+.passwordToggle[aria-pressed="true"] {
+  background: rgb(201 169 110 / 7%);
+  color: var(--gold);
+  filter: drop-shadow(0 0 5px rgb(201 169 110 / 35%));
+}
+
+.passwordToggle:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: -2px;
+  color: var(--gold);
+}
+
+.passwordToggle svg {
+  width: 17px;
+  height: 17px;
+}
+
+.rememberOption {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: start;
+  gap: 10px;
+  width: max-content;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.rememberInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.rememberBox {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  background: #050506;
+  box-shadow: inset 0 0 0 1px rgb(242 242 236 / 28%);
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  transition: background-color 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+.rememberBox::after {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 4px;
+  height: 8px;
+  transform: rotate(45deg) scale(0);
+  border-right: 2px solid var(--black);
+  border-bottom: 2px solid var(--black);
+  content: "";
+  transition: transform 120ms ease;
+}
+
+.rememberInput:checked + .rememberBox {
+  background: var(--gold);
+  box-shadow: 0 0 10px rgb(201 169 110 / 30%);
+}
+
+.rememberInput:checked + .rememberBox::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.rememberInput:focus-visible + .rememberBox {
+  outline: 1px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.rememberCopy {
+  display: grid;
+  gap: 2px;
+}
+
+.rememberCopy strong {
+  color: rgb(242 242 236 / 72%);
+  font-size: 0.68rem;
+  font-weight: 560;
+}
+
+.rememberCopy small {
+  color: rgb(242 242 236 / 30%);
+  font-size: 0.58rem;
+}
+
 .submitButton {
   position: relative;
   justify-content: space-between;
