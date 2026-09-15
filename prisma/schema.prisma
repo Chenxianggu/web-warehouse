@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  SALESPERSON
+}
+
+model User {
+  id             String   @id @default(uuid())
+  username       String   @unique @db.VarChar(50)
+  passwordHash   String   @map("password_hash") @db.VarChar(255)
+  role           UserRole @default(SALESPERSON)
+  isActive       Boolean  @default(true) @map("is_active")
+  sessionVersion Int      @default(0) @map("session_version")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+// 其他业务实体将在字段和库存规则确认后添加。
