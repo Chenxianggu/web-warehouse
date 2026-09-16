@@ -1,0 +1,45 @@
+.message {
+  position: fixed;
+  z-index: 100;
+  top: max(72px, calc(env(safe-area-inset-top) + 16px));
+  left: 50%;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 7px 26px;
+  width: min(430px, calc(100vw - 32px));
+  align-items: center;
+  gap: 11px;
+  overflow: hidden;
+  border: 1px solid rgb(102 247 255 / 38%);
+  background: linear-gradient(90deg, rgb(102 247 255 / 14%), rgb(102 247 255 / 4%)), rgb(8 12 13 / 98%);
+  padding: 10px 13px 10px 10px;
+  color: var(--rz-cyan);
+  box-shadow: 0 10px 34px rgb(0 0 0 / 62%), 0 0 22px rgb(102 247 255 / 13%), inset 2px 0 0 var(--rz-cyan);
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  transform: translateX(-50%);
+  animation: messageIn 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.message[data-leaving="true"] { pointer-events: none; animation: messageOut 180ms ease-in both; }
+.message::after { position: absolute; top: 0; left: 0; width: 42%; height: 1px; background: linear-gradient(90deg, var(--rz-cyan), transparent); content: ""; }
+.icon { display: grid; width: 34px; height: 34px; place-items: center; background: rgb(102 247 255 / 12%); color: var(--rz-cyan); }
+.icon svg { width: 19px; height: 19px; filter: drop-shadow(0 0 5px rgb(102 247 255 / 48%)); }
+.copy { display: grid; gap: 3px; }
+.copy strong { color: var(--rz-ivory); font-size: 0.76rem; font-weight: 680; }
+.copy small { color: rgb(102 247 255 / 58%); font-size: 0.61rem; }
+.signal { width: 6px; height: 6px; border-radius: 50%; background: var(--rz-cyan); box-shadow: 0 0 8px var(--rz-cyan); }
+.close { display: grid; width: 26px; height: 26px; place-items: center; border: 0; background: transparent; color: rgb(242 242 236 / 38%); transition: color 120ms ease, background-color 120ms ease; }
+.close:hover { background: rgb(102 247 255 / 9%); color: var(--rz-cyan); }
+.close:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: -2px; }
+.close svg { width: 14px; height: 14px; }
+
+@keyframes messageIn {
+  from { opacity: 0; transform: translate(-50%, -14px) scale(0.98); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes messageOut {
+  from { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -10px) scale(0.98); }
+}
+
+@media (prefers-reduced-motion: reduce) { .message { animation: none; } }

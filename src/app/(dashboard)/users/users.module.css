@@ -1,0 +1,85 @@
+.page { width: min(1120px, 100%); margin: 0 auto; color: var(--rz-ivory); }
+.hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; padding: 4px 0 26px; border-bottom: 1px solid rgb(201 169 110 / 24%); }
+.eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 11px; color: rgb(102 247 255 / 68%); font-size: 0.65rem; }
+.eyebrow svg { width: 14px; height: 14px; }
+.hero h1 { margin: 0; color: var(--rz-gold); font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; line-height: 1; letter-spacing: -0.06em; }
+.hero > div > p:last-child { margin-top: 13px; color: rgb(242 242 236 / 46%); font-size: 0.8rem; }
+.heroActions { display: flex; align-items: center; gap: 10px; }
+.liveBadge { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid rgb(102 247 255 / 16%); color: rgb(102 247 255 / 62%); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.62rem; clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px); }
+.liveBadge span { width: 5px; height: 5px; border-radius: 50%; background: var(--rz-cyan); box-shadow: 0 0 7px var(--rz-cyan); }
+.alert { margin-top: 18px; border-radius: 0; }
+.openDialogButton, .createButton { border-radius: 0; background: var(--rz-gold); color: var(--rz-black); clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px)); }
+.openDialogButton:hover, .createButton:hover { background: var(--rz-gold); color: var(--rz-black); filter: drop-shadow(-3px 0 0 var(--rz-magenta)) drop-shadow(3px 0 0 var(--rz-cyan)); }
+.dialogOverlay { position: fixed; z-index: 70; inset: 0; background: rgb(0 0 0 / 76%); animation: overlayIn 160ms ease-out; }
+.dialogContent { position: fixed; z-index: 71; top: 50%; left: 50%; width: min(760px, calc(100vw - 32px)); max-height: min(760px, calc(100svh - 40px)); overflow-y: auto; border: 1px solid rgb(201 169 110 / 34%); background: linear-gradient(135deg, rgb(201 169 110 / 7%), transparent 38%), var(--rz-panel); padding: 0; color: var(--rz-ivory); box-shadow: 0 28px 90px rgb(0 0 0 / 75%), 0 0 34px rgb(201 169 110 / 8%); clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px); transform: translate(-50%, -50%); animation: dialogIn 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.dialogContent:focus { outline: none; }
+.dialogHeader { position: relative; display: flex; align-items: center; gap: 13px; border-bottom: 1px solid rgb(201 169 110 / 18%); padding: 21px 24px; }
+.dialogHeader > div { display: grid; gap: 5px; }
+.dialogHeader h2 { margin: 0; color: var(--rz-gold); font-size: 1.15rem; font-weight: 720; }
+.dialogHeader p { margin: 0; color: rgb(242 242 236 / 38%); font-size: 0.66rem; }
+.panelIcon { display: grid; width: 40px; height: 40px; flex: 0 0 auto; place-items: center; background: rgb(201 169 110 / 10%); color: var(--rz-gold); }
+.panelIcon svg { width: 19px; height: 19px; }
+.dialogClose { position: absolute; top: 16px; right: 16px; display: grid; width: 32px; height: 32px; place-items: center; border: 0; background: transparent; color: rgb(242 242 236 / 38%); transition: color 120ms ease, background-color 120ms ease; }
+.dialogClose:hover { background: rgb(201 169 110 / 8%); color: var(--rz-gold); }
+.dialogClose:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: -2px; }
+.dialogClose svg { width: 16px; height: 16px; }
+.dialogError { margin: 18px 24px 0; border-left: 2px solid var(--rz-magenta); background: rgb(255 45 120 / 8%); padding: 10px 12px; color: rgb(255 150 186); font-size: 0.66rem; }
+.directoryHeader h2 { margin: 0; font-size: 0.95rem; font-weight: 680; }
+.directoryHeader p { margin-top: 7px; color: rgb(242 242 236 / 38%); font-size: 0.66rem; line-height: 1.7; }
+.createForm { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; padding: 22px 24px 24px; }
+.field { display: grid; align-content: start; gap: 7px; }
+.field label, .roleFieldset legend { color: rgb(242 242 236 / 66%); font-size: 0.68rem; font-weight: 600; }
+.field input, .resetForm > input:not([type="hidden"]) { height: 45px; border: 0; border-radius: 0; background: #050506; padding: 0 13px; color: var(--rz-ivory); caret-color: var(--rz-gold); box-shadow: inset 0 0 0 1px rgb(242 242 236 / 17%); clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); transition: box-shadow 150ms ease, background-color 150ms ease; }
+.field input::placeholder, .resetForm input::placeholder { color: rgb(242 242 236 / 24%); }
+.field input:hover, .resetForm input:hover { box-shadow: inset 0 0 0 1px rgb(242 242 236 / 34%); }
+.field input:focus-visible, .resetForm input:focus-visible { outline: none; background: #090907; box-shadow: inset 0 0 0 1px var(--rz-gold), 0 0 12px rgb(201 169 110 / 12%); }
+.field small { color: rgb(242 242 236 / 28%); font-size: 0.58rem; }
+.roleFieldset { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; border: 0; padding: 0; }
+.roleFieldset legend { margin-bottom: 8px; }
+.roleOption { position: relative; display: grid; grid-template-columns: 18px minmax(0, 1fr); align-items: center; gap: 11px; min-height: 66px; border: 1px solid rgb(242 242 236 / 10%); background: rgb(255 255 255 / 2%); padding: 11px 13px; cursor: pointer; transition: border-color 150ms ease, background-color 150ms ease; }
+.roleOption:hover { border-color: rgb(201 169 110 / 34%); }
+.roleOption:has(input:checked) { border-color: rgb(201 169 110 / 45%); background: rgb(201 169 110 / 7%); }
+.roleOption input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.roleMarker { display: grid; width: 17px; height: 17px; place-items: center; border: 1px solid rgb(242 242 236 / 28%); }
+.roleMarker::after { width: 7px; height: 7px; background: var(--rz-gold); box-shadow: 0 0 7px rgb(201 169 110 / 42%); content: ""; opacity: 0; }
+.roleOption input:checked + .roleMarker::after { opacity: 1; }
+.roleOption input:focus-visible + .roleMarker { outline: 1px solid var(--rz-cyan); outline-offset: 3px; }
+.roleOption > span:last-child { display: grid; gap: 4px; }
+.roleOption strong { font-size: 0.72rem; font-weight: 650; }
+.roleOption small { color: rgb(242 242 236 / 32%); font-size: 0.6rem; }
+.createNote { grid-column: 1 / -1; display: flex; align-items: center; gap: 7px; color: rgb(242 242 236 / 34%); font-size: 0.61rem; }
+.createNote svg { width: 14px; color: rgb(102 247 255 / 58%); }
+.dialogFooter { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 9px; border-top: 1px solid rgb(242 242 236 / 9%); padding-top: 16px; }
+.cancelButton { min-width: 92px; border-radius: 0; color: rgb(242 242 236 / 58%); }
+.createButton { min-width: 150px; }
+.directory { margin-top: 24px; }
+.directoryHeader { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding-bottom: 14px; border-bottom: 1px solid rgb(242 242 236 / 10%); }
+.counts { display: flex; align-items: center; gap: 18px; color: rgb(242 242 236 / 35%); font-size: 0.59rem; }
+.counts span { display: flex; align-items: baseline; gap: 5px; }
+.counts strong { color: var(--rz-gold); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.82rem; }
+.userList { display: grid; gap: 8px; padding-top: 14px; }
+.userRow { display: grid; grid-template-columns: minmax(190px, 0.9fr) minmax(220px, 0.8fr) minmax(300px, 1.25fr); align-items: center; gap: 20px; min-height: 76px; border: 1px solid rgb(242 242 236 / 9%); background: var(--rz-panel); padding: 12px 14px; clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%); }
+.identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.avatar { display: grid; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; background: rgb(242 242 236 / 7%); color: rgb(242 242 236 / 56%); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-weight: 700; }
+.avatar[data-admin="true"] { background: rgb(201 169 110 / 12%); color: var(--rz-gold); }
+.identity > span:last-child { display: grid; min-width: 0; gap: 5px; }
+.identity strong { overflow: hidden; font-size: 0.78rem; font-weight: 660; text-overflow: ellipsis; white-space: nowrap; }
+.identity small { color: rgb(242 242 236 / 30%); font-size: 0.58rem; }
+.accountState { display: flex; flex-wrap: wrap; gap: 7px; }
+.roleBadge, .statusBadge { display: inline-flex; align-items: center; gap: 6px; width: max-content; border: 1px solid rgb(242 242 236 / 11%); padding: 6px 8px; color: rgb(242 242 236 / 48%); font-size: 0.58rem; }
+.roleBadge svg, .statusBadge svg { width: 12px; height: 12px; }
+.roleBadge[data-admin="true"] { border-color: rgb(201 169 110 / 24%); color: rgb(201 169 110 / 78%); }
+.statusBadge[data-active="true"] { border-color: rgb(102 247 255 / 16%); color: rgb(102 247 255 / 58%); }
+.resetForm { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.resetForm > input:not([type="hidden"]) { height: 38px; min-width: 0; }
+.resetButton { height: 38px; border-radius: 0; color: rgb(242 242 236 / 60%); }
+.resetButton:hover { border-color: rgb(201 169 110 / 40%); background: rgb(201 169 110 / 7%); color: var(--rz-gold); }
+.selfNotice { display: flex; align-items: center; justify-content: flex-end; gap: 8px; color: rgb(242 242 236 / 28%); font-size: 0.6rem; text-align: right; }
+.selfNotice svg { width: 14px; color: rgb(201 169 110 / 50%); }
+.emptyState { margin-top: 14px; border: 1px dashed rgb(242 242 236 / 12%); padding: 38px; color: rgb(242 242 236 / 34%); text-align: center; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+@media (max-width: 980px) { .userRow { grid-template-columns: minmax(190px, 1fr) minmax(220px, 1fr); } .resetForm, .selfNotice { grid-column: 1 / -1; } .selfNotice { justify-content: flex-start; text-align: left; } }
+@media (max-width: 680px) { .hero, .directoryHeader { align-items: stretch; flex-direction: column; } .heroActions { align-items: stretch; justify-content: space-between; } .liveBadge { width: max-content; } .createForm, .roleFieldset, .userRow { grid-template-columns: minmax(0, 1fr); } .dialogContent { width: calc(100vw - 20px); max-height: calc(100svh - 20px); } .dialogHeader { padding: 18px; padding-right: 54px; } .createForm { padding: 18px; } .dialogError { margin: 14px 18px 0; } .dialogFooter { display: grid; grid-template-columns: 1fr 1.5fr; } .cancelButton, .createButton { width: 100%; } .counts { display: grid; grid-template-columns: repeat(3, auto); justify-content: space-between; gap: 8px; } .counts span { display: grid; gap: 2px; } .resetForm { grid-template-columns: minmax(0, 1fr); } .accountState, .resetForm, .selfNotice { grid-column: auto; } }
+@media (prefers-reduced-motion: reduce) { .roleOption, .field input, .resetForm input { transition: none; } .dialogOverlay, .dialogContent { animation: none; } }
+@keyframes overlayIn { from { opacity: 0; } }
+@keyframes dialogIn { from { opacity: 0; transform: translate(-50%, calc(-50% - 14px)) scale(0.98); } }

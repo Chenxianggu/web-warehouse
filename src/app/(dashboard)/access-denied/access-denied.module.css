@@ -1,0 +1,18 @@
+.page {
+  display: grid;
+  width: min(620px, 100%);
+  min-height: calc(100svh - 180px);
+  align-content: center;
+  justify-items: start;
+  margin: 0 auto;
+  background: radial-gradient(circle at 15% 48%, rgb(255 45 120 / 6%), transparent 20rem);
+}
+
+.signal { display: flex; align-items: center; gap: 14px; color: var(--rz-magenta); }
+.signal span { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.72rem; }
+.signal svg { width: 22px; filter: drop-shadow(0 0 6px rgb(255 45 120 / 40%)); }
+.status { margin-top: 18px; color: rgb(255 45 120 / 68%); font-size: 0.68rem; }
+.page h1 { max-width: 520px; margin: 10px 0 0; color: var(--rz-gold); font-size: clamp(2.3rem, 6vw, 4.6rem); font-weight: 820; line-height: 1; letter-spacing: -0.07em; }
+.description { max-width: 500px; margin-top: 22px; color: rgb(242 242 236 / 42%); font-size: 0.8rem; line-height: 1.8; }
+.backButton { margin-top: 30px; border-radius: 0; background: var(--rz-gold); color: var(--rz-black); clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px)); }
+.backButton:hover { background: var(--rz-gold); color: var(--rz-black); }

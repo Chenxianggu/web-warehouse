@@ -18,6 +18,6 @@ export async function requireUser() {
 
 export async function requireAdmin() {
   const user = await requireUser();
-  if (user.role !== UserRole.SUPER_ADMIN) redirect("/");
+  if (user.role !== UserRole.SUPER_ADMIN) redirect("/access-denied");
   return user;
 }

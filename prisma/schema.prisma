@@ -25,4 +25,12 @@ model User {
   @@map("users")
 }
 
+model SalespersonMenuPermission {
+  menuKey   String   @id @map("menu_key") @db.VarChar(100)
+  isVisible Boolean  @default(true) @map("is_visible")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("salesperson_menu_permissions")
+}
+
 // 其他业务实体将在字段和库存规则确认后添加。

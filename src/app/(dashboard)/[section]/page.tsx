@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { modulePages } from "@/config/navigation";
+import { requirePageAccess } from "@/server/menu-permissions";
 import { Card, CardContent } from "@/components/ui/card";
 
 export function generateStaticParams() {
@@ -11,6 +12,7 @@ export default async function ModulePage({ params }: { params: Promise<{ section
   const page = modulePages.find((item) => item.href === `/${section}`);
 
   if (!page) notFound();
+  await requirePageAccess(page.href);
 
   return (
     <div className="mx-auto max-w-5xl">

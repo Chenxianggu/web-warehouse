@@ -2,9 +2,9 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { KeyRound, LogOut, Warehouse } from "lucide-react";
 import { signOut } from "@/auth";
-import { navigation } from "@/config/navigation";
 import { UserRole } from "@/generated/prisma/client";
 import { requireUser } from "@/server/current-user";
+import { getVisibleNavigation } from "@/server/menu-permissions";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -24,12 +24,7 @@ import styles from "./dashboard-shell.module.css";
 
 export default async function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await requireUser();
-  const visibleNavigation = navigation
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => item.href !== "/users" || user.role === UserRole.SUPER_ADMIN),
-    }))
-    .filter((group) => group.items.length > 0);
+  const visibleNavigation = await getVisibleNavigation(user.role);
 
   return (
     <SidebarProvider className={styles.shell} style={{ "--sidebar-width": "17rem" } as CSSProperties}>
