@@ -1,14 +1,15 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { navigation } from "@/config/navigation";
+import { UserRole } from "@/generated/prisma/client";
+import { requireUser } from "@/server/current-user";
+import { HomeWorkbench } from "@/components/home-workbench";
 
-export default function HomePage() {
-  return (
-    <div className="mx-auto max-w-5xl">
-      <p className="text-sm font-medium text-muted-foreground">工作台</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">首页概览</h1>
-      <p className="mt-4 text-muted-foreground">欢迎使用仓库管理系统。业务模块将按方案逐步接入。</p>
-      <Card className="mt-8 border-dashed bg-card/70">
-        <CardContent className="py-8 text-sm text-muted-foreground">暂无业务数据或功能。</CardContent>
-      </Card>
-    </div>
-  );
+export default async function HomePage() {
+  const user = await requireUser();
+  const visibleNavigation = navigation
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.href !== "/users" || user.role === UserRole.SUPER_ADMIN),
+    }))
+    .filter((group) => group.items.length > 0);
+  return <HomeWorkbench groups={visibleNavigation} username={user.username} />;
 }

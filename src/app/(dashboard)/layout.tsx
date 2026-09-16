@@ -1,36 +1,17 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  Boxes,
-  ClipboardCheck,
-  Gauge,
-  KeyRound,
-  LogOut,
-  Package,
-  PackageCheck,
-  Repeat2,
-  ScrollText,
-  ShieldCheck,
-  Tags,
-  TriangleAlert,
-  Truck,
-  Users,
-  Warehouse,
-} from "lucide-react";
+import { KeyRound, LogOut, Warehouse } from "lucide-react";
 import { signOut } from "@/auth";
 import { navigation } from "@/config/navigation";
 import { UserRole } from "@/generated/prisma/client";
 import { requireUser } from "@/server/current-user";
+import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -39,24 +20,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-
-const navigationIcons = {
-  "/": Gauge,
-  "/material-categories": Tags,
-  "/materials": Package,
-  "/customers": Users,
-  "/suppliers": Truck,
-  "/warehouses": Warehouse,
-  "/inbound-orders": ArrowDownToLine,
-  "/outbound-orders": ArrowUpFromLine,
-  "/consignments": PackageCheck,
-  "/ownership-transfers": Repeat2,
-  "/stock-adjustments": ClipboardCheck,
-  "/stock": Boxes,
-  "/stock-ledger": ScrollText,
-  "/shortages": TriangleAlert,
-  "/users": ShieldCheck,
-} as const;
+import styles from "./dashboard-shell.module.css";
 
 export default async function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await requireUser();
@@ -68,19 +32,19 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
     .filter((group) => group.items.length > 0);
 
   return (
-    <SidebarProvider>
-      <Sidebar collapsible="icon">
-        <SidebarHeader className="border-b border-sidebar-border p-4">
+    <SidebarProvider className={styles.shell} style={{ "--sidebar-width": "17rem" } as CSSProperties}>
+      <Sidebar className={styles.sidebarFrame} collapsible="icon">
+        <SidebarHeader className={styles.brandHeader}>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild size="lg" tooltip="塑料仓库管理">
+              <SidebarMenuButton asChild className={styles.brandLink} size="lg" tooltip="仁众塑料">
                 <Link href="/">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-sidebar-border bg-sidebar-accent">
+                  <span className={styles.brandMark}>
                     <Warehouse aria-hidden="true" />
                   </span>
-                  <span className="grid min-w-0 flex-1 text-left leading-tight">
-                    <span className="truncate font-semibold text-sidebar-foreground">塑料仓库管理</span>
-                    <span className="truncate text-xs text-sidebar-foreground/55">仓储业务系统</span>
+                  <span className={styles.brandCopy}>
+                    <strong>任仲塑料</strong>
+                    <small>WAREHOUSE CONTROL</small>
                   </span>
                 </Link>
               </SidebarMenuButton>
@@ -88,56 +52,36 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
           </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent className="py-2">
-          {visibleNavigation.map((group) => (
-            <SidebarGroup key={group.title}>
-              <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {group.items.map((item) => {
-                    const Icon = navigationIcons[item.href as keyof typeof navigationIcons] ?? Package;
-                    return (
-                      <SidebarMenuItem key={item.href}>
-                        <SidebarMenuButton asChild tooltip={item.label}>
-                          <Link href={item.href}>
-                            <Icon aria-hidden="true" />
-                            <span>{item.label}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
+        <SidebarContent className={styles.sidebarContent}>
+          <DashboardNavigation groups={visibleNavigation} />
         </SidebarContent>
 
-        <SidebarFooter className="border-t border-sidebar-border p-3">
+        <SidebarFooter className={styles.sidebarFooter}>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="修改密码">
+              <SidebarMenuButton asChild className={styles.footerAction} tooltip="修改密码">
                 <Link href="/settings/password"><KeyRound aria-hidden="true" /><span>修改密码</span></Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
           <form action={async () => { "use server"; await signOut({ redirectTo: "/login" }); }}>
-            <Button type="submit" variant="ghost" className="w-full justify-start px-2 text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground">
+            <Button type="submit" variant="ghost" className={`${styles.footerAction} w-full justify-start px-2`}>
               <LogOut aria-hidden="true" />
               <span className="group-data-[collapsible=icon]:hidden">退出登录</span>
             </Button>
           </form>
-          <p className="truncate px-2 pt-1 text-xs text-sidebar-foreground/45 group-data-[collapsible=icon]:hidden">
-            {user.username} · {user.role === UserRole.SUPER_ADMIN ? "超级管理员" : "业务员"}
+          <p className={`${styles.userReadout} group-data-[collapsible=icon]:hidden`}>
+            <span className="truncate">{user.username} · {user.role === UserRole.SUPER_ADMIN ? "超级管理员" : "业务员"}</span>
           </p>
         </SidebarFooter>
       </Sidebar>
 
       <SidebarInset>
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b bg-background/90 px-4 backdrop-blur md:px-6">
-          <SidebarTrigger aria-label="展开或收起导航" />
-          <Separator orientation="vertical" className="h-4" />
-          <span className="text-sm text-muted-foreground">塑料仓库管理系统</span>
+        <header className={styles.topbar}>
+          <SidebarTrigger className={styles.topbarTrigger} aria-label="展开或收起导航" />
+          <Separator orientation="vertical" className="h-4 bg-[rgb(201_169_110_/_20%)]" />
+          <span className={styles.topbarTitle}>塑料仓储业务系统</span>
+          <span className={styles.topbarStatus}>SYSTEM ONLINE</span>
         </header>
         <div className="min-w-0 flex-1 p-6 lg:p-10">{children}</div>
       </SidebarInset>
