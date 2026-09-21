@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFormStatus } from "react-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,10 +68,25 @@ export function LoginForm() {
         </span>
       </label>
 
-      <Button type="submit" size="lg" className={styles.submitButton}>
-        <span>确认登录</span>
-        <span className={styles.buttonCode}>ENTER_01</span>
-      </Button>
+      <SubmitButton />
     </form>
+  );
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button
+      type="submit"
+      size="lg"
+      className={styles.submitButton}
+      disabled={pending}
+      data-pending={pending ? "true" : "false"}
+      aria-busy={pending}
+    >
+      <span className={styles.submitLabel}>{pending ? "验证身份中" : "确认登录"}</span>
+      <span className={styles.buttonCode}>{pending ? "AUTH_..." : "ENTER_01"}</span>
+    </Button>
   );
 }
