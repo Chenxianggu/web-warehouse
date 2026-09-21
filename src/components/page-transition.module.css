@@ -1,0 +1,90 @@
+.frame {
+  position: relative;
+  min-width: 0;
+}
+
+.page {
+  min-width: 0;
+  animation: pageEnter 560ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.switching .page {
+  animation-name: pageEnter;
+}
+
+.scan {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.scan::before {
+  position: absolute;
+  top: -12%;
+  left: -5%;
+  width: 110%;
+  height: 2px;
+  background: var(--rz-cyan);
+  box-shadow: 0 0 12px rgb(102 247 255 / 80%), 0 0 32px rgb(102 247 255 / 28%);
+  content: "";
+}
+
+.scan::after {
+  position: absolute;
+  top: -12%;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(to bottom, transparent, rgb(102 247 255 / 7%), transparent);
+  border-bottom: 1px solid rgb(102 247 255 / 18%);
+  content: "";
+}
+
+.switching .scan {
+  opacity: 1;
+  animation: scanHandoff 760ms cubic-bezier(0.35, 0, 0.25, 1) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.992);
+    clip-path: inset(3% 0 0 0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    clip-path: inset(0);
+  }
+}
+
+@keyframes scanHandoff {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  82% { opacity: 0.72; }
+  100% { opacity: 0; }
+}
+
+.switching .scan::before,
+.switching .scan::after {
+  animation: scanLine 760ms cubic-bezier(0.35, 0, 0.25, 1) both;
+}
+
+@keyframes scanLine {
+  from { top: -12%; }
+  to { top: 112%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page,
+  .switching .page,
+  .switching .scan,
+  .switching .scan::before,
+  .switching .scan::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

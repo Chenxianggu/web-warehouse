@@ -6,6 +6,7 @@ import { UserRole } from "@/generated/prisma/client";
 import { requireUser } from "@/server/current-user";
 import { getVisibleNavigation } from "@/server/menu-permissions";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -78,7 +79,9 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
           <span className={styles.topbarTitle}>塑料仓储业务系统</span>
           <span className={styles.topbarStatus}>SYSTEM ONLINE</span>
         </header>
-        <div className="min-w-0 flex-1 p-6 lg:p-10">{children}</div>
+        <div className="min-w-0 flex-1 p-6 lg:p-10">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
