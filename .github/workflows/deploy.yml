@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: production
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   verify:
@@ -109,8 +109,22 @@ jobs:
           chmod 600 "$HOME/.ssh/id_ed25519"
           printf '%s\n' "$PROD_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
           chmod 600 "$HOME/.ssh/known_hosts"
+          cat > "$HOME/.ssh/config" <<'EOF'
+          Host *
+            BatchMode yes
+            IdentitiesOnly yes
+            IdentityFile ~/.ssh/id_ed25519
+            UserKnownHostsFile ~/.ssh/known_hosts
+            StrictHostKeyChecking yes
+            ServerAliveInterval 10
+            ServerAliveCountMax 3
+            ConnectTimeout 20
+            TCPKeepAlive yes
+          EOF
+          chmod 600 "$HOME/.ssh/config"
 
       - name: Upload release files
+        timeout-minutes: 3
         shell: bash
         run: |
           set -euo pipefail
@@ -118,10 +132,12 @@ jobs:
             "$PROD_USER@$PROD_HOST:$PROD_APP_DIR/"
 
       - name: Build and deploy on server
+        timeout-minutes: 30
         shell: bash
         run: |
           set -euo pipefail
-          ssh -p "$PROD_PORT" "$PROD_USER@$PROD_HOST" \
+          timeout --signal=TERM --kill-after=20s 28m \
+            ssh -p "$PROD_PORT" "$PROD_USER@$PROD_HOST" \
             bash -s -- "$PROD_APP_DIR" "$DEPLOY_TAG" "$IMAGE_REPOSITORY" <<'REMOTE'
           set -euo pipefail
           app_dir="$1"
