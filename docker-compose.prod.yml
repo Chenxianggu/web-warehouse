@@ -15,9 +15,7 @@ services:
       retries: 12
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE_REPOSITORY:?IMAGE_REPOSITORY must be set}:${IMAGE_TAG:?IMAGE_TAG must be set}
     restart: unless-stopped
     depends_on:
       db:
