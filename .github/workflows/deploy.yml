@@ -13,14 +13,10 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 concurrency:
   group: production
   cancel-in-progress: false
-
-env:
-  REGISTRY: ghcr.io
 
 jobs:
   verify:
@@ -55,78 +51,32 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
-  publish:
-    if: github.event_name == 'push'
-    needs: verify
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    outputs:
-      image_tag: ${{ steps.release.outputs.image_tag }}
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-
-      - name: Set release tag
-        id: release
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
-          echo "image_tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
-          echo "image_repository=$REGISTRY/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and publish image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ steps.release.outputs.image_repository }}:${{ github.ref_name }}
-            ${{ steps.release.outputs.image_repository }}:sha-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.version=${{ github.ref_name }}
-
   deploy:
-    needs:
-      - verify
-      - publish
+    needs: verify
     if: >-
       always() &&
-      ((github.event_name == 'push' && needs.publish.result == 'success') ||
-       (github.event_name == 'workflow_dispatch' && needs.verify.result == 'skipped' && needs.publish.result == 'skipped'))
+      ((github.event_name == 'push' && needs.verify.result == 'success') ||
+       (github.event_name == 'workflow_dispatch' && needs.verify.result == 'skipped'))
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     environment:
       name: production
       url: ${{ vars.PROD_URL }}
     env:
-      DEPLOY_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || needs.publish.outputs.image_tag }}
+      DEPLOY_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || github.ref_name }}
       PROD_HOST: ${{ secrets.PROD_HOST }}
       PROD_PORT: ${{ secrets.PROD_PORT }}
       PROD_USER: ${{ secrets.PROD_USER }}
       PROD_SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
       PROD_KNOWN_HOSTS: ${{ secrets.PROD_KNOWN_HOSTS }}
       PROD_APP_DIR: ${{ vars.PROD_APP_DIR }}
+      IMAGE_REPOSITORY: warehouse-app
 
     steps:
-      - name: Check out deployment files
+      - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.image_tag || github.sha }}
 
       - name: Validate deployment inputs
         shell: bash
@@ -140,6 +90,16 @@ jobs:
           test -n "$PROD_KNOWN_HOSTS"
           test -n "$PROD_APP_DIR"
 
+      - name: Package source
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf /tmp/warehouse-src.tgz \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=.next \
+            .
+
       - name: Configure SSH
         shell: bash
         run: |
@@ -150,28 +110,33 @@ jobs:
           printf '%s\n' "$PROD_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
           chmod 600 "$HOME/.ssh/known_hosts"
 
-      - name: Upload production Compose file
+      - name: Upload release files
         shell: bash
         run: |
           set -euo pipefail
-          scp -P "$PROD_PORT" docker-compose.prod.yml \
-            "$PROD_USER@$PROD_HOST:$PROD_APP_DIR/docker-compose.prod.yml.next"
+          scp -P "$PROD_PORT" /tmp/warehouse-src.tgz docker-compose.prod.yml \
+            "$PROD_USER@$PROD_HOST:$PROD_APP_DIR/"
 
-      - name: Deploy release
+      - name: Build and deploy on server
         shell: bash
         run: |
           set -euo pipefail
           ssh -p "$PROD_PORT" "$PROD_USER@$PROD_HOST" \
-            bash -s -- "$PROD_APP_DIR" "$DEPLOY_TAG" <<'REMOTE'
+            bash -s -- "$PROD_APP_DIR" "$DEPLOY_TAG" "$IMAGE_REPOSITORY" <<'REMOTE'
           set -euo pipefail
           app_dir="$1"
           image_tag="$2"
+          image_repository="$3"
 
           cd "$app_dir"
-          mv docker-compose.prod.yml.next docker-compose.prod.yml
-          export IMAGE_TAG="$image_tag"
+          rm -rf src-build
+          mkdir src-build
+          tar -xzf warehouse-src.tgz -C src-build
+          docker build -t "${image_repository}:${image_tag}" -t "${image_repository}:latest" src-build
+          rm -rf src-build warehouse-src.tgz
 
-          docker compose --env-file .env.prod -f docker-compose.prod.yml pull app
+          export IMAGE_REPOSITORY="$image_repository"
+          export IMAGE_TAG="$image_tag"
           docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --remove-orphans
           docker compose --env-file .env.prod -f docker-compose.prod.yml ps
           REMOTE

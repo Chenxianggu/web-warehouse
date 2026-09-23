@@ -15,7 +15,7 @@ services:
       retries: 12
 
   app:
-    image: ${IMAGE_REPOSITORY:?IMAGE_REPOSITORY must be set}:${IMAGE_TAG:?IMAGE_TAG must be set}
+    image: ${IMAGE_REPOSITORY:-warehouse-app}:${IMAGE_TAG:?IMAGE_TAG must be set}
     restart: unless-stopped
     depends_on:
       db:
