@@ -15,7 +15,9 @@ FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-RUN apt-get update -y \
+RUN find /etc/apt -type f \( -name '*.list' -o -name '*.sources' \) -print0 \
+  | xargs -0 sed -i 's/deb.debian.org/mirrors.cloud.tencent.com/g; s/security.debian.org/mirrors.cloud.tencent.com/g' \
+  && apt-get update -y \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
