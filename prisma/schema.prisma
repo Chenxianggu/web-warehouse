@@ -56,3 +56,33 @@ model ReceiverHistory {
   @@index([customerCode])
   @@map("receiver_history")
 }
+
+model Material {
+  id           Int      @id @default(autoincrement())
+  code         String   @unique @db.VarChar(50)
+  name         String   @db.VarChar(255)
+  packsPerTon  Int      @default(40) @map("packs_per_ton")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([name])
+  @@map("materials")
+}
+
+// Intentionally keyed by the material code rather than a foreign key. This
+// mirrors the existing warehouse system, where historical inbound entries
+// remain intact when a material master record is renamed or deleted.
+model InboundRecord {
+  id               Int      @id @default(autoincrement())
+  code             String   @db.VarChar(50)
+  name             String   @db.VarChar(255)
+  packCount        Decimal  @map("pack_count") @db.Decimal(12, 2)
+  inboundUnitPrice Decimal? @map("inbound_unit_price") @db.Decimal(14, 4)
+  taxIncluded      Boolean  @default(false) @map("tax_included")
+  createdAt        DateTime @default(now()) @map("created_at")
+  sourceType       String?  @map("source_type") @db.VarChar(50)
+  sourceId         Int?     @map("source_id")
+
+  @@index([code])
+  @@map("inbound_records")
+}

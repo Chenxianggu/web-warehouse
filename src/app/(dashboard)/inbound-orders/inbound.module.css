@@ -1,0 +1,98 @@
+.page { max-width: 1240px; margin: 0 auto; color: var(--rz-ivory); }
+.hero { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 28px; }
+.eyebrow { display: flex; gap: 8px; align-items: center; margin: 0 0 10px; color: var(--rz-gold); font: .62rem ui-monospace, monospace; letter-spacing: .12em; }
+.eyebrow svg { width: 15px; }
+.hero h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.06em; }
+.hero p:last-child { margin: 8px 0 0; color: rgb(242 242 236 / 52%); font-size: .82rem; }
+.liveBadge { color: var(--rz-cyan); font: .6rem ui-monospace, monospace; white-space: nowrap; }
+.liveBadge span { display: inline-block; width: 5px; height: 5px; margin-right: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 7px currentColor; animation: statusPulse 2s ease-in-out infinite; }
+.entryPanel, .ledger { position: relative; border: 1px solid rgb(201 169 110 / 22%); background: var(--rz-panel); clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px); }
+.entryPanel::before, .ledger::before { position: absolute; z-index: 2; top: 0; left: 13px; width: 92px; height: 2px; background: var(--rz-gold); box-shadow: 0 0 9px rgb(201 169 110 / 44%); content: ""; }
+.panelHeader, .ledgerHeader { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 17px 19px; border-bottom: 1px solid rgb(201 169 110 / 19%); }
+.panelHeader h2, .ledgerHeader h2 { margin: 0; font-size: 1rem; }
+.panelHeader p, .ledgerHeader p { margin: 5px 0 0; color: rgb(242 242 236 / 42%); font-size: .7rem; }
+.stepReadout { color: var(--rz-cyan); font: .61rem ui-monospace, monospace; white-space: nowrap; }
+.entryForm { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 22px; max-width: 940px; padding: 23px 19px 21px; }
+.field { position: relative; display: grid; min-width: 0; gap: 7px; }
+.field > label, .taxField legend { color: rgb(242 242 236 / 66%); font-size: .7rem; }
+.field input { width: 100%; height: 44px; border: 1px solid rgb(242 242 236 / 17%); border-radius: 0; background: #050506; padding: 0 12px; color: var(--rz-ivory); outline: none; clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px); }
+.field input:focus { border-color: var(--rz-gold); box-shadow: 0 0 12px rgb(201 169 110 / 12%); }
+.field input::placeholder { color: rgb(242 242 236 / 28%); }
+.field small { color: rgb(242 242 236 / 32%); font-size: .61rem; }
+.autocomplete { position: relative; }
+.autocomplete > svg { position: absolute; top: 14px; right: 12px; width: 15px; color: rgb(201 169 110 / 65%); pointer-events: none; }
+.autocomplete input { padding-right: 38px; }
+.suggestions { position: absolute; z-index: 20; top: calc(100% + 5px); right: 0; left: 0; display: grid; overflow: hidden; border: 1px solid rgb(201 169 110 / 42%); background: rgb(8 8 10 / 99%); box-shadow: 0 18px 38px rgb(0 0 0 / 65%); clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px); }
+.suggestions button { display: grid; grid-template-columns: minmax(90px, .7fr) 1fr; gap: 12px; border: 0; border-bottom: 1px solid rgb(242 242 236 / 8%); background: transparent; padding: 10px 12px; color: var(--rz-ivory); text-align: left; }
+.suggestions button:last-child { border-bottom: 0; }
+.suggestions button:hover, .suggestions button[data-active] { background: rgb(201 169 110 / 9%); }
+.suggestions button span { color: var(--rz-gold); font: .69rem ui-monospace, monospace; }
+.suggestions button strong { overflow: hidden; font-size: .72rem; font-weight: 570; text-overflow: ellipsis; white-space: nowrap; }
+.priceField { position: relative; }
+.priceField input { padding-right: 72px; }
+.priceField span { position: absolute; top: 15px; right: 12px; color: rgb(242 242 236 / 36%); font: .61rem ui-monospace, monospace; pointer-events: none; }
+.taxField { display: grid; min-width: 0; margin: 0; border: 0; padding: 0; gap: 7px; }
+.taxField legend { position: static; width: 100%; padding: 0; }
+.taxOptions { display: flex; min-width: 0; gap: 8px; }
+.taxField label { position: relative; display: grid; height: 44px; min-width: 108px; place-items: center; margin: 0; border: 1px solid rgb(242 242 236 / 17%); color: rgb(242 242 236 / 52%); font-size: .72rem; cursor: pointer; }
+.taxField label[data-selected] { border-color: var(--rz-gold); background: rgb(201 169 110 / 9%); color: var(--rz-gold); box-shadow: inset 0 -2px 0 var(--rz-gold); }
+.taxField input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.taxField input:focus-visible + span { outline: 1px solid var(--rz-cyan); outline-offset: 6px; }
+.formActions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 9px; padding-top: 3px; }
+.primaryButton, .secondaryButton, .dangerButton { display: inline-flex; min-height: 39px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--rz-gold); border-radius: 0; padding: 0 15px; font-weight: 650; line-height: 1; white-space: nowrap; }
+.primaryButton { background: var(--rz-gold); color: var(--rz-black); clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px)); }
+.secondaryButton { background: transparent; color: var(--rz-gold); }
+.dangerButton { min-height: 33px; border-color: rgb(255 45 120 / 48%); background: transparent; padding: 0 10px; color: var(--rz-magenta); font-size: .69rem; }
+.primaryButton:hover, .secondaryButton:hover { filter: brightness(1.18); }
+.ledger { overflow: hidden; margin-top: 16px; }
+.ledgerHeader { align-items: flex-end; }
+.dateRange { display: flex; align-items: center; gap: 8px; }
+.dateRange > svg { width: 16px; color: var(--rz-gold); }
+.dateRange label { position: relative; }
+.dateRange label span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.dateRange input { height: 35px; border: 1px solid rgb(242 242 236 / 16%); border-radius: 0; background: #050506; padding: 0 9px; color: var(--rz-ivory); color-scheme: dark; outline: none; }
+.dateRange input:focus { border-color: var(--rz-gold); }
+.rangeSeparator { color: rgb(242 242 236 / 35%); font-size: .66rem; }
+.clearRange { min-height: 30px; border: 0; background: transparent; color: var(--rz-gold); font-size: .65rem; }
+.tableWrap { min-height: 168px; max-height: 360px; overflow: auto; }
+.table { width: 100%; min-width: 880px; border-collapse: collapse; }
+.table th { position: sticky; z-index: 1; top: 0; background: var(--rz-panel); padding: 12px 16px; color: rgb(201 169 110 / 75%); font: .61rem ui-monospace, monospace; letter-spacing: .06em; text-align: center; white-space: nowrap; }
+.table td { padding: 14px 16px; border-top: 1px solid rgb(242 242 236 / 8%); font-size: .8rem; text-align: center; }
+.table tr { transition: background-color 140ms ease; }
+.table tr:hover td { background: rgb(201 169 110 / 5%); }
+.code, .packCount, .price, .date { font-family: ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.code { color: var(--rz-gold); }
+.materialName { color: var(--rz-ivory); font-weight: 590; }
+.packCount { color: var(--rz-cyan); }
+.price { color: rgb(242 242 236 / 72%); text-align: right; }
+.date { color: rgb(242 242 236 / 52%); }
+.muted { color: rgb(242 242 236 / 30%); }
+.taxBadge { display: inline-grid; min-width: 32px; height: 22px; place-items: center; border: 1px solid rgb(201 169 110 / 32%); color: var(--rz-gold); font: .62rem ui-monospace, monospace; }
+.taxBadge[data-included] { border-color: rgb(102 247 255 / 32%); color: var(--rz-cyan); }
+.empty { display: grid; min-height: 168px; place-content: center; justify-items: center; gap: 7px; color: rgb(242 242 236 / 38%); text-align: center; }
+.empty svg { width: 26px; color: var(--rz-gold); opacity: .72; }
+.empty strong { color: rgb(242 242 236 / 66%); font-size: .82rem; }
+.empty span { font-size: .68rem; }
+.pager { display: flex; justify-content: flex-end; align-items: center; gap: 10px; min-height: 58px; padding: 12px 19px; border-top: 1px solid rgb(242 242 236 / 8%); color: rgb(242 242 236 / 52%); font-size: .7rem; }
+.total { margin-right: auto; }
+.pageSize { display: flex; align-items: center; gap: 6px; }
+.pageSize select, .jump input { height: 29px; border: 1px solid rgb(201 169 110 / 27%); border-radius: 0; background: #050506; color: var(--rz-ivory); outline: none; }
+.pageSize select { padding: 0 23px 0 8px; }
+.pageButtons { display: flex; gap: 5px; }
+.pager button { min-width: 30px; height: 29px; border: 1px solid rgb(201 169 110 / 30%); border-radius: 0; background: transparent; color: var(--rz-gold); }
+.pager button[data-current] { border-color: var(--rz-gold); background: var(--rz-gold); color: var(--rz-black); font-weight: 750; }
+.pager button:disabled { opacity: .28; cursor: not-allowed; }
+.jump { display: flex; align-items: center; gap: 5px; }
+.jump input { width: 39px; padding: 0 6px; text-align: center; }
+.dialogBackdrop { position: fixed; z-index: 50; inset: 0; background: rgb(0 0 0 / 78%); animation: backdropIn 160ms ease-out both; }
+.confirmDialog { position: fixed; z-index: 51; top: 50%; left: 50%; width: min(450px, calc(100vw - 40px)); transform: translate(-50%, -50%); border: 1px solid var(--rz-magenta); background: var(--rz-panel); padding: 22px 24px 20px; clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px); animation: dialogIn 190ms cubic-bezier(.2,.8,.2,1) both; }
+.confirmTitle { margin: 0; color: var(--rz-ivory); font-size: 1rem; }
+.confirmDescription { margin-top: 9px; color: rgb(242 242 236 / 55%); font-size: .75rem; line-height: 1.65; }
+.dialogFooter { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; padding-top: 17px; border-top: 1px solid rgb(242 242 236 / 10%); }
+.primaryButton:focus-visible, .secondaryButton:focus-visible, .dangerButton:focus-visible, .clearRange:focus-visible, .pager button:focus-visible, .pager select:focus-visible, .jump input:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }
+@keyframes dialogIn { from { opacity: 0; transform: translate(-50%, calc(-50% - 10px)) scale(.985); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes statusPulse { 50% { opacity: .42; box-shadow: 0 0 3px currentColor; } }
+@media (max-width: 760px) { .hero { display: block; } .liveBadge { display: inline-block; margin-top: 18px; } .entryForm { grid-template-columns: 1fr; } .formActions { grid-column: 1; } .ledgerHeader { align-items: flex-start; flex-direction: column; } .dateRange { width: 100%; flex-wrap: wrap; } .dateRange label { flex: 1; } .dateRange input { width: 100%; } .pager { flex-wrap: wrap; justify-content: center; } .total { width: 100%; margin: 0; text-align: center; } .jump { display: none; } }
+@media (max-width: 460px) { .panelHeader { align-items: flex-start; } .stepReadout { display: none; } .taxField label { min-width: 0; flex: 1; } .formActions { justify-content: stretch; } .formActions button { flex: 1; } .dateRange > svg, .rangeSeparator { display: none; } .dateRange label { flex-basis: calc(50% - 4px); } .pageSize { width: 100%; justify-content: center; } .confirmDialog { width: calc(100vw - 24px); padding: 19px; } }
+@media (prefers-reduced-motion: reduce) { .confirmDialog, .dialogBackdrop, .liveBadge span { transition: none; animation: none; } .table tr { transition: none; } }
