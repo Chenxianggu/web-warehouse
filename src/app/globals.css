@@ -109,3 +109,77 @@
     cursor: pointer;
   }
 }
+
+.rz-sonner [data-sonner-toast] {
+  --rz-toast-bg: var(--rz-panel-raised);
+  --rz-toast-edge: rgb(201 169 110 / 30%);
+  --rz-toast-tint: rgb(201 169 110 / 8%);
+  --rz-toast-accent: var(--rz-gold);
+  --rz-toast-glow: transparent;
+  --rz-toast-cut: 9px;
+  --normal-bg: var(--rz-toast-bg);
+  --normal-border: var(--rz-toast-edge);
+  --normal-text: var(--rz-ivory);
+}
+
+.rz-sonner [data-sonner-toast][data-type="success"] {
+  --rz-toast-edge: rgb(102 247 255 / 38%);
+  --rz-toast-tint: rgb(102 247 255 / 12%);
+  --rz-toast-accent: var(--rz-cyan);
+  --rz-toast-glow: rgb(102 247 255 / 10%);
+  --success-bg: var(--rz-toast-bg);
+  --success-border: var(--rz-toast-edge);
+  --success-text: var(--rz-ivory);
+}
+
+.rz-sonner [data-sonner-toast][data-type="error"] {
+  --rz-toast-bg: #10070b;
+  --rz-toast-edge: rgb(255 45 120 / 48%);
+  --rz-toast-tint: rgb(255 45 120 / 13%);
+  --rz-toast-accent: var(--rz-magenta);
+  --rz-toast-glow: rgb(255 45 120 / 10%);
+  --error-bg: var(--rz-toast-bg);
+  --error-border: var(--rz-toast-edge);
+  --error-text: var(--rz-ivory);
+}
+
+/* clip-path removes the border on the chamfers, so the diagonal edges are redrawn with corner gradients. */
+.rz-sonner[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  padding-right: 38px;
+  border-color: var(--rz-toast-edge);
+  border-radius: 0;
+  background:
+    linear-gradient(225deg, transparent calc(var(--rz-toast-cut) * 0.7071 - 1.2px), var(--rz-toast-edge) 0 calc(var(--rz-toast-cut) * 0.7071 + 0.4px), transparent 0) top right / var(--rz-toast-cut) var(--rz-toast-cut) no-repeat border-box,
+    linear-gradient(45deg, transparent calc(var(--rz-toast-cut) * 0.7071 - 1.2px), var(--rz-toast-edge) 0 calc(var(--rz-toast-cut) * 0.7071 + 0.4px), transparent 0) bottom left / var(--rz-toast-cut) var(--rz-toast-cut) no-repeat border-box,
+    linear-gradient(90deg, var(--rz-toast-tint), transparent 58%),
+    var(--rz-toast-bg);
+  box-shadow: 0 14px 38px rgb(0 0 0 / 64%), 0 0 20px var(--rz-toast-glow), inset 2px 0 0 var(--rz-toast-accent);
+  clip-path: polygon(0 0, calc(100% - var(--rz-toast-cut)) 0, 100% var(--rz-toast-cut), 100% 100%, var(--rz-toast-cut) 100%, 0 calc(100% - var(--rz-toast-cut)));
+  color: var(--rz-ivory);
+  font-family: var(--font-sans), sans-serif;
+}
+
+.rz-sonner [data-title] { font-size: 0.76rem; font-weight: 680; letter-spacing: 0.02em; }
+.rz-sonner [data-description] { color: rgb(242 242 236 / 58%); font-size: 0.64rem; }
+.rz-sonner [data-icon] svg { width: 18px; height: 18px; }
+.rz-sonner [data-sonner-toast][data-type="success"] [data-icon] { color: var(--rz-cyan); }
+.rz-sonner [data-sonner-toast][data-type="error"] [data-icon] { color: var(--rz-magenta); }
+.rz-sonner[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-close-button] {
+  top: 50%;
+  right: 10px;
+  left: auto;
+  width: 20px;
+  height: 20px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: rgb(242 242 236 / 46%);
+  transform: translateY(-50%);
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+.rz-sonner[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-close-button]:hover {
+  border-color: var(--rz-toast-edge);
+  background: rgb(242 242 236 / 5%);
+  color: var(--rz-ivory);
+}
+.rz-sonner [data-close-button]:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }

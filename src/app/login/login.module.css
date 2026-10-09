@@ -378,19 +378,12 @@
   font-size: 0.72rem;
 }
 
-.alert,
-.successAlert {
+.alert {
   margin-bottom: 18px;
   border-radius: 0;
   font-size: 0.72rem;
   clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
   animation: alertIn 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-.successAlert {
-  border-color: rgb(102 247 255 / 28%);
-  background: rgb(102 247 255 / 6%);
-  color: var(--cyan);
 }
 
 .form {

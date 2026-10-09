@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoginForm } from "./login-form";
+import { FloatingSuccessMessage } from "@/components/floating-success-message";
 import styles from "./login.module.css";
 
 export default async function LoginPage({
@@ -95,9 +96,10 @@ export default async function LoginPage({
               </Alert>
             )}
             {query.changed && (
-              <Alert className={styles.successAlert}>
-                <AlertDescription>密码已修改，请重新登录。</AlertDescription>
-              </Alert>
+              <FloatingSuccessMessage
+                title="密码修改成功"
+                description="新密码已生效，请重新登录"
+              />
             )}
 
             <LoginForm />
