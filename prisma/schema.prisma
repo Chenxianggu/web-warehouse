@@ -33,4 +33,26 @@ model SalespersonMenuPermission {
   @@map("salesperson_menu_permissions")
 }
 
-// 其他业务实体将在字段和库存规则确认后添加。
+model Customer {
+  id           Int               @id @default(autoincrement())
+  code         String            @db.VarChar(50)
+  fullName     String            @map("full_name") @db.VarChar(255)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  receivers    ReceiverHistory[]
+
+  @@unique([code])
+  @@index([fullName])
+  @@map("customers")
+}
+
+model ReceiverHistory {
+  id           Int      @id @default(autoincrement())
+  customerCode String   @map("customer_code") @db.VarChar(50)
+  receiver     String   @db.VarChar(255)
+  customer     Customer @relation(fields: [customerCode], references: [code], onUpdate: Cascade, onDelete: Cascade)
+
+  @@unique([customerCode, receiver])
+  @@index([customerCode])
+  @@map("receiver_history")
+}
