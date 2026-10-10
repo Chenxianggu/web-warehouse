@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
   const visibleNavigation = await getVisibleNavigation(user.role);
 
   return (
-    <SidebarProvider className={styles.shell} style={{ "--sidebar-width": "17rem" } as CSSProperties}>
+    <SidebarProvider className={styles.shell} style={{ "--sidebar-width": "var(--rz-sidebar-width)" } as CSSProperties}>
       <Sidebar className={styles.sidebarFrame} collapsible="icon">
         <SidebarHeader className={styles.brandHeader}>
           <SidebarMenu>
@@ -72,14 +72,14 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
         </SidebarFooter>
       </Sidebar>
 
-      <SidebarInset>
+      <SidebarInset className={styles.main}>
         <header className={styles.topbar}>
           <SidebarTrigger className={styles.topbarTrigger} aria-label="展开或收起导航" />
           <Separator orientation="vertical" className="h-4 bg-[rgb(201_169_110_/_20%)]" />
           <span className={styles.topbarTitle}>塑料仓储业务系统</span>
           <span className={styles.topbarStatus}>SYSTEM ONLINE</span>
         </header>
-        <div className="min-w-0 flex-1 p-6 lg:p-10">
+        <div className={styles.content}>
           <PageTransition>{children}</PageTransition>
         </div>
       </SidebarInset>

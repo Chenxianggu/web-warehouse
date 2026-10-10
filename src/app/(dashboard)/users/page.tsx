@@ -11,7 +11,7 @@ import styles from "./users.module.css";
 
 const messages: Record<string, string> = {
   username: "用户名需为 3–50 位小写字母、数字、点、下划线或连字符。",
-  password: "密码至少需要 12 个字符，且不能超过 72 字节。",
+  password: "密码不能为空，且不能超过 72 字节。",
   role: "请选择一个有效的账号角色。",
   duplicate: "该用户名已经存在，请更换后重试。",
   missing: "目标账号不存在或已被删除。",
@@ -80,7 +80,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                     <form action={resetUserPasswordAction} className={styles.resetForm}>
                       <input type="hidden" name="userId" value={user.id} />
                       <label className={styles.srOnly} htmlFor={`password-${user.id}`}>为 {user.username} 设置新密码</label>
-                      <input id={`password-${user.id}`} name="password" type="password" placeholder="输入新密码（至少 12 位）" autoComplete="new-password" required minLength={12} />
+                      <input id={`password-${user.id}`} name="password" type="password" placeholder="输入新密码" autoComplete="new-password" required />
                       <ResetPasswordButton />
                     </form>
                   )}

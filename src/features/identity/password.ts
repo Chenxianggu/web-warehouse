@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const passwordSchema = z
   .string()
-  .min(12, "密码至少需要 12 个字符")
+  .min(1, "请输入密码")
   .max(72, "密码过长")
   .refine((value) => Buffer.byteLength(value, "utf8") <= 72, "密码最多允许 72 字节");
 

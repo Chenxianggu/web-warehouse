@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 const errorMessages: Record<string, string> = {
   invalid: "请填写所有字段。",
   confirm: "两次输入的新密码不一致。",
-  policy: "新密码至少 12 个字符，且不超过 72 字节。",
+  policy: "新密码不能为空，且不超过 72 字节。",
   same: "新密码不能与当前密码相同。",
   current: "当前密码不正确。",
   retry: "密码已被更新，请刷新页面后重试。",
@@ -43,11 +43,11 @@ export default async function PasswordPage({
             </div>
             <div className="space-y-2">
               <Label htmlFor="newPassword">新密码</Label>
-              <Input id="newPassword" name="newPassword" type="password" autoComplete="new-password" minLength={12} required className="h-10 bg-muted/60" />
+              <Input id="newPassword" name="newPassword" type="password" autoComplete="new-password" required className="h-10 bg-muted/60" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">确认新密码</Label>
-              <Input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" minLength={12} required className="h-10 bg-muted/60" />
+              <Input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" required className="h-10 bg-muted/60" />
             </div>
             <Button type="submit" size="lg">保存新密码</Button>
           </form>

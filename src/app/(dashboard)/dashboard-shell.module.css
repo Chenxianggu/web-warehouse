@@ -1,4 +1,5 @@
 .shell {
+  --rz-sidebar-width: 17rem;
   --sidebar: var(--rz-panel);
   --sidebar-foreground: var(--rz-ivory);
   --sidebar-accent: var(--rz-panel-raised);
@@ -6,6 +7,9 @@
   --sidebar-border: rgb(201 169 110 / 22%);
   --sidebar-ring: var(--rz-gold);
 }
+
+.main { min-width: 0; }
+.content { min-width: 0; flex: 1; padding: 40px; }
 
 .sidebarFrame > [data-sidebar="sidebar"] {
   overflow: hidden;
@@ -124,6 +128,12 @@
 
 .shell [data-collapsible="icon"] .navigationGroup {
   padding-inline: 8px;
+}
+
+.shell [data-collapsible="icon"] .groupLabel {
+  height: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .shell [data-collapsible="icon"] .iconCell {
@@ -315,6 +325,31 @@
 @keyframes locateActive { to { transform: translateX(105%); } }
 
 @media (min-width: 768px) { .topbar { padding-inline: 24px; } }
+
+@media (min-width: 768px) and (max-width: 1600px), (min-width: 768px) and (max-height: 900px) {
+  .shell { --rz-sidebar-width: 14rem; }
+  .content { padding: 20px 24px; }
+  .topbar { height: 48px; padding-inline: 20px; }
+}
+
+@media (min-width: 768px) and (max-height: 900px) {
+  .brandHeader { padding: 10px 12px; }
+  .brandLink { height: 40px; min-height: 40px; }
+  .brandMark { width: 32px; height: 32px; }
+  .sidebarContent { padding-block: 4px 6px; }
+  .navigationGroup { padding-block: 3px 0; }
+  .groupLabel { height: 18px; font-size: .58rem; }
+  .navigationList { gap: 1px; }
+  .navigationItem { height: 32px; min-height: 32px; font-size: .8rem; }
+  .sidebarFooter { gap: 3px; padding: 8px 11px; }
+  .footerAction { height: 30px; min-height: 30px; font-size: .78rem; }
+  .userReadout { padding-top: 3px; }
+}
+
+@media (max-width: 767px) {
+  .content { padding: 20px 16px; }
+  .topbarStatus { font-size: .5rem; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .navigationItem[data-active="true"]::before { animation: none; }

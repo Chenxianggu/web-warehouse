@@ -44,7 +44,7 @@ export function CreateUserDialog({ errorMessage }: { errorMessage?: string }) {
             </div>
             <div className={styles.field}>
               <label htmlFor="newUserPassword">初始密码</label>
-              <input id="newUserPassword" name="password" type="password" autoComplete="new-password" required minLength={12} placeholder="至少 12 个字符" />
+              <input id="newUserPassword" name="password" type="password" autoComplete="new-password" required placeholder="输入初始密码" />
               <small>创建后，用户可在登录后自行修改</small>
             </div>
             <fieldset className={styles.roleFieldset}>

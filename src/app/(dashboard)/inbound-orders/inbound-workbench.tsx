@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
-import { CalendarRange, ChevronDown, PackageCheck, RotateCcw, Save, Trash2 } from "lucide-react";
+import { ChevronDown, PackageCheck, RotateCcw, Save, Trash2 } from "lucide-react";
 import { AlertDialog } from "radix-ui";
 import { pinyin } from "pinyin-pro";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/number-input";
+import { DatePicker, DateRangePicker, type DateRangeValue } from "@/components/date-picker";
 import { createInboundRecord, deleteInboundRecord, listInboundRecords } from "./actions";
 import styles from "./inbound.module.css";
 
@@ -172,14 +174,10 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
     });
   };
 
-  const updateStartDate = (value: string) => {
-    setStartDate(value);
-    refresh(1, pageSize, value, endDate);
-  };
-
-  const updateEndDate = (value: string) => {
-    setEndDate(value);
-    refresh(1, pageSize, startDate, value);
+  const updateDateRange = ({ start, end }: DateRangeValue) => {
+    setStartDate(start);
+    setEndDate(end);
+    refresh(1, pageSize, start, end);
   };
 
   const goToPage = (nextPage: number) => refresh(Math.min(pages, Math.max(1, nextPage)), pageSize, startDate, endDate);
@@ -244,11 +242,11 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
           </div>
           <div className={styles.field}>
             <label htmlFor="inbound-packs">包数</label>
-            <Input id="inbound-packs" name="packCount" type="number" min={1} step={1} inputMode="numeric" value={form.packCount} onChange={(event) => setForm((current) => ({ ...current, packCount: event.target.value }))} placeholder="输入整数包数" required />
+            <NumberInput id="inbound-packs" name="packCount" label="包数" min={1} step={1} value={form.packCount} onValueChange={(value) => setForm((current) => ({ ...current, packCount: value }))} placeholder="输入整数包数" required />
           </div>
           <div className={styles.field}>
             <label htmlFor="inbound-price">入库价格</label>
-            <div className={styles.priceField}><Input id="inbound-price" name="inboundUnitPrice" type="number" min={0} step="0.01" inputMode="decimal" value={form.inboundUnitPrice} onChange={(event) => setForm((current) => ({ ...current, inboundUnitPrice: event.target.value }))} placeholder="0.00" required /><span>元 / 吨</span></div>
+            <NumberInput id="inbound-price" name="inboundUnitPrice" label="入库价格" min={0} step={0.01} suffix="元 / 吨" value={form.inboundUnitPrice} onValueChange={(value) => setForm((current) => ({ ...current, inboundUnitPrice: value }))} placeholder="0.00" required />
           </div>
           <fieldset className={styles.taxField}>
             <legend>是否含税</legend>
@@ -259,8 +257,8 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
           </fieldset>
           <div className={styles.field}>
             <label htmlFor="inbound-date">入库日期</label>
-            <Input id="inbound-date" name="createdAt" type="date" value={form.createdAt} onChange={(event) => setForm((current) => ({ ...current, createdAt: event.target.value }))} />
-            <small>留空时使用当前时间。</small>
+            <DatePicker id="inbound-date" name="createdAt" label="入库日期" value={form.createdAt} onValueChange={(value) => setForm((current) => ({ ...current, createdAt: value }))} describedBy="inbound-date-hint" />
+            <small id="inbound-date-hint">留空时使用当前时间。</small>
           </div>
           <div className={styles.formActions}>
             <Button type="button" className={styles.secondaryButton} variant="outline" onClick={resetForm} disabled={pending}><RotateCcw size={14} />重置</Button>
@@ -273,11 +271,7 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
         <div className={styles.ledgerHeader}>
           <div><h2 id="inbound-ledger-heading">入库记录</h2><p>删除流水后，对应塑料的库存包数会同步减少。</p></div>
           <div className={styles.dateRange}>
-            <CalendarRange aria-hidden="true" />
-            <label><span>开始日期</span><input type="date" value={startDate} max={endDate || undefined} onChange={(event) => updateStartDate(event.target.value)} aria-label="筛选开始日期" /></label>
-            <span className={styles.rangeSeparator}>至</span>
-            <label><span>结束日期</span><input type="date" value={endDate} min={startDate || undefined} onChange={(event) => updateEndDate(event.target.value)} aria-label="筛选结束日期" /></label>
-            {(startDate || endDate) && <button type="button" className={styles.clearRange} onClick={() => { setStartDate(""); setEndDate(""); refresh(1, pageSize, "", ""); }}>清除</button>}
+            <DateRangePicker value={{ start: startDate, end: endDate }} onValueChange={updateDateRange} disabled={pending} />
           </div>
         </div>
         <div className={styles.tableWrap}>
