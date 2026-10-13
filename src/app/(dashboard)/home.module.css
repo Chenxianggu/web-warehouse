@@ -5,6 +5,41 @@
   container-type: inline-size;
 }
 
+.viewSwitch {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  gap: 3px;
+  margin-top: 24px;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--rz-gold) 25%, transparent);
+  background: var(--rz-panel);
+}
+
+.viewSwitch button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  padding: 8px 18px;
+  background: transparent;
+  color: color-mix(in srgb, var(--rz-ivory) 65%, transparent);
+  font-size: 0.8rem;
+}
+
+.viewSwitch button[aria-pressed="true"] {
+  background: var(--rz-gold);
+  color: var(--rz-black);
+  font-weight: 700;
+  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
+}
+
+.viewSwitch button:focus-visible { outline: 2px solid var(--rz-gold); outline-offset: -2px; }
+.viewSwitch button[aria-pressed="true"]:focus-visible { outline-color: var(--rz-black); outline-offset: -4px; }
+.viewSwitch svg { width: 15px; height: 15px; }
+
 .hero {
   position: relative;
   display: flex;

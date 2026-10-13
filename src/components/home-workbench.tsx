@@ -1,19 +1,26 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Radio } from "lucide-react";
+import { ArrowUpRight, LayoutGrid, Radio, Table2 } from "lucide-react";
 import type { NavigationGroup } from "@/config/navigation";
 import { getNavigationIcon } from "@/config/navigation-icons";
 import styles from "@/app/(dashboard)/home.module.css";
+import { PlasticPriceTable } from "@/components/plastic-price-table";
 
 export function HomeWorkbench({ groups, username }: { groups: NavigationGroup[]; username: string }) {
   const moduleCount = groups.reduce((total, group) => total + group.items.length, 0);
+  const canUsePriceTable = groups.some((group) => group.items.some((item) => item.href === "/stock"));
+  const [view, setView] = useState<"workbench" | "prices">(canUsePriceTable ? "prices" : "workbench");
+  const [pricesOpened, setPricesOpened] = useState(canUsePriceTable);
 
   return (
     <div className={styles.page}>
       <header className={styles.hero}>
         <div className={styles.heroCopy}>
           <p className={styles.statusLine}><Radio aria-hidden="true" />业务入口已连接</p>
-          <h1>业务工作台</h1>
-          <p className={styles.introduction}>从这里进入库存、客户、订单及系统功能。</p>
+          <h1>{view === "prices" ? "塑料价格表" : "业务工作台"}</h1>
+          <p className={styles.introduction}>{view === "prices" ? "按类别查看时价与库存，集中维护每日报价。" : "从这里进入库存、客户、订单及系统功能。"}</p>
         </div>
         <dl className={styles.readout}>
           <div><dt>当前用户</dt><dd>{username}</dd></div>
@@ -21,6 +28,12 @@ export function HomeWorkbench({ groups, username }: { groups: NavigationGroup[];
         </dl>
       </header>
 
+      {canUsePriceTable && <div className={styles.viewSwitch} role="group" aria-label="首页展示方式">
+        <button type="button" aria-pressed={view === "prices"} aria-controls="home-prices" onClick={() => { setPricesOpened(true); setView("prices"); }}><Table2 aria-hidden="true" />塑料价格表</button>
+        <button type="button" aria-pressed={view === "workbench"} aria-controls="home-workbench" onClick={() => setView("workbench")}><LayoutGrid aria-hidden="true" />业务工作台</button>
+      </div>}
+
+      <div id="home-workbench" hidden={view !== "workbench"}>
       <div className={styles.sections}>
         {groups.map((group) => (
           <section className={styles.section} key={group.title} aria-labelledby={`group-${group.title}`}>
@@ -52,6 +65,8 @@ export function HomeWorkbench({ groups, username }: { groups: NavigationGroup[];
           </section>
         ))}
       </div>
+      </div>
+      {pricesOpened && <div id="home-prices" hidden={view !== "prices"}><PlasticPriceTable active={view === "prices"} /></div>}
     </div>
   );
 }

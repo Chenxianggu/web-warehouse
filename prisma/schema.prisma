@@ -21,6 +21,7 @@ model User {
   sessionVersion Int      @default(0) @map("session_version")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
+  plasticPriceEditor PlasticPriceEditor?
 
   @@map("users")
 }
@@ -85,4 +86,23 @@ model InboundRecord {
 
   @@index([code])
   @@map("inbound_records")
+}
+
+model PlasticPriceTable {
+  id        String   @id @db.VarChar(50)
+  groups    Json
+  version   Int      @default(1)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("plastic_price_tables")
+}
+
+// Per-user grant for editing the home price table. Super admins are allowed
+// by role and are not stored here.
+model PlasticPriceEditor {
+  userId    String   @id @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("plastic_price_editors")
 }

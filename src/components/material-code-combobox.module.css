@@ -1,0 +1,35 @@
+.control { display: flex; flex: 1; min-width: 0; height: 38px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
+.control:focus-within { border-color: var(--rz-gold); outline: 1px solid var(--rz-gold); outline-offset: 1px; }
+.control input { width: 100%; min-width: 0; border: 0; outline: none; padding: 7px 9px; background: transparent; color: var(--rz-ivory); font: inherit; }
+.control input::placeholder { color: color-mix(in srgb, var(--rz-ivory) 60%, transparent); font-size: 0.7rem; }
+.control button { display: grid; width: 28px; flex-shrink: 0; place-items: center; border: 0; background: transparent; color: var(--rz-gold); }
+.control button:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: -3px; }
+.control button svg { width: 13px; height: 13px; }
+.control button[aria-expanded="true"] svg { transform: rotate(180deg); }
+.control:has(input:disabled) { opacity: 0.5; }
+.content[data-slot="popover-content"] {
+  display: block;
+  width: max(260px, var(--radix-popover-trigger-width));
+  max-width: calc(100vw - 24px);
+  max-height: min(300px, var(--radix-popover-content-available-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--rz-gold) 45%, transparent);
+  border-top: 2px solid var(--rz-gold);
+  border-radius: 0;
+  background: var(--rz-panel);
+  color: var(--rz-ivory);
+  box-shadow: 0 12px 24px color-mix(in srgb, var(--rz-black) 80%, transparent);
+  scrollbar-color: var(--rz-gold) var(--rz-panel);
+  scrollbar-width: thin;
+}
+.option { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 11px; border-left: 2px solid transparent; cursor: pointer; }
+.option[data-highlighted="true"] { border-left-color: var(--rz-gold); background: var(--rz-panel-raised); }
+.option[aria-selected="true"] { color: var(--rz-gold); }
+.option span { display: grid; min-width: 0; gap: 4px; overflow-wrap: anywhere; }
+.option strong { font-size: 0.78rem; font-weight: 600; }
+.option small { color: color-mix(in srgb, var(--rz-ivory) 60%, transparent); font-size: 0.68rem; }
+.option svg { width: 15px; height: 15px; flex-shrink: 0; }
+.note { margin: 0; padding: 12px; color: color-mix(in srgb, var(--rz-ivory) 65%, transparent); font-size: 0.72rem; line-height: 1.7; }
+@media (prefers-reduced-motion: reduce) { .content[data-slot="popover-content"] { animation: none; transition: none; } }
