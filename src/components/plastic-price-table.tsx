@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Pencil, Plus, RefreshCw, Save, ShieldCheck, Tabl
 import { Dialog } from "radix-ui";
 import { toast } from "sonner";
 import { MaterialCodeCombobox } from "@/components/material-code-combobox";
+import { createClientId } from "@/lib/create-client-id";
 import { loadPlasticPriceTable, loadPriceTableEditors, savePlasticPriceTable, savePriceTableEditors } from "@/app/(dashboard)/price-table-actions";
 import { stockForCode, type PriceGroup, type PriceRow, type PriceStock, type PriceTableData } from "@/features/price-table/schema";
 import styles from "./plastic-price-table.module.css";
@@ -203,7 +204,7 @@ export function PlasticPriceTable({ active }: { active: boolean }) {
             <div className={styles.summary}><Table2 aria-hidden="true" /><span>{groups.length} 个类别 · {totalRows} 项报价</span>{draft && <span className={styles.draftState}>{dirty ? "有未保存修改" : "编辑中"}</span>}</div>
             <div className={styles.actions}>
               {draft ? <>
-                <button key="add-group" className={styles.secondary} type="button" disabled={draft.length >= 20} onClick={() => setDraft([...draft, { id: crypto.randomUUID(), title: "新类别", rows: [] }])}><Plus aria-hidden="true" />添加类别</button>
+                <button key="add-group" className={styles.secondary} type="button" disabled={draft.length >= 20} onClick={() => setDraft([...draft, { id: createClientId(), title: "新类别", rows: [] }])}><Plus aria-hidden="true" />添加类别</button>
                 <button key="cancel-edit" className={styles.secondary} type="button" onClick={() => { setDraft(null); setError(""); }}><X aria-hidden="true" />取消编辑</button>
                 <button key="save-table" className={styles.primary} type="submit"><Save aria-hidden="true" />{pending ? "保存中…" : "保存价格表"}</button>
               </> : <>
@@ -255,7 +256,7 @@ export function PlasticPriceTable({ active }: { active: boolean }) {
                   </Fragment>;
                 })}</tr>)}</tbody>
                 {draft && <tfoot><tr>{draft.map((group) => <td key={group.id} colSpan={3} className={styles.groupStart}>
-                  <button className={styles.addRow} type="button" disabled={group.rows.length >= 100 || totalRows >= 1000} onClick={() => setDraft(draft.map((item) => item.id === group.id ? { ...item, rows: [...item.rows, { id: crypto.randomUUID(), code: "", price: "" }] } : item))}><Plus aria-hidden="true" />添加塑料</button>
+                  <button className={styles.addRow} type="button" disabled={group.rows.length >= 100 || totalRows >= 1000} onClick={() => setDraft(draft.map((item) => item.id === group.id ? { ...item, rows: [...item.rows, { id: createClientId(), code: "", price: "" }] } : item))}><Plus aria-hidden="true" />添加塑料</button>
                 </td>)}</tr></tfoot>}
               </table>
             </div>
