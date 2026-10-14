@@ -1,0 +1,15 @@
+.table { min-width: 1600px; }
+.editor > div:first-child { position: sticky; z-index: 3; top: 0; background: var(--rz-panel); }
+.editor > form > div:last-child { position: sticky; z-index: 3; bottom: 0; background: var(--rz-panel); }
+.table tr[data-delivered] td:first-child { box-shadow: inset 2px 0 var(--rz-gold); }
+.summary { color: var(--rz-gold); font-size: .78rem; }
+.batchScroll { overflow: auto; }
+.batchTable { width: 100%; min-width: 450px; border-collapse: collapse; font-size: .77rem; text-align: left; }
+.batchTable th { color: var(--rz-gold); font-weight: 550; }
+.batchTable th, .batchTable td { padding: 10px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 18%, transparent); }
+.addBatch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; gap: 14px; margin-top: 16px; }
+.addBatch > label { display: grid; gap: 7px; font-size: .78rem; }
+.confirmOverlay { z-index: 70; }
+.confirm { z-index: 71; }
+@media (min-width: 1000px) { .filters > label { width: 140px; } }
+@media (max-width: 700px) { .addBatch { grid-template-columns: minmax(0, 1fr); } .summary { font-size: .7rem; } .filters > label:last-of-type { width: calc(50% - 6px); } }

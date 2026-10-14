@@ -1,0 +1,2 @@
+ALTER TABLE "materials" ALTER COLUMN "code" TYPE VARCHAR(100);
+ALTER TABLE "inbound_records" ALTER COLUMN "code" TYPE VARCHAR(100);

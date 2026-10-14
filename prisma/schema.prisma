@@ -58,7 +58,7 @@ model ReceiverHistory {
 
 model Material {
   id           Int      @id @default(autoincrement())
-  code         String   @unique @db.VarChar(50)
+  code         String   @unique @db.VarChar(100)
   name         String   @db.VarChar(255)
   packsPerTon  Int      @default(40) @map("packs_per_ton")
   createdAt    DateTime @default(now()) @map("created_at")
@@ -73,7 +73,7 @@ model Material {
 // remain intact when a material master record is renamed or deleted.
 model InboundRecord {
   id               Int      @id @default(autoincrement())
-  code             String   @db.VarChar(50)
+  code             String   @db.VarChar(100)
   name             String   @db.VarChar(255)
   packCount        Decimal  @map("pack_count") @db.Decimal(12, 2)
   inboundUnitPrice Decimal? @map("inbound_unit_price") @db.Decimal(14, 4)
@@ -229,7 +229,22 @@ model PurchaseOrder {
   status               String    @default("unfinished") @db.VarChar(20)
   createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt            DateTime  @updatedAt @map("updated_at")
+  deliveries           PurchaseOrderDelivery[]
 
   @@index([itemCode, orderDate])
   @@map("purchase_orders")
+}
+
+model PurchaseOrderDelivery {
+  id           Int @id @default(autoincrement())
+  orderId      Int @map("order_id")
+  deliveryDate DateTime @map("delivery_date") @db.Date
+  quantity     Decimal @db.Decimal(12, 3)
+  synced       Boolean @default(false)
+  createdAt    DateTime @default(now()) @map("created_at")
+  order        PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, deliveryDate])
+  @@index([synced, deliveryDate])
+  @@map("purchase_order_deliveries")
 }
