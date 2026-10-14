@@ -40,7 +40,6 @@ model Customer {
   fullName     String            @map("full_name") @db.VarChar(255)
   createdAt    DateTime          @default(now()) @map("created_at")
   updatedAt    DateTime          @updatedAt @map("updated_at")
-  receivers    ReceiverHistory[]
 
   @@unique([code])
   @@index([fullName])
@@ -51,7 +50,6 @@ model ReceiverHistory {
   id           Int      @id @default(autoincrement())
   customerCode String   @map("customer_code") @db.VarChar(50)
   receiver     String   @db.VarChar(255)
-  customer     Customer @relation(fields: [customerCode], references: [code], onUpdate: Cascade, onDelete: Cascade)
 
   @@unique([customerCode, receiver])
   @@index([customerCode])
@@ -105,4 +103,63 @@ model PlasticPriceEditor {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("plastic_price_editors")
+}
+
+// Order/customer/material names are historical snapshots. Manual codes are
+// allowed, and deleting master data must not delete a customer's orders.
+model CustomerOrder {
+  id            Int                 @id @default(autoincrement())
+  orderNo       String              @unique @map("order_no") @db.VarChar(50)
+  customerCode  String              @map("customer_code") @db.VarChar(50)
+  customerName  String              @map("customer_name") @db.VarChar(255)
+  receiver      String              @db.VarChar(255)
+  orderDate     DateTime            @map("order_date") @db.Date
+  isShipped     Boolean             @default(false) @map("is_shipped")
+  deductFutures Boolean             @default(false) @map("deduct_futures")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  items         CustomerOrderItem[]
+
+  @@index([orderDate, createdAt])
+  @@index([customerCode])
+  @@map("orders")
+}
+
+model CustomerOrderItem {
+  id        Int           @id @default(autoincrement())
+  orderId   Int           @map("order_id")
+  code      String        @db.VarChar(50)
+  name      String        @db.VarChar(255)
+  packCount Decimal       @map("pack_count") @db.Decimal(12, 2)
+  unitPrice Decimal       @default(0) @map("unit_price") @db.Decimal(12, 2)
+  remark    String?       @db.VarChar(500)
+  order     CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+// Backing records for the reference system's customer consignment deduction.
+// Quantities are in tons; history entries carry order_id for exact reversal.
+model CustomerConsignment {
+  id              Int      @id @default(autoincrement())
+  orderDate       DateTime @map("order_date") @db.Date
+  customerName    String   @default("") @map("customer_name") @db.VarChar(255)
+  itemCode        String   @map("item_code") @db.VarChar(100)
+  quantity        Decimal  @db.Decimal(18, 8)
+  unitPrice       Decimal  @default(0) @map("unit_price") @db.Decimal(12, 2)
+  amount          Decimal  @default(0) @db.Decimal(12, 2)
+  arrivalDate     DateTime? @map("arrival_date") @db.Date
+  storageFeePrice Decimal  @default(0) @map("storage_fee_price") @db.Decimal(10, 2)
+  storageFeeDays  Int      @default(0) @map("storage_fee_days")
+  storageFeeTotal Decimal  @default(0) @map("storage_fee_total") @db.Decimal(12, 2)
+  outboundQuantity Decimal @default(0) @map("outbound_quantity") @db.Decimal(18, 8)
+  outboundHistory Json     @default("[]") @map("outbound_history")
+  status          String   @default("unfinished") @db.VarChar(20)
+  remark          String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([customerName, itemCode, status])
+  @@index([orderDate, id])
+  @@map("futures")
 }

@@ -73,7 +73,10 @@ export async function updateCustomer(formData: FormData) {
 
 export async function deleteCustomer(id: number) {
   await authorize();
-  await getPrisma().customer.delete({ where: { id } });
+  await getPrisma().$transaction(async (tx) => {
+    const customer = await tx.customer.delete({ where: { id } });
+    await tx.receiverHistory.deleteMany({ where: { customerCode: customer.code } });
+  });
   revalidatePath(path);
   return { ok: true };
 }

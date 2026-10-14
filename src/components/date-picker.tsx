@@ -81,13 +81,15 @@ export function DatePicker({ id, name, label, value, onValueChange, className, d
 export type DateRangeValue = { start: string; end: string };
 
 type DateRangePickerProps = {
+  id?: string;
+  label?: string;
   value: DateRangeValue;
   onValueChange: (value: DateRangeValue) => void;
   className?: string;
   disabled?: boolean;
 };
 
-export function DateRangePicker({ value, onValueChange, className, disabled }: DateRangePickerProps) {
+export function DateRangePicker({ id, label = "入库日期范围", value, onValueChange, className, disabled }: DateRangePickerProps) {
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState<Date>();
   const [draft, setDraft] = useState<DateRange>();
@@ -109,13 +111,13 @@ export function DateRangePicker({ value, onValueChange, className, disabled }: D
   return (
     <Popover open={open} onOpenChange={changeOpen}>
       <PopoverTrigger asChild>
-        <Button type="button" variant="outline" className={cn(styles.trigger, styles.rangeTrigger, className)} data-empty={!value.start && !value.end || undefined} disabled={disabled} aria-label="筛选入库日期范围">
+        <Button id={id} type="button" variant="outline" className={cn(styles.trigger, styles.rangeTrigger, className)} data-empty={!value.start && !value.end || undefined} disabled={disabled} aria-label={`筛选${label}`}>
           <CalendarRange aria-hidden="true" />
           <span>{summary}</span>
           <ChevronDown className={styles.chevron} aria-hidden="true" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={6} collisionPadding={12} className={styles.content} aria-label="入库日期范围选择器">
+      <PopoverContent align="end" sideOffset={6} collisionPadding={12} className={styles.content} aria-label={`${label}选择器`}>
         <div className={styles.heading}>选择日期范围<small>依次选择开始日期和结束日期</small></div>
         <Calendar mode="range" locale={zhCN} timeZone={timeZone} weekStartsOn={1} fixedWeeks selected={draft} month={month} onMonthChange={setMonth} onSelect={setDraft} autoFocus className={styles.calendar} />
         <p className={styles.rangeSummary} aria-live="polite">{draft?.from ? `${dateValue(draft.from)} 至 ${dateValue(draft.to || draft.from)}` : "尚未选择日期"}</p>
