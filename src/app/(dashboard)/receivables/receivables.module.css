@@ -1,0 +1,114 @@
+.page { max-width: 1500px; min-width: 0; margin: 0 auto; color: var(--rz-ivory); }
+.hero { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 24px; }
+.hero h1 { margin: 0; font-size: clamp(2rem, 3vw, 3rem); font-weight: 750; letter-spacing: -.06em; }
+.hero p { margin: 8px 0 0; color: color-mix(in srgb, var(--rz-ivory) 52%, transparent); font-size: .82rem; line-height: 1.7; }
+.panel { position: relative; min-width: 0; border: 1px solid color-mix(in srgb, var(--rz-gold) 25%, transparent); background: var(--rz-panel); }
+.panel::before { position: absolute; top: -1px; left: 13px; width: 76px; height: 2px; background: var(--rz-gold); content: ""; }
+.panel::after { position: absolute; bottom: -1px; right: -1px; width: 13px; height: 13px; background: linear-gradient(135deg, transparent 46%, color-mix(in srgb, var(--rz-gold) 30%, transparent) 48% 52%, var(--rz-black) 54%); pointer-events: none; content: ""; }
+.filterBar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 22px 20px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 20%, transparent); }
+.segment { display: flex; border: 1px solid color-mix(in srgb, var(--rz-gold) 36%, transparent); }
+.segment button { min-height: 40px; min-width: 75px; padding: 0 18px; border: 0; background: transparent; color: var(--rz-gold); font-size: .75rem; }
+.segment button + button { border-left: 1px solid color-mix(in srgb, var(--rz-gold) 36%, transparent); }
+.segment button[aria-pressed="true"] { background: var(--rz-gold); color: var(--rz-black); font-weight: 650; }
+.search { display: flex; align-items: center; gap: 9px; width: min(350px, 100%); margin-left: auto; padding: 0 12px; min-height: 42px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
+.search:focus-within { border-color: var(--rz-gold); }
+.search > svg { flex-shrink: 0; width: 15px; height: 15px; color: var(--rz-gold); }
+.search input { min-width: 0; width: 100%; border: 0; background: transparent; color: var(--rz-ivory); outline: none; font-size: .75rem; }
+.search button { display: grid; padding: 0; border: 0; background: transparent; color: var(--rz-gold); }
+.search button svg { width: 14px; height: 14px; }
+.primaryButton, .secondaryButton, .dangerButton { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; padding: 0 15px; border: 1px solid var(--rz-gold); border-radius: 0; font-size: .73rem; font-weight: 600; white-space: nowrap; }
+.primaryButton { min-height: 42px; background: var(--rz-gold); color: var(--rz-black); clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+.secondaryButton { background: transparent; color: var(--rz-gold); }
+.dangerButton { border-color: color-mix(in srgb, var(--rz-magenta) 50%, transparent); background: transparent; color: var(--rz-magenta); }
+.primaryButton svg, .secondaryButton svg { width: 15px; height: 15px; }
+.primaryButton:hover, .secondaryButton:hover, .dangerButton:hover { filter: brightness(1.15); }
+.page button, .dialog button { cursor: pointer; }
+.page button:disabled, .dialog button:disabled, .fields:disabled { opacity: .45; cursor: not-allowed; }
+.page button:focus-visible, .page select:focus-visible, .page input:focus-visible, .dialog button:focus-visible, .dialog input:focus-visible, .dialog textarea:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
+.error { padding: 14px 20px; color: var(--rz-magenta); font-size: .76rem; border-bottom: 1px solid color-mix(in srgb, var(--rz-magenta) 25%, transparent); }
+.tableScroll { min-height: 260px; max-height: min(650px, 65svh); overflow: auto; scrollbar-width: thin; }
+.table, .detailTable { width: 100%; border-collapse: collapse; text-align: left; }
+.table { min-width: 820px; }
+.table th, .detailTable th { position: sticky; z-index: 1; top: 0; padding: 14px 18px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 25%, transparent); background: var(--rz-panel); color: var(--rz-gold); font-size: .68rem; font-weight: 550; white-space: nowrap; }
+.table td, .detailTable td { padding: 16px 18px; border-bottom: 1px solid color-mix(in srgb, var(--rz-ivory) 8%, transparent); font-size: .77rem; overflow-wrap: anywhere; }
+.table tbody tr { cursor: pointer; }
+.table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--rz-ivory) 2%, var(--rz-panel)); }
+.table tbody tr:hover, .table tbody tr[data-selected] { background: color-mix(in srgb, var(--rz-gold) 6%, var(--rz-panel)); }
+.table tr[data-selected] td:first-child { box-shadow: inset 2px 0 var(--rz-gold); }
+.amount { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.code { color: var(--rz-gold); font-family: ui-monospace, monospace; }
+.owed { color: var(--rz-gold); font-weight: 650; }
+.settled { color: var(--rz-ivory); font-weight: 650; }
+.textButton { padding: 5px 0; border: 0; background: transparent; color: var(--rz-gold); font-size: .73rem; white-space: nowrap; }
+.textButton:hover { text-decoration: underline; text-underline-offset: 4px; }
+.empty { display: grid; min-height: 200px; padding: 25px; place-content: center; justify-items: center; gap: 10px; text-align: center; }
+.empty strong { color: color-mix(in srgb, var(--rz-ivory) 65%, transparent); font-size: .82rem; }
+.empty span { color: color-mix(in srgb, var(--rz-ivory) 45%, transparent); font-size: .72rem; line-height: 1.7; }
+.pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 13px; padding: 14px 20px; border-top: 1px solid color-mix(in srgb, var(--rz-ivory) 10%, transparent); color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); font-size: .7rem; }
+.count { margin-right: auto; }
+.pager label, .pager form, .pager nav { display: flex; align-items: center; gap: 6px; }
+.pager select, .pager input, .pager button { height: 29px; min-width: 30px; padding: 0 7px; border: 1px solid color-mix(in srgb, var(--rz-gold) 30%, transparent); border-radius: 0; background: var(--rz-black); color: var(--rz-gold); }
+.pager input { width: 50px; color: var(--rz-ivory); }
+.pager button[aria-current="page"] { background: var(--rz-gold); color: var(--rz-black); }
+.backdrop { position: fixed; z-index: 50; inset: 0; background: rgb(0 0 0 / 80%); }
+.dialog { position: fixed; z-index: 51; top: 50%; left: 50%; width: min(900px, calc(100vw - 32px)); max-height: calc(100svh - 40px); overflow: auto; transform: translate(-50%, -50%); padding: 24px; border: 1px solid var(--rz-gold); background: var(--rz-panel); color: var(--rz-ivory); animation: dialogEnter 160ms ease-out; }
+.raisedBackdrop { z-index: 60; }
+.paymentDialog { z-index: 61; width: min(500px, calc(100vw - 32px)); }
+.dialogHeader { display: flex; justify-content: space-between; align-items: start; gap: 14px; }
+.dialogTitle { margin: 0; font-size: 1.1rem; font-weight: 650; overflow-wrap: anywhere; }
+.description { margin: 9px 0 0; color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); font-size: .75rem; line-height: 1.7; }
+.iconButton { display: grid; flex-shrink: 0; width: 32px; height: 32px; place-items: center; border: 1px solid color-mix(in srgb, var(--rz-gold) 32%, transparent); background: transparent; color: var(--rz-gold); }
+.iconButton svg { width: 16px; height: 16px; }
+.descriptions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 20px 0; border-top: 1px solid color-mix(in srgb, var(--rz-gold) 20%, transparent); }
+.descriptions > div { min-width: 0; padding: 13px 10px 13px 0; border-bottom: 1px solid color-mix(in srgb, var(--rz-ivory) 10%, transparent); }
+.descriptions dt { margin-bottom: 6px; color: color-mix(in srgb, var(--rz-ivory) 50%, transparent); font-size: .7rem; }
+.descriptions dd { margin: 0; font-size: .85rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.balance { grid-column: 1 / -1; }
+.balance dd { font-size: 1.3rem; }
+.tabs { display: flex; gap: 24px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 24%, transparent); margin-bottom: 16px; }
+.tabs button { padding: 10px 0; border: 0; border-bottom: 2px solid transparent; background: transparent; color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); font-size: .8rem; }
+.tabs button[data-state="active"] { border-bottom-color: var(--rz-gold); color: var(--rz-gold); }
+.detailToolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin: 0 0 12px; font-size: .72rem; color: color-mix(in srgb, var(--rz-ivory) 60%, transparent); }
+.detailToolbar > button { width: 290px; max-width: 100%; }
+.detailScroll { overflow: auto; max-height: 280px; min-height: 150px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 12%, transparent); scrollbar-width: thin; }
+.detailTable { min-width: 470px; }
+.paymentsTable { min-width: 730px; }
+.detailTable td { padding-block: 12px; }
+.detailTable .emptyCell { height: 140px; text-align: center; color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); }
+.remark { min-width: 140px; max-width: 280px; white-space: pre-wrap; }
+.timestamp { white-space: nowrap; font-size: .7rem !important; color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); }
+.dialogFooter { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid color-mix(in srgb, var(--rz-ivory) 10%, transparent); }
+.form { margin-top: 22px; }
+.fields { display: grid; gap: 18px; padding: 0; border: 0; min-width: 0; }
+.field { display: grid; min-width: 0; gap: 8px; }
+.field label { color: color-mix(in srgb, var(--rz-ivory) 65%, transparent); font-size: .73rem; }
+.field label span { color: var(--rz-magenta); }
+.field > input, .field textarea { width: 100%; min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); border-radius: 0; outline: none; background: var(--rz-black); color: var(--rz-ivory); font-size: .78rem; }
+.field textarea { resize: vertical; }
+.field > input:focus, .field textarea:focus { border-color: var(--rz-gold); }
+.field > button { width: 100%; min-height: 44px; }
+.numberControl { display: flex; align-items: center; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
+.numberControl:focus-within { border-color: var(--rz-gold); }
+.numberControl input { min-width: 0; width: 100%; height: 44px; padding: 0 12px; background: transparent; color: var(--rz-ivory); border: 0; outline: none; font-size: .78rem; appearance: textfield; }
+.numberControl input::-webkit-inner-spin-button, .numberControl input::-webkit-outer-spin-button, .pager input::-webkit-inner-spin-button, .pager input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.numberControl span { margin-right: 10px; color: color-mix(in srgb, var(--rz-ivory) 40%, transparent); font-size: .7rem; }
+.numberControl button { width: 34px; height: 32px; flex-shrink: 0; padding: 0; margin-right: 4px; border: 1px solid color-mix(in srgb, var(--rz-gold) 25%, transparent); color: var(--rz-gold); background: transparent; }
+@keyframes dialogEnter { from { opacity: 0; translate: 0 -7px; } to { opacity: 1; translate: 0 0; } }
+@media (min-width: 768px) and (max-height: 900px) { .hero h1 { font-size: 2rem; } .hero { margin-bottom: 18px; } .table td { padding-block: 12px; } }
+@media (max-width: 760px) {
+  .hero { align-items: start; flex-wrap: wrap; gap: 16px; margin-bottom: 18px; }
+  .hero p { font-size: .76rem; }
+  .filterBar { gap: 12px; padding: 18px 14px; }
+  .filterBar > .secondaryButton { margin-left: auto; }
+  .search { order: 3; width: 100%; margin: 0; }
+  .tableScroll { max-height: 470px; }
+  .table th, .table td { padding-inline: 12px; }
+  .pager { justify-content: center; padding: 12px 14px; gap: 10px; }
+  .pager nav { width: 100%; justify-content: center; }
+  .dialog { padding: 18px; }
+  .dialogTitle { font-size: 1rem; }
+  .descriptions { grid-template-columns: minmax(0, 1fr); }
+  .detailToolbar { gap: 8px; }
+  .dialogFooter > button { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .dialog { animation: none; } }

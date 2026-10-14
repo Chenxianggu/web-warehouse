@@ -13,6 +13,8 @@
     "test:outbound": "tsx --test tests/outbound.test.ts",
     "test:outbound:db": "tsx --test tests/outbound.integration.test.ts",
     "test:order-search": "tsx --test tests/order-search.test.ts",
+    "test:receivables": "tsx --test tests/receivables.test.ts",
+    "test:receivables:db": "tsx --test tests/receivables.integration.test.ts",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
