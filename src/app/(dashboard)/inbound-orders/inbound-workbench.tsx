@@ -188,7 +188,7 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
         <div>
           <p className={styles.eyebrow}><PackageCheck aria-hidden="true" />库存接入终端</p>
           <h1>入库登记</h1>
-          <p>登记到货包数、吨价与税态，保存后立即计入库存。</p>
+          <p>登记到货包数、吨价与×态，保存后立即计入库存。</p>
         </div>
         <span className={styles.liveBadge}><span />INBOUND LINK READY</span>
       </header>
@@ -249,10 +249,10 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
             <NumberInput id="inbound-price" name="inboundUnitPrice" label="入库价格" min={0} step={0.01} suffix="元 / 吨" value={form.inboundUnitPrice} onValueChange={(value) => setForm((current) => ({ ...current, inboundUnitPrice: value }))} placeholder="0.00" required />
           </div>
           <fieldset className={styles.taxField}>
-            <legend>是否含税</legend>
+            <legend>是否含×</legend>
             <div className={styles.taxOptions}>
-              <label data-selected={form.taxIncluded === "false" || undefined}><input type="radio" name="taxIncluded" value="false" checked={form.taxIncluded === "false"} onChange={(event) => setForm((current) => ({ ...current, taxIncluded: event.target.value }))} /><span>不含税</span></label>
-              <label data-selected={form.taxIncluded === "true" || undefined}><input type="radio" name="taxIncluded" value="true" checked={form.taxIncluded === "true"} onChange={(event) => setForm((current) => ({ ...current, taxIncluded: event.target.value }))} /><span>含税</span></label>
+              <label data-selected={form.taxIncluded === "false" || undefined}><input type="radio" name="taxIncluded" value="false" checked={form.taxIncluded === "false"} onChange={(event) => setForm((current) => ({ ...current, taxIncluded: event.target.value }))} /><span>不含×</span></label>
+              <label data-selected={form.taxIncluded === "true" || undefined}><input type="radio" name="taxIncluded" value="true" checked={form.taxIncluded === "true"} onChange={(event) => setForm((current) => ({ ...current, taxIncluded: event.target.value }))} /><span>含×</span></label>
             </div>
           </fieldset>
           <div className={styles.field}>
@@ -279,7 +279,7 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
             <div className={styles.empty}><PackageCheck aria-hidden="true" /><strong>暂无入库记录</strong><span>填写上方指令，或调整日期范围。</span></div>
           ) : (
             <table className={styles.table}>
-              <thead><tr><th>塑料编号</th><th>塑料名称</th><th>包数</th><th>入库价格</th><th>是否含税</th><th>时间</th><th>操作</th></tr></thead>
+              <thead><tr><th>塑料编号</th><th>塑料名称</th><th>包数</th><th>入库价格</th><th>是否含×</th><th>时间</th><th>操作</th></tr></thead>
               <tbody>{rows.map((row) => (
                 <tr key={row.id}>
                   <td className={styles.code}>{row.code}</td>
