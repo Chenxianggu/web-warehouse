@@ -25,6 +25,7 @@
 .rangeTrigger { width: 310px; max-width: 100%; height: 35px; font-size: .7rem; }
 
 .content {
+  z-index: 65;
   --primary: var(--rz-gold);
   --primary-foreground: var(--rz-black);
   --muted: color-mix(in srgb, var(--rz-gold) 12%, var(--rz-panel));
