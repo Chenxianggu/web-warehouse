@@ -154,6 +154,7 @@ model CustomerConsignment {
   storageFeeTotal Decimal  @default(0) @map("storage_fee_total") @db.Decimal(12, 2)
   outboundQuantity Decimal @default(0) @map("outbound_quantity") @db.Decimal(18, 8)
   outboundHistory Json     @default("[]") @map("outbound_history")
+  sourceFullContainerId Int? @map("source_full_container_id")
   status          String   @default("unfinished") @db.VarChar(20)
   remark          String?  @db.Text
   createdAt       DateTime @default(now()) @map("created_at")

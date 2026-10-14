@@ -7,12 +7,13 @@ import styles from "./material-code-combobox.module.css";
 
 type MaterialOption = { code: string; name: string };
 
-export function MaterialCodeCombobox({ value, onValueChange, options, label, disabled = false }: {
+export function MaterialCodeCombobox({ value, onValueChange, options, label, disabled = false, maxLength = 50 }: {
   value: string;
   onValueChange: (value: string) => void;
   options: readonly MaterialOption[];
   label: string;
   disabled?: boolean;
+  maxLength?: number;
 }) {
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +50,7 @@ export function MaterialCodeCombobox({ value, onValueChange, options, label, dis
             aria-activedescendant={activeOption}
             autoComplete="off"
             value={value}
-            maxLength={50}
+            maxLength={maxLength}
             required
             disabled={disabled}
             placeholder="选择或输入编号"
