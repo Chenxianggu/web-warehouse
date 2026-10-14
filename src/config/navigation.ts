@@ -43,7 +43,7 @@ export const navigation: NavigationGroup[] = [
   {
     title: "系统工具",
     items: [
-      { label: "税点计算器", href: "/tax-calculator", description: "换算含税与未税金额" },
+      { label: "×点计算器", href: "/tax-calculator", description: "换算含×与未×金额" },
       { label: "菜单管理", href: "/menu-management", description: "配置系统功能菜单" },
       { label: "用户管理", href: "/users", description: "维护账号与访问权限" },
     ],

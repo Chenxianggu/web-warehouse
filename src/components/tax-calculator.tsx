@@ -118,19 +118,19 @@ export function TaxCalculator() {
       <header className={styles.header}>
         <div>
           <div className={styles.eyebrow}><Calculator aria-hidden="true" /> 财务工具 / 01</div>
-          <h1>开票税点计算器</h1>
-          <p>输入供应商与销售方的含税开票金额，实时拆解税额、税负与实际成本。</p>
+          <h1>开票×点计算器</h1>
+          <p>输入供应商与销售方的含×开票金额，实时拆解×额、×负与实际成本。</p>
         </div>
         <button type="button" className={styles.resetButton} onClick={reset}>
           <RotateCcw aria-hidden="true" /> 恢复示例
         </button>
       </header>
 
-      <section className={styles.metrics} aria-label="税率参考">
-        <Metric label="一般货物销项税率" value="13%" accent />
-        <Metric label="增值税税负参考" value="0.20% — 0.22%" />
-        <Metric label="企业所得税税率" value="5%" />
-        <Metric label="其他批发业参考税负" value="0.85%" />
+      <section className={styles.metrics} aria-label="×率参考">
+        <Metric label="一般货物销项×率" value="13%" accent />
+        <Metric label="增值××负参考" value="0.20% — 0.22%" />
+        <Metric label="企业所得××率" value="5%" />
+        <Metric label="其他批发业参考×负" value="0.85%" />
       </section>
 
       <section className={styles.workspace}>
@@ -140,14 +140,14 @@ export function TaxCalculator() {
             <ArrowDownToLine aria-hidden="true" />
           </div>
           <div className={styles.amountBlock}>
-            <span>含税开票金额</span>
+            <span>含×开票金额</span>
             <NumberField value={supplierInvoiceAmount} onChange={setSupplierInvoiceAmount} />
           </div>
           <div className={styles.detailList}>
-            <ResultRow label="不含税金额" value={`￥ ${money(values.supplierTaxExcludedAmount)}`} />
-            <ResultRow label="进项税额" value={`￥ ${money(values.supplierInputTax)}`} />
+            <ResultRow label="不含×金额" value={`￥ ${money(values.supplierTaxExcludedAmount)}`} />
+            <ResultRow label="进项×额" value={`￥ ${money(values.supplierInputTax)}`} />
           </div>
-          <p className={styles.formula}>含税金额 ÷ 1.13 = 不含税金额</p>
+          <p className={styles.formula}>含×金额 ÷ 1.13 = 不含×金额</p>
         </article>
 
         <article className={`${styles.panel} ${styles.inputPanel}`}>
@@ -156,60 +156,60 @@ export function TaxCalculator() {
             <ArrowUpFromLine aria-hidden="true" />
           </div>
           <div className={styles.amountBlock}>
-            <span>含税开票金额</span>
+            <span>含×开票金额</span>
             <NumberField value={salesInvoiceAmount} onChange={setSalesInvoiceAmount} />
           </div>
           <div className={styles.detailList}>
-            <ResultRow label="不含税收入" value={`￥ ${money(values.salesTaxExcludedIncome)}`} />
-            <ResultRow label="销项税额" value={`￥ ${money(values.salesOutputVat)}`} />
+            <ResultRow label="不含×收入" value={`￥ ${money(values.salesTaxExcludedIncome)}`} />
+            <ResultRow label="销项×额" value={`￥ ${money(values.salesOutputVat)}`} />
           </div>
           <p className={styles.formula}>金额变化后，右侧结果会自动更新</p>
         </article>
 
         <article className={`${styles.panel} ${styles.resultPanel}`}>
           <div className={styles.panelHeader}>
-            <div><span className={styles.panelKicker}>OUTPUT / TAX</span><h2>税额拆解</h2></div>
+            <div><span className={styles.panelKicker}>OUTPUT / TAX</span><h2>×额拆解</h2></div>
             <ReceiptText aria-hidden="true" />
           </div>
           <div className={styles.resultGrid}>
-            <ResultRow label="应交增值税" value={`￥ ${money(values.payableVat)}`} />
-            <ResultRow label="附加税" value={`￥ ${money(values.additionalTax)}`} />
-            <ResultRow label="印花税" value={`￥ ${money(values.stampTax)}`} />
-            <ResultRow label="企业所得税" value={`￥ ${money(values.corporateIncomeTax)}`} />
-            <ResultRow label="合计税额" value={`￥ ${money(values.totalTax)}`} emphasis />
+            <ResultRow label="应交增值×" value={`￥ ${money(values.payableVat)}`} />
+            <ResultRow label="附加×" value={`￥ ${money(values.additionalTax)}`} />
+            <ResultRow label="印花×" value={`￥ ${money(values.stampTax)}`} />
+            <ResultRow label="企业所得×" value={`￥ ${money(values.corporateIncomeTax)}`} />
+            <ResultRow label="合计×额" value={`￥ ${money(values.totalTax)}`} emphasis />
           </div>
         </article>
 
         <article className={`${styles.panel} ${styles.resultPanel}`}>
           <div className={styles.panelHeader}>
-            <div><span className={styles.panelKicker}>OUTPUT / RATE</span><h2>税负指标</h2></div>
+            <div><span className={styles.panelKicker}>OUTPUT / RATE</span><h2>×负指标</h2></div>
             <Percent aria-hidden="true" />
           </div>
           <div className={styles.resultGrid}>
-            <ResultRow label="增值税税负" value={percent(values.vatBurdenRate)} />
-            <ResultRow label="企业所得税负" value={percent(values.corporateIncomeTaxBurdenRate)} />
-            <ResultRow label="综合负税率" value={percent(values.comprehensiveTaxBurdenRate)} emphasis />
-            <ResultRow label="开票加收税点合计" value={percent(values.extraTaxPointTotalRate)} emphasis />
+            <ResultRow label="增值××负" value={percent(values.vatBurdenRate)} />
+            <ResultRow label="企业所得×负" value={percent(values.corporateIncomeTaxBurdenRate)} />
+            <ResultRow label="综合负×率" value={percent(values.comprehensiveTaxBurdenRate)} emphasis />
+            <ResultRow label="开票加收×点合计" value={percent(values.extraTaxPointTotalRate)} emphasis />
           </div>
         </article>
       </section>
 
       <section className={styles.costSection}>
-        <div className={styles.costIntro}><span className={styles.panelKicker}>COST ESTIMATE</span><h2>实际成本估算</h2><p>调整税点，快速比较两种入账方式。</p></div>
+        <div className={styles.costIntro}><span className={styles.panelKicker}>COST ESTIMATE</span><h2>实际成本估算</h2><p>调整×点，快速比较两种入账方式。</p></div>
         <div className={styles.costCards}>
           <div className={styles.costCard}>
-            <div><span>成本不过公户</span><small>税点</small></div>
+            <div><span>成本不过公户</span><small>×点</small></div>
             <NumberField value={costWithoutPublicTaxPoint} onChange={setCostWithoutPublicTaxPoint} step={0.1} max={100} suffix="%" />
             <strong>￥ {money(values.costWithoutPublicAccount)}</strong>
           </div>
           <div className={styles.costCard}>
-            <div><span>成本过公户</span><small>税点</small></div>
+            <div><span>成本过公户</span><small>×点</small></div>
             <NumberField value={costWithPublicTaxPoint} onChange={setCostWithPublicTaxPoint} step={0.1} max={100} suffix="%" />
             <strong>￥ {money(values.costWithPublicAccount)}</strong>
           </div>
         </div>
       </section>
-      <footer className={styles.note}>计算结果仅供业务测算参考，实际申报请以财务制度与税务口径为准。</footer>
+      <footer className={styles.note}>计算结果仅供业务测算参考，实际申报请以财务制度与×务口径为准。</footer>
     </main>
   );
 }
