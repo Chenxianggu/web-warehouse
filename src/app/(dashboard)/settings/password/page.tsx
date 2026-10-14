@@ -1,10 +1,6 @@
+import { CircleAlert, KeyRound, LockKeyhole } from "lucide-react";
 import { changePasswordAction } from "./actions";
-import { CircleAlert } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import styles from "./password.module.css";
 
 const errorMessages: Record<string, string> = {
   invalid: "请填写所有字段。",
@@ -23,36 +19,51 @@ export default async function PasswordPage({
   const { error } = await searchParams;
 
   return (
-    <div className="mx-auto max-w-xl">
-      <p className="text-sm font-medium text-muted-foreground">账号设置</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">修改密码</h1>
-      <p className="mt-3 text-sm text-muted-foreground">修改后当前会话将退出，请使用新密码重新登录。</p>
+    <div className={styles.page}>
+      <header className={styles.hero}>
+        <p className={styles.eyebrow}>
+          <KeyRound aria-hidden="true" />
+          账号设置
+        </p>
+        <h1>修改密码</h1>
+        <p className={styles.lede}>修改后当前会话将退出，请使用新密码重新登录。</p>
+      </header>
+
       {error && (
-        <Alert variant="destructive" className="mt-6">
+        <p className={styles.error} role="alert">
           <CircleAlert aria-hidden="true" />
-          <AlertDescription>{errorMessages[error] ?? "操作失败，请重试。"}</AlertDescription>
-        </Alert>
+          <span>{errorMessages[error] ?? "操作失败，请重试。"}</span>
+        </p>
       )}
-      <Card className="mt-7">
-        <CardHeader><CardTitle>密码信息</CardTitle></CardHeader>
-        <CardContent>
-          <form action={changePasswordAction} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">当前密码</Label>
-              <Input id="currentPassword" name="currentPassword" type="password" autoComplete="current-password" required className="h-10 bg-muted/60" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">新密码</Label>
-              <Input id="newPassword" name="newPassword" type="password" autoComplete="new-password" required className="h-10 bg-muted/60" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">确认新密码</Label>
-              <Input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" required className="h-10 bg-muted/60" />
-            </div>
-            <Button type="submit" size="lg">保存新密码</Button>
-          </form>
-        </CardContent>
-      </Card>
+
+      <section className={styles.panel} aria-labelledby="password-panel-title">
+        <div className={styles.panelHeader}>
+          <span className={styles.panelIcon}>
+            <LockKeyhole aria-hidden="true" />
+          </span>
+          <div>
+            <h2 id="password-panel-title">密码信息</h2>
+            <p>确认当前密码后写入新密码，保存成功会结束本次登录。</p>
+          </div>
+        </div>
+        <form action={changePasswordAction} className={styles.form}>
+          <div className={styles.field}>
+            <label htmlFor="currentPassword">当前密码</label>
+            <input id="currentPassword" name="currentPassword" type="password" autoComplete="current-password" required />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="newPassword">新密码</label>
+            <input id="newPassword" name="newPassword" type="password" autoComplete="new-password" required />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="confirmPassword">确认新密码</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" required />
+          </div>
+          <div className={styles.actions}>
+            <button type="submit" className={styles.submit}>保存新密码</button>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
