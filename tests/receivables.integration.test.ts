@@ -59,7 +59,7 @@ test("real ledger reads orders/materials/containers, persists payments and rever
     const synthetic = await persistReceivablePayment({ ...input, customerCode: codes[2], customerName: newBuyer, amount: 125 });
     assert.ok(synthetic.ok);
     assert.equal((await readReceivableDetail(codes[2])).receivableAmount, 375);
-    await db.customer.delete({ where: { code } });
+    await db.customer.deleteMany({ where: { code } });
     assert.equal((await readReceivableDetail(code)).customer.name, name, "deleted customer uses historical name");
     await db.material.update({ where: { code }, data: { packsPerTon: 40 } });
     assert.equal((await readReceivableDetail(code)).totalAmount, 9007.5, "conversion follows current material master");

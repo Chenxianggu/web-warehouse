@@ -18,7 +18,7 @@ export function OrderCombobox({ id, value, onChange, onSelect, options, label, m
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [typing, setTyping] = useState(false);
-  const indexed = useMemo(() => options.map((option) => {
+  const indexed = useMemo(() => [...new Map(options.map((option) => [JSON.stringify([option.code, option.name]), option])).values()].map((option) => {
     const text = `${option.code} ${option.name}`;
     return { option, search: [text, pinyin(text, { toneType: "none" }), pinyin(text, { pattern: "first", toneType: "none" })].map((part) => part.toLowerCase().replace(/\s+/g, "")) };
   }), [options]);
@@ -58,7 +58,7 @@ export function OrderCombobox({ id, value, onChange, onSelect, options, label, m
     <PopoverContent id={listId} role="listbox" aria-label={`${label}选项`} className={styles.comboOptions} align="start" collisionPadding={12}
       onOpenAutoFocus={(event) => event.preventDefault()} onCloseAutoFocus={(event) => event.preventDefault()}
       onInteractOutside={(event) => { if (input.current?.parentElement?.contains(event.target as Node)) event.preventDefault(); }}>
-      {matches.map(({ option }, index) => <div key={option.code} id={`${listId}-${index}`} role="option" aria-selected={option.code === value}
+      {matches.map(({ option }, index) => <div key={JSON.stringify([option.code, option.name])} id={`${listId}-${index}`} role="option" aria-selected={option.code === value}
         className={styles.comboOption} data-active={index === active || undefined} onPointerMove={() => setActive(index)} onMouseDown={(event) => event.preventDefault()} onClick={() => select(option)}>
         <span><strong>{option.code}</strong>{option.name && <small>{option.name}</small>}</span>{value === option.code && <Check aria-hidden="true" />}
       </div>)}

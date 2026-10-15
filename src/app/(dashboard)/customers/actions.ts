@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requirePageAccess } from "@/server/menu-permissions";
 import { getPrisma } from "@/server/db";
+import { deleteCustomerRecord, updateCustomerRecord } from "@/server/customer-directory";
 
 const path = "/customers";
 
@@ -39,12 +40,7 @@ export async function createCustomer(formData: FormData) {
   const code = text(formData.get("code"));
   const fullName = text(formData.get("fullName"));
   if (!code || !fullName) return { ok: false, message: "客户编号和客户姓名不能为空" };
-  try {
-    await getPrisma().customer.create({ data: { code, fullName } });
-  } catch (error) {
-    if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return { ok: false, message: "客户编号已存在" };
-    throw error;
-  }
+  await getPrisma().customer.create({ data: { code, fullName } });
   revalidatePath(path);
   return { ok: true };
 }
@@ -55,28 +51,14 @@ export async function updateCustomer(formData: FormData) {
   const code = text(formData.get("code"));
   const fullName = text(formData.get("fullName"));
   if (!id || !code || !fullName) return { ok: false, message: "客户编号和客户姓名不能为空" };
-  const db = getPrisma();
-  const old = await db.customer.findUnique({ where: { id }, select: { code: true } });
-  if (!old) return { ok: false, message: "客户不存在" };
-  try {
-    await db.$transaction(async (tx) => {
-      await tx.customer.update({ where: { id }, data: { code, fullName } });
-      if (old.code !== code) await tx.receiverHistory.updateMany({ where: { customerCode: old.code }, data: { customerCode: code } });
-    });
-  } catch (error) {
-    if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return { ok: false, message: "客户编号已存在或收货地址重复" };
-    throw error;
-  }
+  if (!(await updateCustomerRecord(id, code, fullName))) return { ok: false, message: "客户不存在" };
   revalidatePath(path);
   return { ok: true };
 }
 
 export async function deleteCustomer(id: number) {
   await authorize();
-  await getPrisma().$transaction(async (tx) => {
-    const customer = await tx.customer.delete({ where: { id } });
-    await tx.receiverHistory.deleteMany({ where: { customerCode: customer.code } });
-  });
+  await deleteCustomerRecord(id);
   revalidatePath(path);
   return { ok: true };
 }

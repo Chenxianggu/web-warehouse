@@ -40,7 +40,7 @@ export async function readReceivableDetail(customerCode: string): Promise<Receiv
       const buyer = buyers.find((row) => fullContainerCode(row.buyer.trim()) === customerCode)?.buyer.trim() ?? customerCode.slice(3).replaceAll("_", " ");
       customer = { code: customerCode, name: buyer };
     } else {
-      const master = await tx.customer.findUnique({ where: { code: customerCode }, select: { fullName: true } });
+      const master = await tx.customer.findFirst({ where: { code: customerCode }, orderBy: { id: "desc" }, select: { fullName: true } });
       const historical = !master ? await tx.customerOrder.findFirst({ where: { customerCode }, orderBy: { id: "asc" }, select: { customerName: true } }) : null;
       customer = { code: customerCode, name: master?.fullName ?? historical?.customerName ?? "" };
     }

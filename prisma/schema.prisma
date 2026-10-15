@@ -41,7 +41,9 @@ model Customer {
   createdAt    DateTime          @default(now()) @map("created_at")
   updatedAt    DateTime          @updatedAt @map("updated_at")
 
-  @@unique([code])
+  // Legacy customer records may share a code. Orders and addresses use that
+  // shared code; individual directory records are managed by their ID.
+  @@index([code])
   @@index([fullName])
   @@map("customers")
 }
