@@ -1,3 +1,4 @@
+import { auditTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { Prisma, type FullContainerRecord } from "@/generated/prisma/client";
 import { containerFilterSchema, containerInputSchema, clearSupply, type ContainerFilter, type ContainerPage, type ContainerRecord } from "@/features/full-containers/schema";
@@ -28,12 +29,12 @@ async function receive(tx: Prisma.TransactionClient, row: FullContainerRecord) {
   if (!material) await tx.material.create({ data: { code: row.itemName, name: row.itemName } });
   await tx.inboundRecord.create({ data: { code: row.itemName, name: material?.name || row.itemName, packCount, sourceType: "full_container", sourceId: row.id } });
 }
-export async function persistFullContainer(input: unknown) {
+export async function persistFullContainer(input: unknown, actor?: AuditActor) {
   const parsed = containerInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, message: parsed.error.issues[0]?.message || "请检查记录内容" };
   const fields = parsed.data.warehouseOnArrival ? clearSupply(parsed.data) : parsed.data;
   const { id, updatedAt, ...values } = fields;
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     await lockContainer(tx);
     const current = id ? await tx.fullContainerRecord.findUnique({ where: { id } }) : null;
     if (id && (!current || current.updatedAt.toISOString() !== updatedAt)) return { ok: false as const, message: "记录已发生变化，请刷新后重试" };
@@ -60,9 +61,9 @@ export async function persistFullContainer(input: unknown) {
     return { ok: true as const, id: saved.id, message: saved.warehouseOnArrival ? "已保存，已同步到客户寄存" : "已保存" };
   });
 }
-export async function removeFullContainer(id: number, updatedAt: string) {
+export async function removeFullContainer(id: number, updatedAt: string, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1 || !Number.isFinite(Date.parse(updatedAt))) return { ok: false as const, message: "记录不存在" };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     await lockContainer(tx); const row = await tx.fullContainerRecord.findUnique({ where: { id } });
     if (!row || row.updatedAt.toISOString() !== updatedAt) return { ok: false as const, message: "记录已发生变化，请刷新后重试" };
     await lockPair(tx, row.buyer, row.itemName);

@@ -17,15 +17,15 @@ export async function getReceivableDetail(customerCode: string) {
 }
 
 export async function createPayment(input: unknown) {
-  await requirePageAccess(path);
-  const result = await persistReceivablePayment(input);
+  const user = await requirePageAccess(path);
+  const result = await persistReceivablePayment(input, user);
   if (result.ok) revalidatePath(path);
   return result;
 }
 
 export async function deletePayment(id: number) {
-  await requirePageAccess(path);
-  const result = await removeReceivablePayment(id);
+  const user = await requirePageAccess(path);
+  const result = await removeReceivablePayment(id, user);
   if (result.ok) revalidatePath(path);
   return result;
 }

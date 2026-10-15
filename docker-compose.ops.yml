@@ -1,0 +1,120 @@
+# Separate project: business releases must never run --remove-orphans on this stack.
+name: warehouse-ops
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  grafana:
+    image: grafana/grafana:13.2.4
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "/etc/warehouse/grafana-entrypoint.sh"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_BASIC_ENABLED: "true"
+      GF_SECURITY_ADMIN_USER: developer
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_SECURITY_SECRET_KEY__FILE: /run/secrets/grafana_secret_key
+      GF_USERS_DEFAULT_THEME: dark
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/runtime.json
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+      GF_NEWS_NEWS_FEED_ENABLED: "false"
+      AUDIT_DB_HOST: ${AUDIT_DB_HOST:-warehouse-db}
+      AUDIT_DB_NAME: ${POSTGRES_DB:-warehouse}
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3300}:3000"
+    secrets: [grafana_admin_password, grafana_secret_key, audit_reader_password]
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./ops/grafana/entrypoint.sh:/etc/warehouse/grafana-entrypoint.sh:ro
+      - ./ops/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./ops/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks: [frontend, backend, audit]
+    logging: *logging
+    security_opt: [no-new-privileges:true]
+
+  loki:
+    image: grafana/loki:3.7.8
+    restart: unless-stopped
+    command: ["-config.file=/etc/loki/config.yml"]
+    volumes:
+      - ./ops/loki/config.yml:/etc/loki/config.yml:ro
+      - loki_data:/loki
+    networks: [backend]
+    logging: *logging
+    security_opt: [no-new-privileges:true]
+
+  alloy:
+    image: grafana/alloy:v1.20.1
+    restart: unless-stopped
+    command: ["run", "--server.http.listen-addr=127.0.0.1:12345", "--storage.path=/var/lib/alloy/data", "/etc/alloy/config.alloy"]
+    volumes:
+      - ./ops/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - alloy_data:/var/lib/alloy/data
+    networks: [backend, docker_api]
+    depends_on: [loki, docker-proxy]
+    logging: *logging
+    security_opt: [no-new-privileges:true]
+
+  docker-proxy:
+    image: ghcr.io/tecnativa/docker-socket-proxy:v0.5.0
+    restart: unless-stopped
+    environment:
+      CONTAINERS: "1"
+      NETWORKS: "1"
+      INFO: "1"
+      VERSION: "1"
+      PING: "1"
+      EVENTS: "0"
+      POST: "0"
+      LOG_LEVEL: warning
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [docker_api]
+    logging: *logging
+    security_opt: [no-new-privileges:true]
+
+  # Explicit one-off setup; no database admin credentials reach Grafana/Alloy/Loki.
+  audit-reader-init:
+    image: postgres:17-alpine
+    profiles: [setup]
+    entrypoint: ["/bin/sh", "/setup/init-reader.sh"]
+    environment:
+      PGHOST: ${AUDIT_DB_HOST:-warehouse-db}
+      PGDATABASE: ${POSTGRES_DB:-warehouse}
+      PGUSER: ${POSTGRES_USER:-warehouse}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-}
+    secrets: [audit_reader_password]
+    volumes:
+      - ./ops/postgres:/setup:ro
+    networks: [audit]
+    logging: *logging
+
+networks:
+  frontend:
+  backend:
+    internal: true
+  docker_api:
+    internal: true
+  audit:
+    external: true
+    name: ${OBSERVABILITY_NETWORK:-warehouse-observability}
+
+volumes:
+  grafana_data:
+  loki_data:
+  alloy_data:
+
+secrets:
+  grafana_admin_password:
+    file: ./ops/.secrets/grafana_admin_password
+  grafana_secret_key:
+    file: ./ops/.secrets/grafana_secret_key
+  audit_reader_password:
+    file: ./ops/.secrets/audit_reader_password

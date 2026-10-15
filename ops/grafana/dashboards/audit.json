@@ -1,0 +1,383 @@
+{
+  "uid": "warehouse-audit",
+  "title": "仁众 · 操作追溯",
+  "tags": [
+    "warehouse",
+    "developer"
+  ],
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "timezone": "Asia/Shanghai",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "links": [
+    {
+      "title": "运行排错",
+      "url": "/d/warehouse-runtime",
+      "type": "link",
+      "keepTime": true
+    },
+    {
+      "title": "操作追溯",
+      "url": "/d/warehouse-audit",
+      "type": "link",
+      "keepTime": true
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "category",
+        "label": "日志类型",
+        "type": "custom",
+        "query": "AUDIT,AUTH,SYSTEM",
+        "includeAll": true,
+        "allValue": "'__all'",
+        "multi": false,
+        "current": {
+          "text": "全部",
+          "value": "$__all"
+        },
+        "options": [
+          {
+            "text": "全部",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "AUDIT",
+            "value": "AUDIT",
+            "selected": false
+          },
+          {
+            "text": "AUTH",
+            "value": "AUTH",
+            "selected": false
+          },
+          {
+            "text": "SYSTEM",
+            "value": "SYSTEM",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "status",
+        "label": "结果",
+        "type": "custom",
+        "query": "SUCCESS,FAILURE",
+        "includeAll": true,
+        "allValue": "'__all'",
+        "multi": false,
+        "current": {
+          "text": "全部",
+          "value": "$__all"
+        },
+        "options": [
+          {
+            "text": "全部",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "SUCCESS",
+            "value": "SUCCESS",
+            "selected": false
+          },
+          {
+            "text": "FAILURE",
+            "value": "FAILURE",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "module",
+        "label": "业务模块",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "warehouse-audit"
+        },
+        "query": "SELECT DISTINCT module AS __text, module AS __value FROM observability.events ORDER BY 1",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": "'__all'",
+        "multi": false,
+        "current": {
+          "text": "全部",
+          "value": "$__all"
+        },
+        "options": []
+      },
+      {
+        "name": "actor",
+        "label": "操作人",
+        "type": "textbox",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "options": []
+      },
+      {
+        "name": "keyword",
+        "label": "日志 / 对象 / 关联编号",
+        "type": "textbox",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "符合条件的记录",
+      "type": "stat",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "warehouse-audit"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "warehouse-audit"
+          },
+          "rawSql": "SELECT COUNT(*) AS \"记录数\" FROM observability.events WHERE $__timeFilter(created_at)\nAND (${category:sqlstring} = '__all' OR category = ${category:sqlstring})\nAND (${status:sqlstring} = '__all' OR status = ${status:sqlstring})\nAND (${module:sqlstring} = '__all' OR module = ${module:sqlstring})\nAND actor_name ILIKE '%' || ${actor:sqlstring} || '%'\nAND (id::text ILIKE '%' || ${keyword:sqlstring} || '%' OR COALESCE(entity_id,'') ILIKE '%' || ${keyword:sqlstring} || '%' OR COALESCE(request_id,'') ILIKE '%' || ${keyword:sqlstring} || '%' OR message ILIKE '%' || ${keyword:sqlstring} || '%')",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#c9a96e"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 2,
+      "title": "符合条件的失败事件",
+      "type": "stat",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "warehouse-audit"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "warehouse-audit"
+          },
+          "rawSql": "SELECT COUNT(*) AS \"失败数\" FROM observability.events WHERE $__timeFilter(created_at)\nAND (${category:sqlstring} = '__all' OR category = ${category:sqlstring})\nAND (${status:sqlstring} = '__all' OR status = ${status:sqlstring})\nAND (${module:sqlstring} = '__all' OR module = ${module:sqlstring})\nAND actor_name ILIKE '%' || ${actor:sqlstring} || '%'\nAND (id::text ILIKE '%' || ${keyword:sqlstring} || '%' OR COALESCE(entity_id,'') ILIKE '%' || ${keyword:sqlstring} || '%' OR COALESCE(request_id,'') ILIKE '%' || ${keyword:sqlstring} || '%' OR message ILIKE '%' || ${keyword:sqlstring} || '%') AND status='FAILURE'",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f2f2ec",
+                "value": null
+              },
+              {
+                "color": "#ff2d78",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "title": "操作记录（最近 1,000 条，快照列可打开查看）",
+      "type": "table",
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 20
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "warehouse-audit"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "warehouse-audit"
+          },
+          "rawSql": "SELECT created_at AS \"时间\", id::text AS \"编号\", category AS \"类型\", level AS \"级别\", status AS \"结果\", actor_name AS \"操作人\", module AS \"模块\", action AS \"操作\", entity_type AS \"对象类型\", entity_id AS \"对象编号\", message AS \"说明\", request_id AS \"关联编号\", before_json AS \"修改前\", after_json AS \"修改后\", metadata_json AS \"附加信息\" FROM observability.events WHERE $__timeFilter(created_at)\nAND (${category:sqlstring} = '__all' OR category = ${category:sqlstring})\nAND (${status:sqlstring} = '__all' OR status = ${status:sqlstring})\nAND (${module:sqlstring} = '__all' OR module = ${module:sqlstring})\nAND actor_name ILIKE '%' || ${actor:sqlstring} || '%'\nAND (id::text ILIKE '%' || ${keyword:sqlstring} || '%' OR COALESCE(entity_id,'') ILIKE '%' || ${keyword:sqlstring} || '%' OR COALESCE(request_id,'') ILIKE '%' || ${keyword:sqlstring} || '%' OR message ILIKE '%' || ${keyword:sqlstring} || '%') ORDER BY created_at DESC, id DESC LIMIT 1000",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": true,
+            "align": "auto",
+            "filterable": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "修改前"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "json-view"
+                }
+              },
+              {
+                "id": "custom.inspect",
+                "value": true
+              },
+              {
+                "id": "custom.width",
+                "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "修改后"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "json-view"
+                }
+              },
+              {
+                "id": "custom.inspect",
+                "value": true
+              },
+              {
+                "id": "custom.width",
+                "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "附加信息"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "json-view"
+                }
+              },
+              {
+                "id": "custom.inspect",
+                "value": true
+              },
+              {
+                "id": "custom.width",
+                "value": 220
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "时间"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 230
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "编号"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm",
+        "enablePagination": true
+      }
+    }
+  ]
+}

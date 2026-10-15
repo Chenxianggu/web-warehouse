@@ -1,5 +1,7 @@
 "use server";
 
+import { auditTransaction } from "@/server/audit";
+
 import { revalidatePath } from "next/cache";
 import { requirePageAccess } from "@/server/menu-permissions";
 import { getPrisma } from "@/server/db";
@@ -8,7 +10,7 @@ import { deleteCustomerRecord, updateCustomerRecord } from "@/server/customer-di
 const path = "/customers";
 
 async function authorize() {
-  await requirePageAccess(path);
+  return requirePageAccess(path);
 }
 
 function text(value: FormDataEntryValue | null) {
@@ -36,42 +38,42 @@ export async function listReceivers(customerCode: string) {
 }
 
 export async function createCustomer(formData: FormData) {
-  await authorize();
+  const user = await authorize();
   const code = text(formData.get("code"));
   const fullName = text(formData.get("fullName"));
   if (!code || !fullName) return { ok: false, message: "客户编号和客户姓名不能为空" };
-  await getPrisma().customer.create({ data: { code, fullName } });
+  await auditTransaction(user, async (tx) => tx.customer.create({ data: { code, fullName } }));
   revalidatePath(path);
   return { ok: true };
 }
 
 export async function updateCustomer(formData: FormData) {
-  await authorize();
+  const user = await authorize();
   const id = Number(text(formData.get("id")));
   const code = text(formData.get("code"));
   const fullName = text(formData.get("fullName"));
   if (!id || !code || !fullName) return { ok: false, message: "客户编号和客户姓名不能为空" };
-  if (!(await updateCustomerRecord(id, code, fullName))) return { ok: false, message: "客户不存在" };
+  if (!(await updateCustomerRecord(id, code, fullName, user))) return { ok: false, message: "客户不存在" };
   revalidatePath(path);
   return { ok: true };
 }
 
 export async function deleteCustomer(id: number) {
-  await authorize();
-  await deleteCustomerRecord(id);
+  const user = await authorize();
+  await deleteCustomerRecord(id, user);
   revalidatePath(path);
   return { ok: true };
 }
 
 export async function saveReceiver(formData: FormData) {
-  await authorize();
+  const user = await authorize();
   const id = Number(text(formData.get("id")));
   const customerCode = text(formData.get("customerCode"));
   const receiver = text(formData.get("receiver"));
   if (!customerCode || !receiver) return { ok: false, message: "收货地址不能为空" };
   try {
-    if (id) await getPrisma().receiverHistory.update({ where: { id }, data: { receiver } });
-    else await getPrisma().receiverHistory.create({ data: { customerCode, receiver } });
+    if (id) await auditTransaction(user, async (tx) => tx.receiverHistory.update({ where: { id }, data: { receiver } }));
+    else await auditTransaction(user, async (tx) => tx.receiverHistory.create({ data: { customerCode, receiver } }));
   } catch (error) {
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return { ok: false, message: "该收货地址已存在" };
     throw error;
@@ -81,8 +83,8 @@ export async function saveReceiver(formData: FormData) {
 }
 
 export async function deleteReceiver(id: number) {
-  await authorize();
-  await getPrisma().receiverHistory.delete({ where: { id } });
+  const user = await authorize();
+  await auditTransaction(user, async (tx) => tx.receiverHistory.delete({ where: { id } }));
   revalidatePath(path);
   return { ok: true };
 }

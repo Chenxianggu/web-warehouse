@@ -1,14 +1,15 @@
 "use server";
 
+import { auditTransaction } from "@/server/audit";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { UserRole } from "@/generated/prisma/client";
 import { hashPassword, passwordSchema } from "@/features/identity/password";
 import { requireAdmin } from "@/server/current-user";
-import { getPrisma } from "@/server/db";
 
 export async function createUserAction(formData: FormData) {
-  await requireAdmin();
+  const user = await requireAdmin();
   const rawUsername = formData.get("username");
   const rawPassword = formData.get("password");
   const rawRole = formData.get("role");
@@ -21,9 +22,9 @@ export async function createUserAction(formData: FormData) {
   if (!role) redirect("/users?error=role");
 
   try {
-    await getPrisma().user.create({
+    await auditTransaction(user, async (tx) => tx.user.create({
       data: { username, passwordHash: await hashPassword(password), role },
-    });
+    }));
   } catch (error) {
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
       redirect("/users?error=duplicate");
@@ -44,10 +45,10 @@ export async function resetUserPasswordAction(formData: FormData) {
   }
   if (id === currentUser.id) redirect("/users?error=self-reset");
 
-  const result = await getPrisma().user.updateMany({
+  const result = await auditTransaction(currentUser, async (tx) => tx.user.updateMany({
     where: { id },
     data: { passwordHash: await hashPassword(password), sessionVersion: { increment: 1 } },
-  });
+  }));
   if (result.count !== 1) redirect("/users?error=missing");
   revalidatePath("/users");
   redirect("/users?notice=reset");

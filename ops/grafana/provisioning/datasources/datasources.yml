@@ -1,0 +1,28 @@
+apiVersion: 1
+datasources:
+  - name: Warehouse runtime
+    uid: warehouse-loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    isDefault: true
+    editable: false
+    jsonData:
+      maxLines: 1000
+  - name: Warehouse audit (read only)
+    uid: warehouse-audit
+    type: grafana-postgresql-datasource
+    access: proxy
+    url: $AUDIT_DB_HOST:5432
+    user: warehouse_log_reader
+    editable: false
+    jsonData:
+      database: $AUDIT_DB_NAME
+      sslmode: disable
+      postgresVersion: 1700
+      timescaledb: false
+      maxOpenConns: 3
+      maxIdleConns: 1
+      connMaxLifetime: 600
+    secureJsonData:
+      password: $AUDIT_READER_PASSWORD

@@ -4,6 +4,7 @@ import { navigation, type NavigationGroup, type NavigationItem } from "@/config/
 import { UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/server/db";
 import { requireUser } from "@/server/current-user";
+import { writeLog } from "@/server/logger";
 
 export const ADMIN_ONLY_MENU_PATHS = new Set(["/menu-management", "/users"]);
 
@@ -59,12 +60,18 @@ export async function getMenuPermissionGroups(): Promise<MenuPermissionGroup[]> 
 export async function requirePageAccess(href: string) {
   const user = await requireUser();
   if (user.role === UserRole.SUPER_ADMIN || href === "/" || href === "/settings/password") return user;
-  if (ADMIN_ONLY_MENU_PATHS.has(href) || !configurableMenuPaths.has(href)) redirect("/access-denied");
+  if (ADMIN_ONLY_MENU_PATHS.has(href) || !configurableMenuPaths.has(href)) {
+    await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "访问控制", action: "ACCESS_DENIED", message: "页面访问被权限规则拒绝", actor: user, metadata: { path: href } });
+    redirect("/access-denied");
+  }
 
   const permission = await getPrisma().salespersonMenuPermission.findUnique({
     where: { menuKey: href },
     select: { isVisible: true },
   });
-  if (permission?.isVisible === false) redirect("/access-denied");
+  if (permission?.isVisible === false) {
+    await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "访问控制", action: "ACCESS_DENIED", message: "页面访问被菜单权限拒绝", actor: user, metadata: { path: href } });
+    redirect("/access-denied");
+  }
   return user;
 }

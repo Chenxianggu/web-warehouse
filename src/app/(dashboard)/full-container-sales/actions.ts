@@ -11,5 +11,5 @@ export async function containerOptions() {
   return { customers: customers.map((c) => ({ code: c.code, name: c.fullName })), materials, suppliers: suppliers.map((s) => s.supplier) };
 }
 function invalidate() { for (const path of ["/full-container-sales", "/consignments", "/stock", "/inbound-orders", "/receivables", "/"]) revalidatePath(path); }
-export async function saveFullContainer(input: unknown) { await requirePageAccess("/full-container-sales"); const result = await persistFullContainer(input); if (result.ok) invalidate(); return result; }
-export async function deleteFullContainer(id: number, updatedAt: string) { await requirePageAccess("/full-container-sales"); const result = await removeFullContainer(id, updatedAt); if (result.ok) invalidate(); return result; }
+export async function saveFullContainer(input: unknown) { const user = await requirePageAccess("/full-container-sales"); const result = await persistFullContainer(input, user); if (result.ok) invalidate(); return result; }
+export async function deleteFullContainer(id: number, updatedAt: string) { const user = await requirePageAccess("/full-container-sales"); const result = await removeFullContainer(id, updatedAt, user); if (result.ok) invalidate(); return result; }

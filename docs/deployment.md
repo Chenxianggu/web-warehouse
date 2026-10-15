@@ -56,6 +56,12 @@ git push origin v1.0.0
 
 The application container runs `prisma migrate deploy` before starting Next.js. Database schema changes should therefore remain backward-compatible with the previous application version.
 
+## Logging
+
+Logging is available only in the separate developer Grafana console, bound to server loopback port 3300 and accessed through an SSH tunnel. Business accounts have no log UI or export endpoint. See [logging operations](./logging.md) for one-time secret generation, the audit-only database role, stack startup, backups and retention.
+
+Releases copy `ops/` and `docker-compose.ops.yml` to the application directory without touching `ops/.secrets/`. The operations stack uses its own Compose project, `warehouse-ops`; business deployments do not restart it. First deploy the business release and wait for migrations, then initialize and start the operations stack separately. Existing installations recreate the business containers once to join the audit network and enable log collection labels.
+
 ## Rollback
 
 Open the **Deploy production** workflow in GitHub Actions, choose **Run workflow**, and provide a previously released tag such as `v1.0.0`. The workflow checks out that tag, rebuilds it on the server, and starts it.

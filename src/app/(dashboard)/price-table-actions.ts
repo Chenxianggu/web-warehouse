@@ -1,5 +1,7 @@
 "use server";
 
+import { auditTransaction } from "@/server/audit";
+
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -53,21 +55,20 @@ export async function savePlasticPriceTable(input: unknown) {
   const parsed = z.object({ groups: priceGroupsSchema, version: z.number().int().min(0) }).safeParse(input);
   if (!parsed.success) return { ok: false as const, message: parsed.error.issues[0]?.message ?? "请检查表格内容" };
   const { groups, version } = parsed.data;
-  const db = getPrisma();
   const conflict = { ok: false as const, message: "价格表已被其他人更新，请先取消编辑并刷新，再重新修改" };
   const updatedAt = new Date();
   if (version === 0) {
     try {
-      await db.plasticPriceTable.create({ data: { id: tableId, groups, updatedAt } });
+      await auditTransaction(user, async (tx) => tx.plasticPriceTable.create({ data: { id: tableId, groups, updatedAt } }));
     } catch (error) {
       if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") return conflict;
       throw error;
     }
   } else {
-    const updated = await db.plasticPriceTable.updateMany({
+    const updated = await auditTransaction(user, async (tx) => tx.plasticPriceTable.updateMany({
       where: { id: tableId, version },
       data: { groups, version: { increment: 1 }, updatedAt },
-    });
+    }));
     if (updated.count === 0) return conflict;
   }
   revalidatePath("/");
@@ -102,7 +103,7 @@ export async function savePriceTableEditors(userIds: string[]) {
     select: { id: true },
   });
   if (allowed.length !== uniqueIds.length) return { ok: false as const, message: "包含无效账号，请重新打开授权名单" };
-  await db.$transaction(async (tx) => {
+  await auditTransaction(user, async (tx) => {
     await tx.plasticPriceEditor.deleteMany();
     if (allowed.length > 0) await tx.plasticPriceEditor.createMany({ data: allowed.map((item) => ({ userId: item.id })) });
   });

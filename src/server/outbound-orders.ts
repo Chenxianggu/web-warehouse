@@ -1,3 +1,4 @@
+import { auditTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { serializeCustomerOrders } from "@/server/customer-orders";
 import { Prisma } from "@/generated/prisma/client";
@@ -33,9 +34,9 @@ async function lockStock(tx: Prisma.TransactionClient, codes: string[]) {
   }
 }
 
-export async function shipCustomerOrder(id: number) {
+export async function shipCustomerOrder(id: number, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1) return { ok: false as const, message: "订单不存在" };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     const changed = await tx.customerOrder.updateMany({ where: { id, isShipped: false }, data: { isShipped: true } });
     if (!changed.count) return { ok: false as const, message: "订单不存在或已出库，不能重复出库" };
     const order = await tx.customerOrder.findUniqueOrThrow({ where: { id }, include: { items: { orderBy: { id: "asc" } } } });
@@ -86,9 +87,9 @@ export async function shipCustomerOrder(id: number) {
   }, { timeout: 30000 });
 }
 
-export async function unshipCustomerOrder(id: number) {
+export async function unshipCustomerOrder(id: number, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1) return { ok: false as const, message: "订单不存在" };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     const changed = await tx.customerOrder.updateMany({ where: { id, isShipped: true }, data: { isShipped: false } });
     if (!changed.count) return { ok: false as const, message: "订单不存在或未出库，无需取消" };
     const order = await tx.customerOrder.findUniqueOrThrow({ where: { id }, include: { items: true } });

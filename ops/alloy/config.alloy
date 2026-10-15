@@ -1,0 +1,72 @@
+logging {
+  level = "warn"
+}
+
+// The collector has no direct Docker socket and only reads explicitly opted-in containers.
+discovery.docker "warehouse" {
+  host = "http://docker-proxy:2375"
+  refresh_interval = "5s"
+  filter {
+    name = "label"
+    values = ["io.renzhong.logs=true"]
+  }
+}
+
+discovery.relabel "warehouse" {
+  targets = discovery.docker.warehouse.targets
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex = "/(.*)"
+    target_label = "container"
+    replacement = "$1"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label = "service_name"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_label_io_renzhong_environment"]
+    target_label = "environment"
+  }
+  rule {
+    target_label = "application"
+    replacement = "warehouse"
+  }
+}
+
+loki.source.docker "warehouse" {
+  host = "http://docker-proxy:2375"
+  targets = discovery.relabel.warehouse.output
+  forward_to = [loki.process.warehouse.receiver]
+}
+
+loki.process "warehouse" {
+  stage.json {
+    expressions = { level = "level", category = "category" }
+  }
+  stage.labels {
+    values = { level = "", category = "" }
+  }
+  // PostgreSQL uses text logs; normalize severity so the level filter includes DB errors.
+  stage.match {
+    selector = "{service_name=\"db\"}"
+    stage.regex {
+      expression = "\\b(?P<level>ERROR|FATAL|PANIC|WARNING|LOG|INFO|NOTICE|DEBUG[1-5]?):\\s"
+    }
+    stage.template {
+      source = "level"
+      template = "{{ if eq .Value \"WARNING\" }}WARN{{ else if or (eq .Value \"FATAL\") (eq .Value \"PANIC\") }}ERROR{{ else if or (eq .Value \"LOG\") (eq .Value \"NOTICE\") }}INFO{{ else }}{{ .Value }}{{ end }}"
+    }
+    stage.labels {
+      values = { level = "" }
+    }
+  }
+  // User IDs, order IDs and request IDs stay in JSON; never turn them into index labels.
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

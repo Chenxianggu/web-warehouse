@@ -1,6 +1,9 @@
 services:
   db:
     image: postgres:17-alpine
+    labels:
+      io.renzhong.logs: "true"
+      io.renzhong.environment: development
     environment:
       POSTGRES_DB: warehouse
       POSTGRES_USER: warehouse
@@ -9,6 +12,20 @@ services:
       - "127.0.0.1:5433:5432"
     volumes:
       - warehouse_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U warehouse -d warehouse"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      default:
+      observability:
+        aliases: [warehouse-db]
 
 volumes:
   warehouse_postgres_data:
+
+networks:
+  observability:
+    name: ${OBSERVABILITY_NETWORK:-warehouse-observability}
+    internal: true

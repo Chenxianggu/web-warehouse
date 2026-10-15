@@ -19,14 +19,14 @@ export async function purchaseOptions() {
 }
 function invalidate() { for (const path of ["/purchase-orders", "/price-trends", "/stock", "/inbound-orders", "/"]) revalidatePath(path); }
 export async function savePurchaseOrder(input: unknown) {
-  await requirePageAccess("/purchase-orders"); const result = await persistPurchaseOrder(input); if (result.ok) invalidate(); return result;
+  const user = await requirePageAccess("/purchase-orders"); const result = await persistPurchaseOrder(input, user); if (result.ok) invalidate(); return result;
 }
 export async function deletePurchaseOrder(id: number, updatedAt: string) {
-  await requirePageAccess("/purchase-orders"); const result = await removePurchaseOrder(id, updatedAt); if (result.ok) invalidate(); return result;
+  const user = await requirePageAccess("/purchase-orders"); const result = await removePurchaseOrder(id, updatedAt, user); if (result.ok) invalidate(); return result;
 }
 export async function addDelivery(input: unknown) {
-  await requirePageAccess("/purchase-orders"); const result = await addPurchaseDelivery(input); if (result.ok) invalidate(); return result;
+  const user = await requirePageAccess("/purchase-orders"); const result = await addPurchaseDelivery(input, user); if (result.ok) invalidate(); return result;
 }
 export async function deleteDelivery(orderId: number, deliveryId: number, updatedAt: string) {
-  await requirePageAccess("/purchase-orders"); const result = await removePurchaseDelivery(orderId, deliveryId, updatedAt); if (result.ok) invalidate(); return result;
+  const user = await requirePageAccess("/purchase-orders"); const result = await removePurchaseDelivery(orderId, deliveryId, updatedAt, user); if (result.ok) invalidate(); return result;
 }

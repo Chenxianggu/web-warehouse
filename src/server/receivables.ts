@@ -1,3 +1,4 @@
+import { auditTransaction, type AuditActor } from "@/server/audit";
 import { Prisma } from "@/generated/prisma/client";
 import { getPrisma } from "@/server/db";
 import { buildReceivables, currency, fullContainerCode, type OrderTotal } from "@/features/receivables/ledger";
@@ -61,15 +62,15 @@ export async function readReceivableDetail(customerCode: string): Promise<Receiv
   }, { isolationLevel: "RepeatableRead" });
 }
 
-export async function persistReceivablePayment(input: unknown) {
+export async function persistReceivablePayment(input: unknown, actor?: AuditActor) {
   const parsed = paymentSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, message: parsed.error.issues[0]?.message ?? "请检查支付记录" };
-  const payment = await getPrisma().receivablePayment.create({ data: { ...parsed.data, paymentDate: new Date(`${parsed.data.paymentDate}T00:00:00Z`) } });
+  const payment = await auditTransaction(actor, async (tx) => tx.receivablePayment.create({ data: { ...parsed.data, paymentDate: new Date(`${parsed.data.paymentDate}T00:00:00Z`) } }));
   return { ok: true as const, id: payment.id };
 }
 
-export async function removeReceivablePayment(id: number) {
+export async function removeReceivablePayment(id: number, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1) return { ok: false as const, message: "支付记录不存在" };
-  const result = await getPrisma().receivablePayment.deleteMany({ where: { id } });
+  const result = await auditTransaction(actor, async (tx) => tx.receivablePayment.deleteMany({ where: { id } }));
   return result.count ? { ok: true as const } : { ok: false as const, message: "支付记录不存在" };
 }

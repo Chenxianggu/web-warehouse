@@ -19,6 +19,20 @@ jobs:
     timeout-minutes: 15
     env:
       DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci?schema=public
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: ci
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
 
     steps:
       - name: Check out repository
@@ -39,6 +53,14 @@ jobs:
       - name: Validate Prisma schema
         run: npm run db:validate
 
+      - name: Migrate test database
+        run: npm run db:migrate
+
+      - name: Test logging platform
+        run: npm run test:logs && npm run test:logs:db
+        env:
+          RUN_DATABASE_TESTS: "1"
+
       - name: Lint
         run: npm run lint
 
@@ -47,3 +69,42 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  observability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: postgresql://warehouse:warehouse@127.0.0.1:5433/warehouse?schema=public
+      POSTGRES_PASSWORD: warehouse
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start isolated test database
+        run: docker compose -f docker-compose.yml up -d --wait db
+      - run: npm run db:migrate
+      - run: npm run ops:secrets
+      - name: Initialize audit-only reader
+        run: docker compose -f docker-compose.ops.yml run --rm audit-reader-init
+      - name: Start developer console
+        run: docker compose -f docker-compose.ops.yml up -d grafana loki alloy docker-proxy
+      - name: Wait for Grafana
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3300/api/health > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Check authentication, database isolation, log ingestion and restart durability
+        run: npm run ops:verify -- --restart-loki
+      - name: Diagnostics
+        if: failure()
+        run: docker compose -f docker-compose.ops.yml logs --tail=100
+      - name: Stop test stacks
+        if: always()
+        run: |
+          docker compose -f docker-compose.ops.yml down
+          docker compose -f docker-compose.yml down

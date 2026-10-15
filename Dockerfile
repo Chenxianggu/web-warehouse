@@ -31,6 +31,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/src/generated ./src/generated
 COPY --from=builder /app/src/features ./src/features
+COPY --from=builder /app/scripts/prune-logs.mjs ./scripts/prune-logs.mjs
 COPY docker-entrypoint.prod.sh ./docker-entrypoint.prod.sh
 RUN sed -i 's/\r$//' ./docker-entrypoint.prod.sh
 

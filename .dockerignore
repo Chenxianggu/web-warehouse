@@ -6,4 +6,5 @@ node_modules
 !.env.example
 output
 .playwright-cli
+ops/.secrets
 *.tsbuildinfo

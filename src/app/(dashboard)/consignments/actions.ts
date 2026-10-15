@@ -23,14 +23,14 @@ function invalidate() {
   for (const path of ["/consignments", "/outbound-orders", "/receivables", "/"]) revalidatePath(path);
 }
 export async function saveConsignment(input: unknown) {
-  await requirePageAccess("/consignments");
-  const result = await persistConsignment(input);
+  const user = await requirePageAccess("/consignments");
+  const result = await persistConsignment(input, user);
   if (result.ok) invalidate();
   return result;
 }
 export async function deleteConsignment(id: number, updatedAt: string) {
-  await requirePageAccess("/consignments");
-  const result = await removeConsignment(id, updatedAt);
+  const user = await requirePageAccess("/consignments");
+  const result = await removeConsignment(id, updatedAt, user);
   if (result.ok) invalidate();
   return result;
 }

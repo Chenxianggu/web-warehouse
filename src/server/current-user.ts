@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { UserRole } from "@/generated/prisma/client";
 import { auth } from "@/auth";
 import { getPrisma } from "@/server/db";
+import { writeLog } from "@/server/logger";
 
 export async function requireUser() {
   const session = await auth();
@@ -18,6 +19,9 @@ export async function requireUser() {
 
 export async function requireAdmin() {
   const user = await requireUser();
-  if (user.role !== UserRole.SUPER_ADMIN) redirect("/access-denied");
+  if (user.role !== UserRole.SUPER_ADMIN) {
+    await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "访问控制", action: "ACCESS_DENIED", message: "尝试访问管理员功能，权限不足", actor: user });
+    redirect("/access-denied");
+  }
   return user;
 }

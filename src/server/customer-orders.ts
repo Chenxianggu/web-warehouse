@@ -1,3 +1,4 @@
+import { auditTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { customerOrderSchema, orderDateSchema, type OrderRecord } from "@/features/customer-orders/schema";
 import type { Prisma } from "@/generated/prisma/client";
@@ -32,12 +33,12 @@ export async function serializeCustomerOrders(orders: OrderWithItems[]): Promise
   }));
 }
 
-export async function persistCustomerOrder(input: unknown) {
+export async function persistCustomerOrder(input: unknown, actor?: AuditActor) {
   const parsed = customerOrderSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, message: parsed.error.issues[0]?.message || "请检查订单内容" };
   const { id, items, ...fields } = parsed.data;
   const data = { ...fields, orderDate: new Date(`${fields.orderDate}T00:00:00Z`) };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     let orderId: number;
     let orderNo: string;
     if (id !== null) {
@@ -69,8 +70,8 @@ export async function persistCustomerOrder(input: unknown) {
   });
 }
 
-export async function removeCustomerOrder(id: number) {
+export async function removeCustomerOrder(id: number, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1) return { ok: false as const, message: "订单不存在" };
-  const result = await getPrisma().customerOrder.deleteMany({ where: { id, isShipped: false } });
+  const result = await auditTransaction(actor, async (tx) => tx.customerOrder.deleteMany({ where: { id, isShipped: false } }));
   return result.count ? { ok: true as const } : { ok: false as const, message: "订单不存在或已出库，不能删除" };
 }

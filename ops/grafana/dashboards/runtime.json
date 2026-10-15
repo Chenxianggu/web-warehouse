@@ -1,0 +1,265 @@
+{
+  "uid": "warehouse-runtime",
+  "title": "仁众 · 运行排错",
+  "tags": [
+    "warehouse",
+    "developer"
+  ],
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "timezone": "Asia/Shanghai",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "links": [
+    {
+      "title": "运行排错",
+      "url": "/d/warehouse-runtime",
+      "type": "link",
+      "keepTime": true
+    },
+    {
+      "title": "操作追溯",
+      "url": "/d/warehouse-audit",
+      "type": "link",
+      "keepTime": true
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "environment",
+        "label": "环境",
+        "type": "custom",
+        "query": "production,development,test",
+        "includeAll": true,
+        "allValue": ".+",
+        "multi": false,
+        "current": {
+          "text": "全部",
+          "value": "$__all"
+        },
+        "options": [
+          {
+            "text": "全部",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "production",
+            "value": "production",
+            "selected": false
+          },
+          {
+            "text": "development",
+            "value": "development",
+            "selected": false
+          },
+          {
+            "text": "test",
+            "value": "test",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "service",
+        "label": "服务",
+        "type": "query",
+        "datasource": {
+          "type": "loki",
+          "uid": "warehouse-loki"
+        },
+        "query": "label_values({application=\"warehouse\"}, service_name)",
+        "refresh": 1,
+        "includeAll": true,
+        "allValue": ".+",
+        "multi": false,
+        "current": {
+          "text": "全部",
+          "value": "$__all"
+        },
+        "options": []
+      },
+      {
+        "name": "level",
+        "label": "级别",
+        "type": "custom",
+        "query": "INFO,WARN,ERROR",
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": false,
+        "current": {
+          "text": "全部",
+          "value": "$__all"
+        },
+        "options": [
+          {
+            "text": "全部",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "INFO",
+            "value": "INFO",
+            "selected": false
+          },
+          {
+            "text": "WARN",
+            "value": "WARN",
+            "selected": false
+          },
+          {
+            "text": "ERROR",
+            "value": "ERROR",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "keyword",
+        "label": "关键词 / 关联编号",
+        "type": "textbox",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "日志量（按服务）",
+      "type": "timeseries",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "warehouse-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (service_name) (count_over_time({application=\"warehouse\",environment=~\"$environment\",service_name=~\"$service\",level=~\"$level\"}[$__interval]))",
+          "legendFormat": "{{service_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 35
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "警告 / 错误总数",
+      "type": "stat",
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "warehouse-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(count_over_time({application=\"warehouse\",environment=~\"$environment\",service_name=~\"$service\",level=~\"WARN|ERROR\"}[$__range]))",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f2f2ec",
+                "value": null
+              },
+              {
+                "color": "#ff2d78",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none"
+      }
+    },
+    {
+      "id": 3,
+      "title": "运行日志（最近 1,000 条，可在 Explore 中继续查询）",
+      "type": "logs",
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 18
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "warehouse-loki"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "{application=\"warehouse\",environment=~\"$environment\",service_name=~\"$service\",level=~\"$level\"} |= ${keyword:doublequote}",
+          "queryType": "range",
+          "maxLines": 1000
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": true,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      }
+    }
+  ]
+}

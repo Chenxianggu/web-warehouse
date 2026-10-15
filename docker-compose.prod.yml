@@ -1,13 +1,25 @@
 services:
   db:
     image: postgres:17-alpine
+    labels:
+      io.renzhong.logs: "true"
+      io.renzhong.environment: production
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-warehouse}
       POSTGRES_USER: ${POSTGRES_USER:-warehouse}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     volumes:
       - warehouse_postgres_data:/var/lib/postgresql/data
+    networks:
+      default:
+      observability:
+        aliases: [warehouse-db]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
@@ -16,12 +28,21 @@ services:
 
   app:
     image: ${IMAGE_REPOSITORY:-warehouse-app}:${IMAGE_TAG:?IMAGE_TAG must be set}
+    labels:
+      io.renzhong.logs: "true"
+      io.renzhong.environment: production
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     depends_on:
       db:
         condition: service_healthy
     environment:
       NODE_ENV: production
+      APP_RELEASE: ${IMAGE_TAG}
       POSTGRES_DB: ${POSTGRES_DB:-warehouse}
       POSTGRES_USER: ${POSTGRES_USER:-warehouse}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
@@ -33,3 +54,8 @@ services:
 
 volumes:
   warehouse_postgres_data:
+
+networks:
+  observability:
+    name: ${OBSERVABILITY_NETWORK:-warehouse-observability}
+    internal: true

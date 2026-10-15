@@ -8,3 +8,4 @@ coverage/
 *.tsbuildinfo
 next-env.d.ts
 src/generated/prisma/
+ops/.secrets/

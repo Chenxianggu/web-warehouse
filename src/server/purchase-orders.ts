@@ -1,3 +1,4 @@
+import { auditTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { Prisma } from "@/generated/prisma/client";
 import { shanghaiToday } from "@/features/customer-orders/schema";
@@ -84,11 +85,11 @@ export async function readPurchaseOrders(input: PurchaseFilter, all = false): Pr
     return { data: rows.map((r) => serialize(r, today)), total, page, pageSize: filter.pageSize };
   }, { isolationLevel: "RepeatableRead" });
 }
-export async function persistPurchaseOrder(input: unknown) {
+export async function persistPurchaseOrder(input: unknown, actor?: AuditActor) {
   const parsed = purchaseInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, message: parsed.error.issues[0]?.message || "请检查订货内容" };
   const { id, updatedAt, ...fields } = parsed.data;
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     await lockPurchases(tx);
     const current = id ? await tx.purchaseOrder.findUnique({ where: { id }, include: { deliveries: true } }) : null;
     if (id && (!current || current.updatedAt.toISOString() !== updatedAt)) return { ok: false as const, message: "记录已发生变化，请刷新后重试" };
@@ -106,11 +107,11 @@ export async function persistPurchaseOrder(input: unknown) {
     return { ok: true as const, id: row.id };
   });
 }
-export async function addPurchaseDelivery(input: unknown) {
+export async function addPurchaseDelivery(input: unknown, actor?: AuditActor) {
   const parsed = deliveryInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, message: "请填写有效的到货日期和数量" };
   const { orderId, updatedAt, deliveryDate, quantity } = parsed.data;
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     await lockPurchases(tx);
     const row = await tx.purchaseOrder.findUnique({ where: { id: orderId }, include: { deliveries: true } });
     if (!row) return { ok: false as const, message: "订货记录不存在" };
@@ -128,9 +129,9 @@ export async function addPurchaseDelivery(input: unknown) {
     return { ok: true as const, record: serialize(updated), message: synced ? "分批发货已记录并入库" : "分批已记录，到货后自动入库" };
   });
 }
-export async function removePurchaseDelivery(orderId: number, deliveryId: number, updatedAt?: string) {
+export async function removePurchaseDelivery(orderId: number, deliveryId: number, updatedAt?: string, actor?: AuditActor) {
   if (![orderId, deliveryId].every((id) => Number.isSafeInteger(id) && id > 0)) return { ok: false as const, message: "分批记录不存在" };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     await lockPurchases(tx);
     const d = await tx.purchaseOrderDelivery.findFirst({ where: { id: deliveryId, orderId }, include: { order: true } });
     if (!d) return { ok: false as const, message: "分批记录已删除" };
@@ -141,9 +142,9 @@ export async function removePurchaseDelivery(orderId: number, deliveryId: number
     return { ok: true as const, record: serialize(await tx.purchaseOrder.findUniqueOrThrow({ where: { id: orderId }, include: { deliveries: { orderBy: [{ deliveryDate: "asc" }, { id: "asc" }] } } })) };
   });
 }
-export async function removePurchaseOrder(id: number, updatedAt: string) {
+export async function removePurchaseOrder(id: number, updatedAt: string, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1 || !Number.isFinite(Date.parse(updatedAt))) return { ok: false as const, message: "订货记录不存在" };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     await lockPurchases(tx);
     // Reference deletion removes the order and batches, retaining warehouse
     // receipts. Deleting a single batch above explicitly reverses its receipt.

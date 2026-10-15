@@ -98,6 +98,8 @@ jobs:
             --exclude=.git \
             --exclude=node_modules \
             --exclude=.next \
+            --exclude=ops/.secrets \
+            --exclude=.playwright-cli \
             .
 
       - name: Configure SSH
@@ -149,6 +151,9 @@ jobs:
           mkdir src-build
           tar -xzf warehouse-src.tgz -C src-build
           docker build -t "${image_repository}:${image_tag}" -t "${image_repository}:latest" src-build
+          mkdir -p ops
+          cp -a src-build/ops/. ops/
+          cp src-build/docker-compose.ops.yml ./docker-compose.ops.yml
           rm -rf src-build warehouse-src.tgz
 
           export IMAGE_REPOSITORY="$image_repository"

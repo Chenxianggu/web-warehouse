@@ -1,3 +1,4 @@
+import { auditTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { Prisma } from "@/generated/prisma/client";
 import { consignmentHistory } from "@/features/outbound/schema";
@@ -37,11 +38,11 @@ async function lockPair(tx: Prisma.TransactionClient, customerName: string, item
   await tx.$queryRaw`SELECT pg_advisory_xact_lock(73813, hashtext(${key}))::text`;
 }
 
-export async function persistConsignment(input: unknown) {
+export async function persistConsignment(input: unknown, actor?: AuditActor) {
   const parsed = consignmentInputSchema.safeParse(input);
   if (!parsed.success) return { ok: false as const, message: parsed.error.issues[0]?.message || "请检查输入内容" };
   const { id, updatedAt, ...fields } = parsed.data;
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     let legacyOutbound = new Prisma.Decimal(0);
     if (id !== null) {
       const original = await tx.customerConsignment.findUnique({ where: { id } });
@@ -68,9 +69,9 @@ export async function persistConsignment(input: unknown) {
   });
 }
 
-export async function removeConsignment(id: number, updatedAt: string) {
+export async function removeConsignment(id: number, updatedAt: string, actor?: AuditActor) {
   if (!Number.isSafeInteger(id) || id < 1 || !Number.isFinite(Date.parse(updatedAt))) return { ok: false as const, message: "寄存记录不存在" };
-  return getPrisma().$transaction(async (tx) => {
+  return auditTransaction(actor, async (tx) => {
     const row = await tx.customerConsignment.findUnique({ where: { id } });
     if (!row) return { ok: false as const, message: "寄存记录已删除" };
     await lockPair(tx, row.customerName, row.itemCode);

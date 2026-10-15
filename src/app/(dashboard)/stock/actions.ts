@@ -1,5 +1,7 @@
 "use server";
 
+import { auditTransaction } from "@/server/audit";
+
 import { revalidatePath } from "next/cache";
 import { UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/server/db";
@@ -94,14 +96,14 @@ export async function listMaterials(keyword = "", page = 1, pageSize = 10) {
 }
 
 export async function createMaterial(formData: FormData) {
-  await requirePageAccess(path);
+  const user = await requirePageAccess(path);
   const code = text(formData.get("code"));
   const name = text(formData.get("name"));
   const packsPerTon = normalizedPacksPerTon(formData.get("packsPerTon"));
   if (!code || !name) return { ok: false, message: "塑料编号和塑料名称不能为空" };
   if (packsPerTon === null) return { ok: false, message: "每吨包数必须是 1–200 之间的整数" };
   try {
-    await getPrisma().material.create({ data: { code, name, packsPerTon } });
+    await auditTransaction(user, async (tx) => tx.material.create({ data: { code, name, packsPerTon } }));
   } catch (error) {
     if (isUniqueConstraintError(error)) return { ok: false, message: "塑料编号已存在" };
     throw error;
@@ -111,7 +113,7 @@ export async function createMaterial(formData: FormData) {
 }
 
 export async function updateMaterial(formData: FormData) {
-  await requirePageAccess(path);
+  const user = await requirePageAccess(path);
   const id = Number(text(formData.get("id")));
   const code = text(formData.get("code"));
   const name = text(formData.get("name"));
@@ -119,7 +121,7 @@ export async function updateMaterial(formData: FormData) {
   if (!id || !code || !name) return { ok: false, message: "塑料编号和塑料名称不能为空" };
   if (packsPerTon === null) return { ok: false, message: "每吨包数必须是 1–200 之间的整数" };
   try {
-    await getPrisma().material.update({ where: { id }, data: { code, name, packsPerTon } });
+    await auditTransaction(user, async (tx) => tx.material.update({ where: { id }, data: { code, name, packsPerTon } }));
   } catch (error) {
     if (isUniqueConstraintError(error)) return { ok: false, message: "塑料编号已存在" };
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2025") {
@@ -132,9 +134,9 @@ export async function updateMaterial(formData: FormData) {
 }
 
 export async function deleteMaterial(id: number) {
-  await requirePageAccess(path);
+  const user = await requirePageAccess(path);
   try {
-    await getPrisma().material.delete({ where: { id } });
+    await auditTransaction(user, async (tx) => tx.material.delete({ where: { id } }));
   } catch (error) {
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2025") {
       return { ok: false, message: "塑料不存在或已被删除" };

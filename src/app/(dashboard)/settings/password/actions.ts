@@ -1,5 +1,7 @@
 "use server";
 
+import { auditTransaction } from "@/server/audit";
+
 import { redirect } from "next/navigation";
 import { signOut } from "@/auth";
 import { hashPassword, passwordSchema, verifyPassword } from "@/features/identity/password";
@@ -25,10 +27,10 @@ export async function changePasswordAction(formData: FormData) {
     redirect("/settings/password?error=current");
   }
 
-  const result = await prisma.user.updateMany({
+  const result = await auditTransaction(currentUser, async (tx) => tx.user.updateMany({
     where: { id: currentUser.id, passwordHash: account.passwordHash },
     data: { passwordHash: await hashPassword(newPassword), sessionVersion: { increment: 1 } },
-  });
+  }));
   if (result.count !== 1) redirect("/settings/password?error=retry");
 
   await signOut({ redirectTo: "/login?changed=1" });

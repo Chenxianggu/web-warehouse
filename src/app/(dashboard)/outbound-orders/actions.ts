@@ -20,14 +20,14 @@ function invalidate() {
   for (const route of [path, "/customer-orders", "/stock", "/inbound-orders", "/consignments", "/"]) revalidatePath(route);
 }
 export async function shipOrder(id: number) {
-  await requirePageAccess(path);
-  const result = await shipCustomerOrder(id);
+  const user = await requirePageAccess(path);
+  const result = await shipCustomerOrder(id, user);
   if (result.ok) invalidate();
   return result;
 }
 export async function unshipOrder(id: number) {
-  await requirePageAccess(path);
-  const result = await unshipCustomerOrder(id);
+  const user = await requirePageAccess(path);
+  const result = await unshipCustomerOrder(id, user);
   if (result.ok) invalidate();
   return result;
 }

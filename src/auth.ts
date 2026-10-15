@@ -5,6 +5,7 @@ import { z } from "zod";
 import { UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/server/db";
 import { verifyPassword } from "@/features/identity/password";
+import { writeLog } from "@/server/logger";
 
 const credentialsSchema = z.object({
   username: z.string().trim().min(1).max(50),
@@ -37,11 +38,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         const parsed = credentialsSchema.safeParse(credentials);
-        if (!parsed.success) return null;
+        if (!parsed.success) {
+          await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "登录认证", action: "LOGIN_FAILED", message: "登录参数无效" });
+          return null;
+        }
 
         const user = await getPrisma().user.findUnique({ where: { username: parsed.data.username } });
-        if (!user?.isActive) return null;
-        if (!(await verifyPassword(parsed.data.password, user.passwordHash))) return null;
+        if (!user?.isActive || !(await verifyPassword(parsed.data.password, user.passwordHash))) {
+          // The attempted name is unverified; do not assign it a trusted actor ID.
+          await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "登录认证", action: "LOGIN_FAILED", message: "用户名、密码或账号状态不符合登录要求", metadata: { attemptedUsername: parsed.data.username } });
+          return null;
+        }
 
         return {
           id: user.id,
@@ -53,6 +60,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  events: {
+    async signIn({ user }) {
+      await writeLog({ category: "AUTH", module: "登录认证", action: "LOGIN", message: "用户登录成功", actor: { id: user.id ?? "", username: user.name ?? "未知用户" } });
+    },
+    async signOut(event) {
+      const token = "token" in event ? event.token : null;
+      await writeLog({ category: "AUTH", module: "登录认证", action: "LOGOUT", message: "用户退出登录", actor: token?.userId ? { id: String(token.userId), username: String(token.name ?? "未知用户") } : undefined });
+    },
+  },
   callbacks: {
     jwt({ token, user }) {
       if (user) {

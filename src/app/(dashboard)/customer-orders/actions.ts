@@ -38,8 +38,8 @@ export async function listOrderReceivers(customerCode: string) {
 }
 
 export async function saveCustomerOrder(input: unknown) {
-  await requirePageAccess(path);
-  const result = await persistCustomerOrder(input);
+  const user = await requirePageAccess(path);
+  const result = await persistCustomerOrder(input, user);
   if (result.ok) {
     revalidatePath(path);
     revalidatePath("/customers");
@@ -48,8 +48,8 @@ export async function saveCustomerOrder(input: unknown) {
 }
 
 export async function deleteCustomerOrder(id: number) {
-  await requirePageAccess(path);
-  const result = await removeCustomerOrder(id);
+  const user = await requirePageAccess(path);
+  const result = await removeCustomerOrder(id, user);
   if (result.ok) revalidatePath(path);
   return result;
 }

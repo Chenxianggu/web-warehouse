@@ -1,7 +1,7 @@
-import { getPrisma } from "@/server/db";
+import { auditTransaction, type AuditActor } from "@/server/audit";
 
-export async function updateCustomerRecord(id: number, code: string, fullName: string) {
-  return getPrisma().$transaction(async (tx) => {
+export async function updateCustomerRecord(id: number, code: string, fullName: string, actor?: AuditActor) {
+  return auditTransaction(actor, async (tx) => {
     const old = await tx.customer.findUnique({ where: { id }, select: { code: true } });
     if (!old) return false;
     await tx.customer.update({ where: { id }, data: { code, fullName } });
@@ -16,8 +16,8 @@ export async function updateCustomerRecord(id: number, code: string, fullName: s
   });
 }
 
-export async function deleteCustomerRecord(id: number) {
-  return getPrisma().$transaction(async (tx) => {
+export async function deleteCustomerRecord(id: number, actor?: AuditActor) {
+  return auditTransaction(actor, async (tx) => {
     const customer = await tx.customer.delete({ where: { id } });
     if (await tx.customer.count({ where: { code: customer.code } }) === 0) await tx.receiverHistory.deleteMany({ where: { customerCode: customer.code } });
   });

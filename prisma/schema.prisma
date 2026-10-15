@@ -7,6 +7,34 @@ datasource db {
   provider = "postgresql"
 }
 
+// Audit snapshots are written by PostgreSQL triggers in the business transaction.
+// Identity is a snapshot, deliberately not a cascading foreign key to users.
+model SystemLog {
+  id         BigInt   @id @default(autoincrement())
+  category   String   @db.VarChar(16)
+  level      String   @default("INFO") @db.VarChar(8)
+  status     String   @default("SUCCESS") @db.VarChar(16)
+  module     String   @db.VarChar(64)
+  action     String   @db.VarChar(64)
+  entityType String?  @map("entity_type") @db.VarChar(100)
+  entityId   String?  @map("entity_id") @db.VarChar(255)
+  actorId    String?  @map("actor_id") @db.VarChar(100)
+  actorName  String   @default("系统") @map("actor_name") @db.VarChar(100)
+  requestId  String?  @map("request_id") @db.VarChar(100)
+  message    String   @db.Text
+  before     Json?
+  after      Json?
+  metadata   Json?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
+  @@index([category, createdAt(sort: Desc)])
+  @@index([module, createdAt(sort: Desc)])
+  @@index([actorId, createdAt(sort: Desc)])
+  @@index([requestId])
+  @@map("system_logs")
+}
+
 enum UserRole {
   SUPER_ADMIN
   SALESPERSON

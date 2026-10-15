@@ -1,5 +1,7 @@
 "use server";
 
+import { auditTransaction } from "@/server/audit";
+
 import { revalidatePath } from "next/cache";
 import { getPrisma } from "@/server/db";
 import { requirePageAccess } from "@/server/menu-permissions";
@@ -79,7 +81,7 @@ export async function listInboundRecords(startDate = "", endDate = "", page = 1,
 }
 
 export async function createInboundRecord(formData: FormData) {
-  await requirePageAccess(path);
+  const user = await requirePageAccess(path);
   const code = text(formData.get("code"));
   const name = text(formData.get("name"));
   const packCount = Number(text(formData.get("packCount")));
@@ -93,7 +95,7 @@ export async function createInboundRecord(formData: FormData) {
   if (!Number.isFinite(inboundUnitPrice) || inboundUnitPrice < 0) return { ok: false, message: "入库价格必须是有效的非负数" };
   if (createdAtText && !createdAt) return { ok: false, message: "入库日期格式不正确" };
 
-  await getPrisma().inboundRecord.create({
+  await auditTransaction(user, async (tx) => tx.inboundRecord.create({
     data: {
       code,
       name,
@@ -102,16 +104,16 @@ export async function createInboundRecord(formData: FormData) {
       taxIncluded,
       ...(createdAt ? { createdAt } : {}),
     },
-  });
+  }));
   revalidatePath(path);
   revalidatePath("/stock");
   return { ok: true };
 }
 
 export async function deleteInboundRecord(id: number) {
-  await requirePageAccess(path);
+  const user = await requirePageAccess(path);
   try {
-    await getPrisma().inboundRecord.delete({ where: { id } });
+    await auditTransaction(user, async (tx) => tx.inboundRecord.delete({ where: { id } }));
   } catch (error) {
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2025") {
       return { ok: false, message: "记录不存在或已被删除" };
