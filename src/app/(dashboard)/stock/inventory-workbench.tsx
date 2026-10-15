@@ -154,7 +154,7 @@ export function InventoryWorkbench({ initialData }: { initialData: InventoryData
 
       <div className={styles.toolbar}>
         <label className={styles.searchBox}>
-          <Search aria-hidden="true" />
+          <Search aria-hidden="true" size={15} />
           <span className={styles.srOnly}>搜索塑料名称或编号</span>
           <Input className={styles.search} value={keyword} onChange={(event) => setKeyword(event.target.value)} placeholder="搜索塑料名称或编号" />
         </label>

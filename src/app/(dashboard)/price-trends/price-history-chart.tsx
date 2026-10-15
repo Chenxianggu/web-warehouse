@@ -43,12 +43,12 @@ export default function PriceHistoryChart({ points, itemCode, year }: { points: 
           return `${new Date(Number(value[0])).toISOString().slice(0, 10)}<br/>单价：${amount(Number(value[1]))}`;
         },
       },
-      grid: { left: 14, right: 25, top: 48, bottom: 28, outerBoundsMode: "same", outerBoundsContain: "axisLabel" },
+      grid: { left: 14, right: 25, top: host.clientHeight < 380 ? 32 : 48, bottom: host.clientHeight < 380 ? 20 : 28, outerBoundsMode: "same", outerBoundsContain: "axisLabel" },
       xAxis: { type: "time", boundaryGap: [0, 0], splitNumber: host.clientWidth < 500 ? 4 : 8,
         axisLine: { lineStyle: { color: gold, opacity: 0.35 } }, axisTick: { show: false },
         axisLabel: { color: ivory, opacity: 0.6, fontSize: 11, rotate: 45, hideOverlap: true, formatter: (value: number) => { const date = new Date(value); return `${date.getUTCMonth() + 1}-${date.getUTCDate()}`; } },
       },
-      yAxis: { type: "value", name: "单价（元/吨）", scale: true, min: bounds.min, max: bounds.max, minInterval: 50, splitNumber: 8,
+      yAxis: { type: "value", name: "单价（元/吨）", scale: true, min: bounds.min, max: bounds.max, minInterval: 50, splitNumber: host.clientHeight < 380 ? 4 : 8,
         nameTextStyle: { color: ivory, opacity: 0.65, fontSize: 11 },
         axisLabel: { color: ivory, opacity: 0.6, fontSize: 11, formatter: (value: number) => `¥${value.toLocaleString("zh-CN")}` },
         splitLine: { lineStyle: { color: ivory, opacity: 0.08 } },
@@ -60,7 +60,11 @@ export default function PriceHistoryChart({ points, itemCode, year }: { points: 
       }],
     };
     instance.setOption(option);
-    const resize = new ResizeObserver(() => { instance.resize(); instance.setOption({ xAxis: { splitNumber: host.clientWidth < 500 ? 4 : 8 } }); });
+    const resize = new ResizeObserver(() => {
+      const short = host.clientHeight < 380;
+      instance.resize();
+      instance.setOption({ xAxis: { splitNumber: host.clientWidth < 500 ? 4 : 8 }, yAxis: { splitNumber: short ? 4 : 8 }, grid: { top: short ? 32 : 48, bottom: short ? 20 : 28 } });
+    });
     resize.observe(host);
     const changeMotion = () => instance.setOption({ animation: !media.matches });
     media.addEventListener("change", changeMotion);

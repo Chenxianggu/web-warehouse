@@ -28,7 +28,7 @@
 .resultsHeader { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 16px 20px; }
 .resultsHeader h2 { margin: 0; font-size: .9rem; font-weight: 600; }
 .resultsHeader > span { color: color-mix(in srgb, var(--rz-ivory) 42%, transparent); font-size: .7rem; }
-.tableScroll { min-height: 260px; max-height: min(650px, 65svh); overflow: auto; scrollbar-width: thin; }
+.tableScroll { min-height: 260px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .table, .detailTable { width: 100%; border-collapse: collapse; text-align: left; }
 .table { min-width: 820px; }
 .table th, .detailTable th { position: sticky; z-index: 1; top: 0; padding: 12px 18px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 20%, transparent); background: var(--rz-panel); color: var(--rz-gold); font-size: .68rem; font-weight: 500; white-space: nowrap; }
@@ -85,7 +85,6 @@
   .dateField, .filterActions { grid-column: 1 / -1; }
   .filterActions > button { flex: 1; }
   .resultsHeader { padding-inline: 14px; }
-  .tableScroll { max-height: 470px; }
   .table th, .table td { padding-inline: 12px; }
   .pager { justify-content: center; gap: 10px; padding: 12px 14px; }
   .pager nav { justify-content: center; width: 100%; }

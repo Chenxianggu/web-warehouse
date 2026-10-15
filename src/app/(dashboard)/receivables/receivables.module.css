@@ -26,7 +26,7 @@
 .page button:disabled, .dialog button:disabled, .fields:disabled { opacity: .45; cursor: not-allowed; }
 .page button:focus-visible, .page select:focus-visible, .page input:focus-visible, .dialog button:focus-visible, .dialog input:focus-visible, .dialog textarea:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
 .error { padding: 14px 20px; color: var(--rz-magenta); font-size: .76rem; border-bottom: 1px solid color-mix(in srgb, var(--rz-magenta) 25%, transparent); }
-.tableScroll { min-height: 260px; max-height: min(650px, 65svh); overflow: auto; scrollbar-width: thin; }
+.tableScroll { min-height: 260px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .table, .detailTable { width: 100%; border-collapse: collapse; text-align: left; }
 .table { min-width: 820px; }
 .table th, .detailTable th { position: sticky; z-index: 1; top: 0; padding: 14px 18px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 25%, transparent); background: var(--rz-panel); color: var(--rz-gold); font-size: .68rem; font-weight: 550; white-space: nowrap; }
@@ -101,7 +101,6 @@
   .filterBar { gap: 12px; padding: 18px 14px; }
   .filterBar > .secondaryButton { margin-left: auto; }
   .search { order: 3; width: 100%; margin: 0; }
-  .tableScroll { max-height: 470px; }
   .table th, .table td { padding-inline: 12px; }
   .pager { justify-content: center; padding: 12px 14px; gap: 10px; }
   .pager nav { width: 100%; justify-content: center; }

@@ -77,7 +77,7 @@ export function PurchaseWorkbench({ initial, options, today }: { initial: Purcha
   }
   function restoreFocus(event: Event) { event.preventDefault(); (returnFocus.current?.isConnected ? returnFocus.current : addButton.current)?.focus(); }
 
-  return <div className={base.page}>
+  return <div className={`${base.page} ${base.fitPage}`}>
     <header className={base.hero}><div><h1>订货管理</h1><p>管理采购订货、分批交货与入库记录。</p></div><ShoppingCart aria-hidden="true" /></header>
     <section className={base.panel} aria-label="订货记录">
       <div className={base.panelHeader}><div><h2>订货记录</h2><p>到货日期已到时自动入库，分批货物按每次到货数量入库。</p></div><div className={base.actions}><button className={base.secondary} disabled={exporting || pending} onClick={exportRows}><Download />{exporting ? "导出中…" : "导出"}</button><button ref={addButton} className={base.primary} onClick={(e) => edit(null, e.currentTarget)}><Plus />新增订货</button></div></div>

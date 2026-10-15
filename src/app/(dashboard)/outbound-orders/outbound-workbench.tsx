@@ -84,7 +84,7 @@ function OutboundList({ shipped, today, initial, revision, onDetail, onPrint, on
       </div>
     </header>
     {error ? <div className={styles.empty}><strong>订单加载失败</strong><button className={styles.secondaryButton} disabled={pending} onClick={() => load(filter)}>重新加载</button></div> :
-      <div className={styles.tableScroll}><table className={styles.table}><thead><tr><th>订单号</th><th>客户编号</th><th>客户姓名</th><th>订单日期</th><th>状态</th><th>操作</th></tr></thead>
+      <div className={styles.tableGrow}><table className={styles.table}><thead><tr><th>订单号</th><th>客户编号</th><th>客户姓名</th><th>订单日期</th><th>状态</th><th>操作</th></tr></thead>
         <tbody>{result.data.map((order) => <tr key={order.id} onClick={(event) => {
           if (pending || busy || (event.target as HTMLElement).closest("button")) return;
           const button = event.currentTarget.querySelector("button"); if (button) onDetail(order, button);

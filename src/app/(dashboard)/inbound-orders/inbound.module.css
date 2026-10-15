@@ -44,9 +44,9 @@
 .ledger { overflow: hidden; margin-top: 16px; }
 .ledgerHeader { align-items: flex-end; }
 .dateRange { display: flex; min-width: 0; max-width: 100%; }
-.tableWrap { min-height: 168px; max-height: 360px; overflow: auto; }
+.tableWrap { min-height: 168px; overflow-x: auto; overflow-y: hidden; }
 .table { width: 100%; min-width: 880px; border-collapse: collapse; }
-.table th { position: sticky; z-index: 1; top: 0; background: var(--rz-panel); padding: 12px 16px; color: rgb(201 169 110 / 75%); font: .61rem ui-monospace, monospace; letter-spacing: .06em; text-align: center; white-space: nowrap; }
+.table th { background: var(--rz-panel); padding: 12px 16px; color: rgb(201 169 110 / 75%); font: .61rem ui-monospace, monospace; letter-spacing: .06em; text-align: center; white-space: nowrap; }
 .table td { padding: 14px 16px; border-top: 1px solid rgb(242 242 236 / 8%); font-size: .8rem; text-align: center; }
 .table tr { transition: background-color 140ms ease; }
 .table tr:hover td { background: rgb(201 169 110 / 5%); }

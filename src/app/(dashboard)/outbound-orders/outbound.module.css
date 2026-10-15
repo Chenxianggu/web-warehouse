@@ -18,7 +18,7 @@
 .search input::placeholder { color: color-mix(in srgb, var(--rz-ivory) 35%, transparent); }
 .search > button { display: grid; flex-shrink: 0; width: 30px; place-items: center; border: 0; background: transparent; color: var(--rz-gold); }
 .search > button svg { width: 14px; }
-.tableScroll { height: 250px; overflow: auto; scrollbar-width: thin; }
+.tableGrow { overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .table, .detailTable { width: 100%; border-collapse: collapse; text-align: left; }
 .table { min-width: 790px; }
 .table th, .detailTable th { position: sticky; z-index: 1; top: 0; padding: 12px 18px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 20%, transparent); background: var(--rz-panel); color: var(--rz-gold); font-size: .68rem; font-weight: 500; white-space: nowrap; }
@@ -85,7 +85,7 @@
 .footerActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
 .page button:focus-visible, .page input:focus-visible, .page select:focus-visible, .dialog button:focus-visible, .dialog input:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
 @keyframes dialogEnter { from { opacity: 0; translate: 0 -7px; } to { opacity: 1; translate: 0 0; } }
-@media (min-width: 768px) and (max-height: 900px) { .hero { margin-bottom: 18px; } .hero h1 { font-size: 2rem; } .lists { gap: 16px; } .panelHeader { padding: 13px 18px; } .tableScroll { height: 205px; } .table td { padding-block: 10px; } }
+@media (min-width: 768px) and (max-height: 900px) { .hero { margin-bottom: 18px; } .hero h1 { font-size: 2rem; } .lists { gap: 16px; } .panelHeader { padding: 13px 18px; } .table td { padding-block: 10px; } }
 @media (max-width: 760px) {
   .hero { margin-bottom: 18px; }
   .hero > svg { display: none; }
@@ -93,7 +93,6 @@
   .filters { width: 100%; }
   .filters > button:first-child { width: 100%; }
   .search { flex: 1; width: auto; min-width: 165px; }
-  .tableScroll { height: 250px; }
   .table th, .table td { padding-inline: 12px; }
   .pager { justify-content: center; gap: 10px; padding: 12px 14px; }
   .totalCount { margin-right: auto; }

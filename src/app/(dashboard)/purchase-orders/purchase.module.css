@@ -1,7 +1,10 @@
 .table { min-width: 1600px; }
 .editor > div:first-child { position: sticky; z-index: 3; top: 0; background: var(--rz-panel); }
 .editor > form > div:last-child { position: sticky; z-index: 3; bottom: 0; background: var(--rz-panel); }
-.table tr[data-delivered] td:first-child { box-shadow: inset 2px 0 var(--rz-gold); }
+.table tr[data-delivered] td { background: color-mix(in srgb, var(--rz-cyan) 9%, var(--rz-panel)); }
+.table tr[data-delivered] td:first-child { box-shadow: inset 3px 0 var(--rz-cyan); }
+.table tr[data-delivered] td:nth-child(11) { color: var(--rz-cyan); font-weight: 650; }
+.table tr[data-delivered]:hover td { background: color-mix(in srgb, var(--rz-cyan) 15%, var(--rz-panel)); }
 .summary { color: var(--rz-gold); font-size: .78rem; }
 .batchScroll { overflow: auto; }
 .batchTable { width: 100%; min-width: 450px; border-collapse: collapse; font-size: .77rem; text-align: left; }
