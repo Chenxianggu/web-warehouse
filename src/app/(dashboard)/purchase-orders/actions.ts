@@ -11,11 +11,11 @@ export async function listPurchaseOrders(filter: PurchaseFilter) {
 export async function purchaseOptions() {
   await requirePageAccess("/purchase-orders"); const db = getPrisma();
   const [customers, materials, categories] = await Promise.all([
-    db.customer.findMany({ select: { code: true, fullName: true }, orderBy: { fullName: "asc" } }),
+    db.customer.findMany({ select: { id: true, code: true, fullName: true }, orderBy: { fullName: "asc" } }),
     db.material.findMany({ select: { code: true, name: true }, orderBy: { code: "asc" } }),
     db.purchaseOrder.findMany({ distinct: ["category"], select: { category: true }, orderBy: { category: "asc" }, where: { category: { not: "" } } }),
   ]);
-  return { suppliers: customers.map((r) => ({ code: r.code, name: r.fullName })), materials, categories: categories.map((r) => r.category) };
+  return { suppliers: customers.map((r) => ({ id: r.id, code: r.code, name: r.fullName })), materials, categories: categories.map((r) => r.category) };
 }
 function invalidate() { for (const path of ["/purchase-orders", "/price-trends", "/stock", "/inbound-orders", "/"]) revalidatePath(path); }
 export async function savePurchaseOrder(input: unknown) {

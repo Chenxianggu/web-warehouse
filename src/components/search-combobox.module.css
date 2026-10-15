@@ -1,6 +1,7 @@
-.control { display: flex; flex: 1; min-width: 0; height: 38px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
+.control { display: flex; flex: 1; min-width: 0; height: 40px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
 .control:focus-within { border-color: var(--rz-gold); outline: 1px solid var(--rz-gold); outline-offset: 1px; }
-.control input { width: 100%; min-width: 0; border: 0; outline: none; padding: 7px 9px; background: transparent; color: var(--rz-ivory); font: inherit; }
+.control > input[role="combobox"] { width: 100%; min-width: 0; min-height: 0; height: 100%; border: 0; outline: none; padding: 7px 9px; background: transparent; color: var(--rz-ivory); font: inherit; }
+.control > input[role="combobox"]:focus-visible { border: 0; outline: none; }
 .control input::placeholder { color: color-mix(in srgb, var(--rz-ivory) 60%, transparent); font-size: 0.7rem; }
 .control button { display: grid; width: 28px; flex-shrink: 0; place-items: center; border: 0; background: transparent; color: var(--rz-gold); }
 .control button:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: -3px; }
@@ -8,6 +9,7 @@
 .control button[aria-expanded="true"] svg { transform: rotate(180deg); }
 .control:has(input:disabled) { opacity: 0.5; }
 .content[data-slot="popover-content"] {
+  z-index: 65;
   display: block;
   width: max(260px, var(--radix-popover-trigger-width));
   max-width: calc(100vw - 24px);

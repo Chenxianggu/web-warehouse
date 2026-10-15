@@ -1,10 +1,11 @@
 "use client";
-import { useRef, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { Dialog, AlertDialog } from "radix-ui";
 import { Download, Plus, Search, ShoppingCart, X } from "lucide-react";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/date-picker";
 import { MaterialCodeCombobox } from "@/components/material-code-combobox";
+import { SearchCombobox } from "@/components/search-combobox";
 import { emptyPurchaseFilter, type PurchaseInput, type PurchaseFilter, type PurchasePage, type PurchaseRecord, type DeliveryRecord } from "@/features/purchase-orders/schema";
 import { listPurchaseOrders, purchaseOptions, savePurchaseOrder, deletePurchaseOrder, addDelivery, deleteDelivery } from "./actions";
 import base from "../consignments/consignments.module.css";
@@ -27,6 +28,8 @@ export function PurchaseWorkbench({ initial, options, today }: { initial: Purcha
   const [newDelivery, setNewDelivery] = useState({ date: "", quantity: "" });
   const [busy, setBusy] = useState(false); const [exporting, setExporting] = useState(false);
   const [categories, setCategories] = useState(options.categories);
+  const supplierOptions = useMemo(() => options.suppliers.map((supplier) => ({ id: supplier.id, value: supplier.name, label: supplier.name, description: supplier.code === supplier.name ? undefined : supplier.code })), [options.suppliers]);
+  const categoryOptions = useMemo(() => categories.map((category) => ({ id: category, value: category, label: category })), [categories]);
   const [confirmation, setConfirmation] = useState<{ kind: "order"; row: PurchaseRecord } | { kind: "delivery"; row: DeliveryRecord } | null>(null);
   const [jump, setJump] = useState("1");
   const returnFocus = useRef<HTMLButtonElement | null>(null); const addButton = useRef<HTMLButtonElement | null>(null);
@@ -101,11 +104,11 @@ export function PurchaseWorkbench({ initial, options, today }: { initial: Purcha
       {form && <form onSubmit={save}><fieldset className={base.fields} disabled={busy}>
         <label>订货日期 *<DatePicker id="purchase-edit-date" label="订货日期" value={form.orderDate} disabled={busy} onValueChange={(v) => change("orderDate", v)} /></label>
         <label>配送日期/方式<input value={form.deliveryInfo} maxLength={255} onChange={(e) => change("deliveryInfo", e.target.value)} placeholder="配送日期或方式" /></label>
-        <label>供货方 *<input required list="purchase-suppliers" maxLength={255} placeholder="输入供货方/编号搜索" value={form.supplier} onChange={(e) => change("supplier", e.target.value)} /><datalist id="purchase-suppliers">{options.suppliers.map((s) => <option key={s.code} value={s.name}>{s.code} · {s.name}</option>)}</datalist></label>
+        <div className={base.field}><span>供货方 *</span><SearchCombobox required label="供货方" maxLength={255} placeholder="输入供货方/编号搜索" value={form.supplier} onValueChange={(v) => change("supplier", v)} options={supplierOptions} disabled={busy} /></div>
         <label>到货日期<DatePicker id="purchase-edit-arrival" label="到货日期" value={form.arrivalDate} disabled={busy} onValueChange={(v) => change("arrivalDate", v)} /></label>
         <div className={base.field}><span>货号 *</span><MaterialCodeCombobox value={form.itemCode} onValueChange={(v) => change("itemCode", v)} options={options.materials} label="订货货号" disabled={busy} maxLength={100} /></div>
         <label>是否已交货<select value={form.status} onChange={(e) => change("status", e.target.value as PurchaseInput["status"])}><option value="unfinished">未交货</option><option value="finished">已交货</option></select></label>
-        <label>类别<input list="purchase-categories" maxLength={100} value={form.category} onChange={(e) => change("category", e.target.value)} placeholder="选择或输入类别" /><datalist id="purchase-categories">{categories.map((c) => <option key={c} value={c} />)}</datalist></label>
+        <div className={base.field}><span>类别</span><SearchCombobox label="类别" maxLength={100} value={form.category} onValueChange={(v) => change("category", v)} placeholder="选择或输入类别" options={categoryOptions} disabled={busy} /></div>
         <label>备注<textarea maxLength={10000} rows={3} value={form.remark} onChange={(e) => change("remark", e.target.value)} /></label>
         <label>数量（吨）<input type="number" min={0} max={999999999.999} step="0.001" value={form.quantity} onChange={(e) => change("quantity", Number(e.target.value))} /></label>
         <label>单价（元/吨）<input type="number" min={0} step="0.01" value={form.unitPrice} onChange={(e) => change("unitPrice", Number(e.target.value))} /></label>
