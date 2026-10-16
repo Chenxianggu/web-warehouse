@@ -1,7 +1,7 @@
 .panel {
   --edge: color-mix(in srgb, var(--rz-gold) 28%, transparent);
-  --line: color-mix(in srgb, var(--rz-ivory) 11%, transparent);
-  --muted: color-mix(in srgb, var(--rz-ivory) 60%, transparent);
+  --line: rgb(var(--rz-text-rgb) / max(11%, var(--rz-line-alpha-min)));
+  --muted: rgb(var(--rz-text-rgb) / max(60%, var(--rz-text-alpha-min)));
   min-width: 0;
   margin: 22px 0 24px;
   color: var(--rz-ivory);
@@ -27,13 +27,13 @@
   font-size: 0.76rem;
   font-weight: 600;
 }
-.primary { background: var(--rz-gold); color: var(--rz-black); clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+.primary { background: var(--rz-gold-fill); color: var(--rz-on-gold); clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
 .secondary, .addRow { background: var(--rz-panel); color: var(--rz-gold); }
 .primary svg, .secondary svg, .addRow svg { width: 14px; height: 14px; }
 .panel button:disabled { opacity: 0.4; cursor: not-allowed; }
 .panel button:hover:not(:disabled) { filter: brightness(1.15); }
 .panel button:focus-visible, .tableScroll:focus-visible { outline: 2px solid var(--rz-gold); outline-offset: -3px; }
-.panel .primary:focus-visible { outline-color: var(--rz-black); }
+.panel .primary:focus-visible { outline-color: var(--rz-on-gold); }
 
 .dateBar {
   justify-content: space-between;
@@ -72,7 +72,7 @@
 .editTable .priceCell { min-width: 132px; }
 .editTable .stockCell { min-width: 88px; }
 .editTable td { padding: 10px; }
-.input, .categoryInput { width: 100%; min-width: 0; height: 38px; border: 1px solid var(--line); border-radius: 0; background: var(--rz-black); padding: 7px 9px; color: var(--rz-ivory); font: inherit; }
+.input, .categoryInput { width: 100%; min-width: 0; height: 38px; border: 1px solid var(--line); border-radius: 0; background: var(--rz-input-bg); padding: 7px 9px; color: var(--rz-ivory); font: inherit; }
 .categoryInput { min-width: 150px; color: var(--rz-gold); }
 .input::placeholder { color: var(--muted); font-size: 0.7rem; }
 .input:focus-visible, .categoryInput:focus-visible { border-color: var(--rz-gold); outline: 1px solid var(--rz-gold); outline-offset: 1px; }
@@ -86,11 +86,11 @@
 .table tfoot td { border-top: 1px solid var(--edge); }
 .srOnly { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
-.dialogBackdrop { position: fixed; z-index: 50; inset: 0; background: rgb(0 0 0 / 78%); }
+.dialogBackdrop { position: fixed; z-index: 50; inset: 0; background: rgb(0 0 0 / calc(78% * var(--rz-overlay-strength))); }
 .dialog { position: fixed; z-index: 51; top: 50%; left: 50%; display: flex; width: min(460px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); flex-direction: column; transform: translate(-50%, -50%); border: 1px solid var(--edge); background: var(--rz-panel); padding: 20px 22px 18px; color: var(--rz-ivory); clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); }
 .dialogHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--edge); }
 .dialog h2 { margin: 0; color: var(--rz-gold); font-size: 1.05rem; font-weight: 700; }
-.dialogIntro { margin: 6px 0 0; color: color-mix(in srgb, var(--rz-ivory) 88%, transparent); font-size: 0.78rem; line-height: 1.7; }
+.dialogIntro { margin: 6px 0 0; color: rgb(var(--rz-text-rgb) / max(88%, var(--rz-text-alpha-min))); font-size: 0.78rem; line-height: 1.7; }
 .editorList { display: grid; gap: 8px; margin-top: 14px; overflow: auto; }
 .editorOption { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--rz-black); padding: 10px 12px; cursor: pointer; }
 .editorOption[data-checked] { border-color: var(--edge); }
@@ -111,3 +111,8 @@
   .footer { gap: 5px; }
   .editHint { padding: 10px 14px; }
 }
+
+/* White surfaces and neutral data keep long ledger sessions readable. */
+:global(html.light) .table th { background: var(--rz-panel-raised); color: var(--rz-ivory); }
+:global(html.light) .table tbody tr:hover td { background: var(--rz-panel-raised); }
+:global(html.light) .priceCell { color: var(--rz-ivory); }

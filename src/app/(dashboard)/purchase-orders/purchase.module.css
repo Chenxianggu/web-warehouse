@@ -16,3 +16,7 @@
 .confirm { z-index: 71; }
 @media (min-width: 1000px) { .filters > label { width: 140px; } }
 @media (max-width: 700px) { .addBatch { grid-template-columns: minmax(0, 1fr); } .summary { font-size: .7rem; } .filters > label:last-of-type { width: calc(50% - 6px); } }
+
+/* White surfaces and neutral data keep long ledger sessions readable. */
+:global(html.light) .batchTable th { background: var(--rz-panel-raised); color: var(--rz-ivory); }
+:global(html.light) .batchTable tbody tr:hover td { background: var(--rz-panel-raised); }

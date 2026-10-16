@@ -21,6 +21,9 @@
   overflow: hidden;
 }
 
+:global(html.light) .scan::before,
+:global(html.light) .scan::after { display: none; }
+
 .scan::before {
   position: absolute;
   top: -12%;
@@ -28,7 +31,7 @@
   width: 110%;
   height: 2px;
   background: var(--rz-cyan);
-  box-shadow: 0 0 12px rgb(102 247 255 / 80%), 0 0 32px rgb(102 247 255 / 28%);
+  box-shadow: 0 0 12px rgb(var(--rz-cyan-rgb) / 80%), 0 0 32px rgb(var(--rz-cyan-rgb) / 28%);
   content: "";
 }
 
@@ -38,8 +41,8 @@
   left: 0;
   right: 0;
   height: 18%;
-  background: linear-gradient(to bottom, transparent, rgb(102 247 255 / 7%), transparent);
-  border-bottom: 1px solid rgb(102 247 255 / 18%);
+  background: linear-gradient(to bottom, transparent, rgb(var(--rz-cyan-rgb) / 7%), transparent);
+  border-bottom: 1px solid rgb(var(--rz-cyan-rgb) / 18%);
   content: "";
 }
 

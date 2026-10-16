@@ -5,6 +5,12 @@
   container-type: inline-size;
 }
 
+:global(html.light) .hero h1 { color: var(--rz-ivory); text-shadow: none; }
+:global(html.light) .hero::after { background: var(--rz-gold-fill); box-shadow: none; }
+:global(html.light) .moduleCard { background: var(--rz-panel); }
+:global(html.light) .moduleCard[data-current="true"] { background: var(--accent); }
+:global(html.light) .statusLine svg { filter: none; }
+
 .viewSwitch {
   display: flex;
   width: fit-content;
@@ -25,19 +31,19 @@
   border: 0;
   padding: 8px 18px;
   background: transparent;
-  color: color-mix(in srgb, var(--rz-ivory) 65%, transparent);
+  color: rgb(var(--rz-text-rgb) / max(65%, var(--rz-text-alpha-min)));
   font-size: 0.8rem;
 }
 
 .viewSwitch button[aria-pressed="true"] {
-  background: var(--rz-gold);
-  color: var(--rz-black);
+  background: var(--rz-gold-fill);
+  color: var(--rz-on-gold);
   font-weight: 700;
   clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
 }
 
 .viewSwitch button:focus-visible { outline: 2px solid var(--rz-gold); outline-offset: -2px; }
-.viewSwitch button[aria-pressed="true"]:focus-visible { outline-color: var(--rz-black); outline-offset: -4px; }
+.viewSwitch button[aria-pressed="true"]:focus-visible { outline-color: var(--rz-on-gold); outline-offset: -4px; }
 .viewSwitch svg { width: 15px; height: 15px; }
 
 .hero {
@@ -48,7 +54,7 @@
   gap: 36px;
   overflow: hidden;
   padding: 8px 0 30px;
-  border-bottom: 1px solid rgb(201 169 110 / 24%);
+  border-bottom: 1px solid rgb(var(--rz-gold-rgb) / 24%);
 }
 
 .hero::after {
@@ -58,7 +64,7 @@
   width: min(34%, 320px);
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--rz-magenta));
-  box-shadow: 0 0 10px rgb(255 45 120 / 32%);
+  box-shadow: 0 0 10px rgb(var(--rz-magenta-rgb) / 32%);
   content: "";
 }
 
@@ -69,7 +75,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 13px;
-  color: rgb(102 247 255 / 68%);
+  color: rgb(var(--rz-cyan-rgb) / max(68%, var(--rz-accent-alpha-min)));
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.64rem;
 }
@@ -77,7 +83,7 @@
 .statusLine svg {
   width: 13px;
   height: 13px;
-  filter: drop-shadow(0 0 5px rgb(102 247 255 / 50%));
+  filter: drop-shadow(0 0 5px rgb(var(--rz-cyan-rgb) / 50%));
 }
 
 .hero h1 {
@@ -87,12 +93,12 @@
   font-weight: 820;
   line-height: 0.95;
   letter-spacing: -0.07em;
-  text-shadow: 4px 0 0 rgb(255 45 120 / 12%);
+  text-shadow: 4px 0 0 rgb(var(--rz-magenta-rgb) / 12%);
 }
 
 .introduction {
   margin-top: 16px;
-  color: rgb(242 242 236 / 48%);
+  color: rgb(var(--rz-text-rgb) / max(48%, var(--rz-text-alpha-min)));
   font-size: 0.84rem;
 }
 
@@ -101,7 +107,7 @@
   grid-template-columns: repeat(2, minmax(100px, 1fr));
   width: min(300px, 100%);
   margin: 0;
-  border-top: 1px solid rgb(242 242 236 / 12%);
+  border-top: 1px solid rgb(var(--rz-text-rgb) / max(12%, var(--rz-line-alpha-min)));
 }
 
 .readout > div {
@@ -110,17 +116,17 @@
   padding: 12px 10px 0;
 }
 
-.readout > div + div { border-left: 1px solid rgb(242 242 236 / 10%); }
+.readout > div + div { border-left: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min))); }
 
 .readout dt {
-  color: rgb(242 242 236 / 30%);
+  color: rgb(var(--rz-text-rgb) / max(30%, var(--rz-text-alpha-min)));
   font-size: 0.62rem;
 }
 
 .readout dd {
   overflow: hidden;
   margin: 0;
-  color: rgb(242 242 236 / 76%);
+  color: rgb(var(--rz-text-rgb) / max(76%, var(--rz-text-alpha-min)));
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.75rem;
   text-overflow: ellipsis;
@@ -145,13 +151,13 @@
 .sectionHeading::after {
   height: 1px;
   flex: 1;
-  background: linear-gradient(90deg, rgb(201 169 110 / 20%), transparent);
+  background: linear-gradient(90deg, rgb(var(--rz-gold-rgb) / 20%), transparent);
   content: "";
 }
 
 .sectionHeading h2 {
   margin: 0;
-  color: rgb(242 242 236 / 82%);
+  color: rgb(var(--rz-text-rgb) / max(82%, var(--rz-text-alpha-min)));
   font-size: 0.8rem;
   font-weight: 650;
   letter-spacing: 0.08em;
@@ -159,7 +165,7 @@
 
 .sectionHeading span {
   order: 2;
-  color: rgb(242 242 236 / 28%);
+  color: rgb(var(--rz-text-rgb) / max(28%, var(--rz-text-alpha-min)));
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.58rem;
 }
@@ -178,8 +184,8 @@
   align-items: center;
   gap: 13px;
   overflow: hidden;
-  border: 1px solid rgb(242 242 236 / 10%);
-  background: linear-gradient(135deg, rgb(201 169 110 / 4%), transparent 48%), var(--rz-panel);
+  border: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min)));
+  background: linear-gradient(135deg, rgb(var(--rz-gold-rgb) / 4%), transparent 48%), var(--rz-panel);
   padding: 16px;
   color: inherit;
   text-decoration: none;
@@ -193,14 +199,14 @@
   left: 0;
   width: 28px;
   height: 2px;
-  background: var(--rz-gold);
+  background: var(--rz-gold-fill);
   content: "";
   transition: width 180ms ease;
 }
 
 .moduleCard:hover {
   transform: translateY(-2px);
-  border-color: rgb(201 169 110 / 42%);
+  border-color: rgb(var(--rz-gold-rgb) / 42%);
   background-color: var(--rz-panel-raised);
 }
 
@@ -212,8 +218,8 @@
 }
 
 .moduleCard[data-current="true"] {
-  border-color: rgb(201 169 110 / 30%);
-  background: linear-gradient(135deg, rgb(201 169 110 / 12%), transparent 62%), var(--rz-panel-raised);
+  border-color: rgb(var(--rz-gold-rgb) / 30%);
+  background: linear-gradient(135deg, rgb(var(--rz-gold-rgb) / 12%), transparent 62%), var(--rz-panel-raised);
 }
 
 .moduleIcon {
@@ -221,7 +227,7 @@
   width: 42px;
   height: 42px;
   place-items: center;
-  background: rgb(201 169 110 / 9%);
+  background: rgb(var(--rz-gold-rgb) / 9%);
   color: var(--rz-gold);
   clip-path: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%);
 }
@@ -238,7 +244,7 @@
 
 .moduleCopy small {
   overflow: hidden;
-  color: rgb(242 242 236 / 36%);
+  color: rgb(var(--rz-text-rgb) / max(36%, var(--rz-text-alpha-min)));
   font-size: 0.66rem;
   line-height: 1.4;
   text-overflow: ellipsis;
@@ -248,7 +254,7 @@
 .moduleArrow {
   width: 16px;
   height: 16px;
-  color: rgb(242 242 236 / 24%);
+  color: rgb(var(--rz-text-rgb) / max(24%, var(--rz-text-alpha-min)));
   transition: color 150ms ease, transform 150ms ease;
 }
 
@@ -257,7 +263,7 @@
   color: var(--rz-cyan);
 }
 
-.currentTag { color: rgb(102 247 255 / 68%); font-size: 0.58rem; }
+.currentTag { color: rgb(var(--rz-cyan-rgb) / max(68%, var(--rz-accent-alpha-min))); font-size: 0.58rem; }
 
 @container (max-width: 920px) {
   .moduleGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

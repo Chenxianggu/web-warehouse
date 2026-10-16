@@ -16,3 +16,7 @@
 .fields legend small { font-size: .7rem; font-weight: 400; margin-left: 8px; }
 .fields:disabled { opacity: .55; }
 @media (max-width: 700px) { .filters .dateRange { width: 100%; } .filters > label:last-of-type { width: calc(50% - 6px); } }
+
+/* White surfaces and neutral data keep long ledger sessions readable. */
+:global(html.light) .table th { background: var(--rz-panel-raised); color: var(--rz-ivory); }
+:global(html.light) .table tbody tr:hover td { background: var(--rz-panel-raised); }

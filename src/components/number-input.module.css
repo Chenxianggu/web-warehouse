@@ -1,8 +1,8 @@
 .group {
   height: 44px;
-  border: 1px solid color-mix(in srgb, var(--rz-ivory) 17%, transparent);
+  border: 1px solid rgb(var(--rz-text-rgb) / max(17%, var(--rz-line-alpha-min)));
   border-radius: 0;
-  background: var(--rz-black);
+  background: var(--rz-input-bg);
   color: var(--rz-ivory);
   opacity: 1;
   clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
@@ -58,7 +58,7 @@
 
 .group .unit {
   padding: 0 10px 0 4px;
-  color: color-mix(in srgb, var(--rz-ivory) 52%, transparent);
+  color: rgb(var(--rz-text-rgb) / max(52%, var(--rz-text-alpha-min)));
   font: .61rem ui-monospace, monospace;
   white-space: nowrap;
 }

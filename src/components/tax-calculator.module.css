@@ -36,7 +36,7 @@
 
 .header p {
   margin: 0;
-  color: rgb(242 242 236 / 50%);
+  color: rgb(var(--rz-text-rgb) / max(50%, var(--rz-text-alpha-min)));
   font-size: .86rem;
 }
 
@@ -44,8 +44,8 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1px solid rgb(201 169 110 / 35%);
-  background: rgb(201 169 110 / 7%);
+  border: 1px solid rgb(var(--rz-gold-rgb) / 35%);
+  background: rgb(var(--rz-gold-rgb) / 7%);
   color: var(--rz-gold);
   padding: 10px 14px;
   font-size: .76rem;
@@ -53,7 +53,7 @@
 }
 
 .resetButton:hover {
-  background: rgb(201 169 110 / 15%);
+  background: rgb(var(--rz-gold-rgb) / 15%);
   border-color: var(--rz-gold);
   transform: translateY(-1px);
 }
@@ -73,13 +73,13 @@
 .metric {
   min-height: 78px;
   padding: 15px 17px;
-  border: 1px solid rgb(242 242 236 / 10%);
-  background: linear-gradient(130deg, rgb(255 255 255 / 4%), rgb(255 255 255 / 1%));
+  border: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min)));
+  background: linear-gradient(130deg, rgb(var(--rz-highlight-rgb) / 4%), rgb(var(--rz-highlight-rgb) / 1%));
 }
 
 .metric span {
   display: block;
-  color: rgb(242 242 236 / 45%);
+  color: rgb(var(--rz-text-rgb) / max(45%, var(--rz-text-alpha-min)));
   font-size: .7rem;
 }
 
@@ -92,8 +92,8 @@
 }
 
 .metricAccent {
-  border-color: rgb(201 169 110 / 34%);
-  background: linear-gradient(130deg, rgb(201 169 110 / 11%), rgb(255 255 255 / 1%));
+  border-color: rgb(var(--rz-gold-rgb) / 34%);
+  background: linear-gradient(130deg, rgb(var(--rz-gold-rgb) / 11%), rgb(var(--rz-highlight-rgb) / 1%));
 }
 
 .metricAccent strong {
@@ -108,7 +108,7 @@
 
 .panel {
   min-width: 0;
-  border: 1px solid rgb(242 242 236 / 12%);
+  border: 1px solid rgb(var(--rz-text-rgb) / max(12%, var(--rz-line-alpha-min)));
   background: var(--rz-panel);
 }
 
@@ -123,7 +123,7 @@
   bottom: -42px;
   width: 130px;
   height: 130px;
-  border: 1px solid rgb(102 247 255 / 13%);
+  border: 1px solid rgb(var(--rz-cyan-rgb) / 13%);
   transform: rotate(45deg);
   content: "";
 }
@@ -137,7 +137,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid rgb(242 242 236 / 9%);
+  border-bottom: 1px solid rgb(var(--rz-text-rgb) / max(9%, var(--rz-line-alpha-min)));
 }
 
 .panelHeader h2 {
@@ -159,11 +159,11 @@
   justify-content: space-between;
   gap: 12px;
   padding: 20px;
-  border-bottom: 1px solid rgb(242 242 236 / 8%);
+  border-bottom: 1px solid rgb(var(--rz-text-rgb) / max(8%, var(--rz-line-alpha-min)));
 }
 
 .amountBlock>span {
-  color: rgb(242 242 236 / 68%);
+  color: rgb(var(--rz-text-rgb) / max(68%, var(--rz-text-alpha-min)));
   font-size: .82rem;
 }
 
@@ -172,14 +172,14 @@
   align-items: center;
   width: 190px;
   height: 39px;
-  border: 1px solid rgb(201 169 110 / 35%);
-  background: #050506;
+  border: 1px solid rgb(var(--rz-gold-rgb) / 35%);
+  background: var(--rz-input-bg);
   color: var(--rz-gold);
 }
 
 .numberField:focus-within {
   border-color: var(--rz-gold);
-  box-shadow: 0 0 0 3px rgb(201 169 110 / 10%);
+  box-shadow: 0 0 0 3px rgb(var(--rz-gold-rgb) / 10%);
 }
 
 .numberField input {
@@ -205,7 +205,7 @@
 .numberField>span {
   flex: 0 0 auto;
   padding: 0 12px 0 4px;
-  color: rgb(242 242 236 / 48%);
+  color: rgb(var(--rz-text-rgb) / max(48%, var(--rz-text-alpha-min)));
   font-size: .7rem;
 }
 
@@ -220,8 +220,8 @@
   justify-content: space-between;
   gap: 14px;
   min-height: 38px;
-  border-bottom: 1px solid rgb(242 242 236 / 6%);
-  color: rgb(242 242 236 / 53%);
+  border-bottom: 1px solid rgb(var(--rz-text-rgb) / max(6%, var(--rz-line-alpha-min)));
+  color: rgb(var(--rz-text-rgb) / max(53%, var(--rz-text-alpha-min)));
   font-size: .78rem;
 }
 
@@ -238,7 +238,7 @@
 .resultEmphasis {
   margin-top: 6px;
   padding-top: 7px;
-  border-top: 1px solid rgb(201 169 110 / 27%);
+  border-top: 1px solid rgb(var(--rz-gold-rgb) / 27%);
   border-bottom: 0;
   color: var(--rz-gold);
 }
@@ -251,7 +251,7 @@
 .formula {
   margin: 0;
   padding: 4px 20px 17px;
-  color: rgb(102 247 255 / 52%);
+  color: rgb(var(--rz-cyan-rgb) / max(52%, var(--rz-accent-alpha-min)));
   font: .64rem ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
@@ -261,8 +261,8 @@
   gap: 18px;
   margin-top: 14px;
   padding: 20px;
-  border: 1px solid rgb(201 169 110 / 20%);
-  background: linear-gradient(110deg, rgb(201 169 110 / 7%), transparent 56%);
+  border: 1px solid rgb(var(--rz-gold-rgb) / 20%);
+  background: linear-gradient(110deg, rgb(var(--rz-gold-rgb) / 7%), transparent 56%);
 }
 
 .costIntro h2 {
@@ -272,7 +272,7 @@
 
 .costIntro p {
   margin: 0;
-  color: rgb(242 242 236 / 40%);
+  color: rgb(var(--rz-text-rgb) / max(40%, var(--rz-text-alpha-min)));
   font-size: .72rem;
   line-height: 1.6;
 }
@@ -289,8 +289,8 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid rgb(242 242 236 / 10%);
-  background: rgb(0 0 0 / 18%);
+  border: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min)));
+  background: rgb(var(--rz-shade-rgb) / 18%);
 }
 
 .costCard>div {
@@ -299,12 +299,12 @@
 }
 
 .costCard>div span {
-  color: rgb(242 242 236 / 70%);
+  color: rgb(var(--rz-text-rgb) / max(70%, var(--rz-text-alpha-min)));
   font-size: .8rem;
 }
 
 .costCard>div small {
-  color: rgb(242 242 236 / 35%);
+  color: rgb(var(--rz-text-rgb) / max(35%, var(--rz-text-alpha-min)));
   font-size: .65rem;
 }
 
@@ -316,14 +316,14 @@
 .costCard>strong {
   grid-column: 1 / -1;
   padding-top: 9px;
-  border-top: 1px solid rgb(242 242 236 / 8%);
+  border-top: 1px solid rgb(var(--rz-text-rgb) / max(8%, var(--rz-line-alpha-min)));
   color: var(--rz-gold);
   font: 700 1.15rem ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .note {
   margin-top: 14px;
-  color: rgb(242 242 236 / 30%);
+  color: rgb(var(--rz-text-rgb) / max(30%, var(--rz-text-alpha-min)));
   font-size: .68rem;
 }
 

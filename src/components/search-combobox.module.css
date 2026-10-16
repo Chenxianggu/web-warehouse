@@ -1,8 +1,8 @@
-.control { display: flex; flex: 1; min-width: 0; height: 40px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
+.control { display: flex; flex: 1; min-width: 0; height: 40px; border: 1px solid rgb(var(--rz-text-rgb) / max(18%, var(--rz-line-alpha-min))); background: var(--rz-input-bg); }
 .control:focus-within { border-color: var(--rz-gold); outline: 1px solid var(--rz-gold); outline-offset: 1px; }
 .control > input[role="combobox"] { width: 100%; min-width: 0; min-height: 0; height: 100%; border: 0; outline: none; padding: 7px 9px; background: transparent; color: var(--rz-ivory); font: inherit; }
 .control > input[role="combobox"]:focus-visible { border: 0; outline: none; }
-.control input::placeholder { color: color-mix(in srgb, var(--rz-ivory) 60%, transparent); font-size: 0.7rem; }
+.control input::placeholder { color: rgb(var(--rz-text-rgb) / max(60%, var(--rz-text-alpha-min))); font-size: 0.7rem; }
 .control button { display: grid; width: 28px; flex-shrink: 0; place-items: center; border: 0; background: transparent; color: var(--rz-gold); }
 .control button:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: -3px; }
 .control button svg { width: 13px; height: 13px; }
@@ -22,7 +22,7 @@
   border-radius: 0;
   background: var(--rz-panel);
   color: var(--rz-ivory);
-  box-shadow: 0 12px 24px color-mix(in srgb, var(--rz-black) 80%, transparent);
+  box-shadow: 0 12px 24px rgb(0 0 0 / calc(80% * var(--rz-shadow-strength)));
   scrollbar-color: var(--rz-gold) var(--rz-panel);
   scrollbar-width: thin;
 }
@@ -31,7 +31,7 @@
 .option[aria-selected="true"] { color: var(--rz-gold); }
 .option span { display: grid; min-width: 0; gap: 4px; overflow-wrap: anywhere; }
 .option strong { font-size: 0.78rem; font-weight: 600; }
-.option small { color: color-mix(in srgb, var(--rz-ivory) 60%, transparent); font-size: 0.68rem; }
+.option small { color: rgb(var(--rz-text-rgb) / max(60%, var(--rz-text-alpha-min))); font-size: 0.68rem; }
 .option svg { width: 15px; height: 15px; flex-shrink: 0; }
-.note { margin: 0; padding: 12px; color: color-mix(in srgb, var(--rz-ivory) 65%, transparent); font-size: 0.72rem; line-height: 1.7; }
+.note { margin: 0; padding: 12px; color: rgb(var(--rz-text-rgb) / max(65%, var(--rz-text-alpha-min))); font-size: 0.72rem; line-height: 1.7; }
 @media (prefers-reduced-motion: reduce) { .content[data-slot="popover-content"] { animation: none; transition: none; } }

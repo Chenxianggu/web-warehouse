@@ -1,17 +1,17 @@
 .page { display: flex; flex-direction: column; width: 100%; max-width: 1500px; min-width: 0; height: calc(100svh - 136px); margin: 0 auto; overflow: clip; color: var(--rz-ivory); }
 .hero { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
 .hero h1 { margin: 0; font-size: clamp(1.75rem, 2.4vw, 2.4rem); font-weight: 750; letter-spacing: -.06em; }
-.hero p { margin: 4px 0 0; color: color-mix(in srgb, var(--rz-ivory) 52%, transparent); font-size: .82rem; line-height: 1.5; }
+.hero p { margin: 4px 0 0; color: rgb(var(--rz-text-rgb) / max(52%, var(--rz-text-alpha-min))); font-size: .82rem; line-height: 1.5; }
 .hero > svg { width: 32px; height: 32px; color: var(--rz-gold); }
 .panel { position: relative; display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; border: 1px solid color-mix(in srgb, var(--rz-gold) 25%, transparent); background: var(--rz-panel); }
-.panel::before { position: absolute; top: -1px; left: 13px; width: 76px; height: 2px; background: var(--rz-gold); content: ""; }
+.panel::before { position: absolute; top: -1px; left: 13px; width: 76px; height: 2px; background: var(--rz-gold-fill); content: ""; }
 .panel::after { position: absolute; bottom: -1px; right: -1px; width: 13px; height: 13px; background: linear-gradient(135deg, transparent 46%, color-mix(in srgb, var(--rz-gold) 30%, transparent) 48% 52%, var(--rz-black) 54%); content: ""; pointer-events: none; }
 .controls { display: flex; flex: none; flex-wrap: wrap; align-items: end; gap: 16px; padding: 14px 20px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 20%, transparent); }
 .field { display: grid; width: 260px; min-width: 0; gap: 8px; }
-.field label { color: color-mix(in srgb, var(--rz-ivory) 65%, transparent); font-size: .72rem; }
+.field label { color: rgb(var(--rz-text-rgb) / max(65%, var(--rz-text-alpha-min))); font-size: .72rem; }
 .yearField { width: 140px; }
-.field select { width: 100%; height: 44px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); border-radius: 0; background: var(--rz-black); color: var(--rz-ivory); font-size: .78rem; }
-.selectControl { display: flex; align-items: center; height: 44px; border: 1px solid color-mix(in srgb, var(--rz-ivory) 18%, transparent); background: var(--rz-black); }
+.field select { width: 100%; height: 44px; padding: 0 12px; border: 1px solid rgb(var(--rz-text-rgb) / max(18%, var(--rz-line-alpha-min))); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); font-size: .78rem; }
+.selectControl { display: flex; align-items: center; height: 44px; border: 1px solid rgb(var(--rz-text-rgb) / max(18%, var(--rz-line-alpha-min))); background: var(--rz-input-bg); }
 .selectControl:focus-within { border-color: var(--rz-gold); }
 .selectControl input { min-width: 0; width: 100%; height: 100%; padding: 0 12px; outline: none; border: 0; background: transparent; color: var(--rz-ivory); font-size: .78rem; }
 .selectControl button { display: grid; flex-shrink: 0; width: 28px; height: 32px; place-items: center; padding: 0; border: 0; background: transparent; color: var(--rz-gold); }
@@ -20,26 +20,26 @@
 .option { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 10px; color: var(--rz-gold); cursor: pointer; font-size: .78rem; overflow-wrap: anywhere; }
 .option[data-active], .option:hover { background: color-mix(in srgb, var(--rz-gold) 10%, transparent); }
 .option svg { width: 14px; height: 14px; flex-shrink: 0; }
-.optionEmpty { padding: 10px; color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); font-size: .75rem; }
-.primaryButton { display: inline-flex; justify-content: center; align-items: center; gap: 7px; min-height: 44px; padding: 0 20px; border: 1px solid var(--rz-gold); border-radius: 0; background: var(--rz-gold); color: var(--rz-black); font-size: .75rem; font-weight: 650; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
+.optionEmpty { padding: 10px; color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); font-size: .75rem; }
+.primaryButton { display: inline-flex; justify-content: center; align-items: center; gap: 7px; min-height: 44px; padding: 0 20px; border: 1px solid var(--rz-gold); border-radius: 0; background: var(--rz-gold-fill); color: var(--rz-on-gold); font-size: .75rem; font-weight: 650; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); }
 .primaryButton svg { width: 15px; height: 15px; }
 .page button { cursor: pointer; }
 .page button:disabled { opacity: .45; cursor: not-allowed; }
 .page button:focus-visible, .page input:focus-visible, .page select:focus-visible, .chart:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
 .chartHeader { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px 0; }
 .chartHeader h2 { margin: 0; font-size: .9rem; font-weight: 600; }
-.chartHeader > span { color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); font-size: .72rem; overflow-wrap: anywhere; }
+.chartHeader > span { color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); font-size: .72rem; overflow-wrap: anywhere; }
 .chartArea { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; padding: 4px 12px 0; }
 .chartFrame { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; }
 .chart { flex: 1; width: 100%; min-width: 0; min-height: 0; }
-.empty { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 0; padding: 28px; text-align: center; font-size: .82rem; color: color-mix(in srgb, var(--rz-ivory) 55%, transparent); }
+.empty { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 0; padding: 28px; text-align: center; font-size: .82rem; color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); }
 .empty > svg { width: 34px; height: 34px; margin-bottom: 4px; color: var(--rz-gold); }
 .empty strong { max-width: 100%; font-size: .84rem; font-weight: 500; line-height: 1.8; overflow-wrap: anywhere; }
 .empty span { font-size: .73rem; line-height: 1.7; }
 .error strong { color: var(--rz-magenta); }
-.chartHint { display: flex; flex: none; flex-wrap: wrap; justify-content: space-between; gap: 10px; min-height: 28px; padding: 4px 8px 8px; color: color-mix(in srgb, var(--rz-ivory) 48%, transparent); font-size: .68rem; line-height: 1.5; }
+.chartHint { display: flex; flex: none; flex-wrap: wrap; justify-content: space-between; gap: 10px; min-height: 28px; padding: 4px 8px 8px; color: rgb(var(--rz-text-rgb) / max(48%, var(--rz-text-alpha-min))); font-size: .68rem; line-height: 1.5; }
 .chartHint output { color: var(--rz-gold); font-variant-numeric: tabular-nums; }
-.chartFooter { display: flex; flex: none; flex-wrap: wrap; gap: 4px 24px; padding: 8px 20px; border-top: 1px solid color-mix(in srgb, var(--rz-ivory) 10%, transparent); color: color-mix(in srgb, var(--rz-ivory) 48%, transparent); font-size: .7rem; line-height: 1.5; }
+.chartFooter { display: flex; flex: none; flex-wrap: wrap; gap: 4px 24px; padding: 8px 20px; border-top: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min))); color: rgb(var(--rz-text-rgb) / max(48%, var(--rz-text-alpha-min))); font-size: .7rem; line-height: 1.5; }
 @media (min-width: 768px) and (max-width: 1600px), (min-width: 768px) and (max-height: 900px) { .page { height: calc(100svh - 88px); } }
 @media (min-width: 768px) and (max-height: 900px) { .hero h1 { font-size: 1.75rem; } .hero { margin-bottom: 10px; } .controls { padding-block: 10px; } .chartHeader { padding-top: 8px; } .chartFooter { padding-block: 6px; } }
 @media (max-width: 767px) {

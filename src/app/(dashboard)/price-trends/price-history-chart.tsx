@@ -7,12 +7,14 @@ import { AriaComponent, GridComponent, TooltipComponent, type AriaComponentOptio
 import { CanvasRenderer } from "echarts/renderers";
 import { priceAxisBounds, shouldSamplePrices, type PricePoint } from "@/features/price-trends/schema";
 import styles from "./price-trends.module.css";
+import { useTheme } from "@/components/theme-provider";
 
 registerCharts([LineChart, GridComponent, TooltipComponent, AriaComponent, CanvasRenderer]);
 type ChartOption = ComposeOption<LineSeriesOption | GridComponentOption | TooltipComponentOption | AriaComponentOption>;
 const amount = (value: number) => `¥${value.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export default function PriceHistoryChart({ points, itemCode, year }: { points: PricePoint[]; itemCode: string; year: number }) {
+  const { resolvedTheme } = useTheme();
   const canvas = useRef<HTMLDivElement>(null);
   const chart = useRef<EChartsType | null>(null);
   const hintId = useId();
@@ -24,6 +26,8 @@ export default function PriceHistoryChart({ points, itemCode, year }: { points: 
     const theme = getComputedStyle(host);
     const color = (token: string) => theme.getPropertyValue(token).trim();
     const gold = color("--rz-gold"), ivory = color("--rz-ivory"), panel = color("--rz-panel"), black = color("--rz-black");
+    const muted = color("--muted-foreground");
+    const light = resolvedTheme === "light";
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const instance = init(host, undefined, { renderer: "canvas" });
     chart.current = instance;
@@ -34,7 +38,7 @@ export default function PriceHistoryChart({ points, itemCode, year }: { points: 
       aria: { enabled: true, label: { description: `${itemCode}，${year}年订货单价趋势，共${points.length}个日期价格点，单位元每吨。` } },
       tooltip: {
         trigger: "item", confine: true, backgroundColor: panel, borderColor: gold, borderWidth: 1,
-        textStyle: { color: ivory, fontSize: 12 }, extraCssText: "border-radius:0;box-shadow:0 8px 24px rgba(0,0,0,.6)",
+        textStyle: { color: ivory, fontSize: 12 }, extraCssText: `border-radius:0;box-shadow:0 8px 24px rgba(0,0,0,${light ? .12 : .6})`,
         formatter: (params) => {
           const entry = Array.isArray(params) ? params[0] : params;
           const value = entry.value;
@@ -46,12 +50,12 @@ export default function PriceHistoryChart({ points, itemCode, year }: { points: 
       grid: { left: 14, right: 25, top: host.clientHeight < 380 ? 32 : 48, bottom: host.clientHeight < 380 ? 20 : 28, outerBoundsMode: "same", outerBoundsContain: "axisLabel" },
       xAxis: { type: "time", boundaryGap: [0, 0], splitNumber: host.clientWidth < 500 ? 4 : 8,
         axisLine: { lineStyle: { color: gold, opacity: 0.35 } }, axisTick: { show: false },
-        axisLabel: { color: ivory, opacity: 0.6, fontSize: 11, rotate: 45, hideOverlap: true, formatter: (value: number) => { const date = new Date(value); return `${date.getUTCMonth() + 1}-${date.getUTCDate()}`; } },
+        axisLabel: { color: light ? muted : ivory, opacity: light ? 1 : 0.6, fontSize: 11, rotate: 45, hideOverlap: true, formatter: (value: number) => { const date = new Date(value); return `${date.getUTCMonth() + 1}-${date.getUTCDate()}`; } },
       },
       yAxis: { type: "value", name: "单价（元/吨）", scale: true, min: bounds.min, max: bounds.max, minInterval: 50, splitNumber: host.clientHeight < 380 ? 4 : 8,
-        nameTextStyle: { color: ivory, opacity: 0.65, fontSize: 11 },
-        axisLabel: { color: ivory, opacity: 0.6, fontSize: 11, formatter: (value: number) => `¥${value.toLocaleString("zh-CN")}` },
-        splitLine: { lineStyle: { color: ivory, opacity: 0.08 } },
+        nameTextStyle: { color: light ? muted : ivory, opacity: light ? 1 : 0.65, fontSize: 11 },
+        axisLabel: { color: light ? muted : ivory, opacity: light ? 1 : 0.6, fontSize: 11, formatter: (value: number) => `¥${value.toLocaleString("zh-CN")}` },
+        splitLine: { lineStyle: { color: light ? color("--border") : ivory, opacity: light ? 1 : 0.08 } },
       },
       series: [{ name: "单价", type: "line", smooth: false, symbol: "circle", symbolSize: sampling ? 4 : 6, sampling: sampling ? "lttb" : undefined,
         data: points.map((point) => [Date.parse(`${point.orderDate}T00:00:00Z`), point.unitPrice]),
@@ -69,7 +73,7 @@ export default function PriceHistoryChart({ points, itemCode, year }: { points: 
     const changeMotion = () => instance.setOption({ animation: !media.matches });
     media.addEventListener("change", changeMotion);
     return () => { resize.disconnect(); media.removeEventListener("change", changeMotion); chart.current = null; instance.dispose(); };
-  }, [points, itemCode, year]);
+  }, [points, itemCode, year, resolvedTheme]);
 
   return <div className={styles.chartFrame}>
     <div ref={canvas} className={styles.chart} tabIndex={0} role="group" aria-label={`${itemCode} ${year}年价格趋势图`} aria-describedby={hintId}
