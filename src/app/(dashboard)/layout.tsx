@@ -7,6 +7,7 @@ import { requireUser } from "@/server/current-user";
 import { getVisibleNavigation } from "@/server/menu-permissions";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { PageTransition } from "@/components/page-transition";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -75,9 +76,10 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
       <SidebarInset className={styles.main}>
         <header className={styles.topbar}>
           <SidebarTrigger className={styles.topbarTrigger} aria-label="展开或收起导航" />
-          <Separator orientation="vertical" className="h-4 bg-[rgb(201_169_110_/_20%)]" />
+          <Separator orientation="vertical" className="h-4 bg-[var(--rz-edge)]" />
           <span className={styles.topbarTitle}>塑料仓储业务系统</span>
           <span className={styles.topbarStatus}>SYSTEM ONLINE</span>
+          <ThemeSwitcher />
         </header>
         <div className={styles.content}>
           <PageTransition>{children}</PageTransition>

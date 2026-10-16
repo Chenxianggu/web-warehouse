@@ -1,0 +1,34 @@
+.control {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--rz-edge);
+  border-radius: 10px;
+  background: var(--rz-panel-raised);
+  padding: 0;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.control > svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.control:hover {
+  border-color: var(--rz-gold);
+  background: var(--rz-panel);
+  color: var(--rz-gold);
+}
+
+.control:focus-visible { outline: 2px solid var(--rz-gold); outline-offset: 3px; }
+.control:active { background: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  .control { transition: none; }
+}

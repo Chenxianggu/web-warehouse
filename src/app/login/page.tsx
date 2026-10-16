@@ -8,6 +8,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoginForm } from "./login-form";
 import { FloatingSuccessMessage } from "@/components/floating-success-message";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import styles from "./login.module.css";
 
 export default async function LoginPage({
@@ -35,9 +36,12 @@ export default async function LoginPage({
             <small>仓储管理系统</small>
           </span>
         </div>
-        <div className={styles.linkState}>
-          <RadioTower aria-hidden="true" />
-          <span>安全链路已建立</span>
+        <div className={styles.topbarActions}>
+          <div className={styles.linkState}>
+            <RadioTower aria-hidden="true" />
+            <span>安全链路已建立</span>
+          </div>
+          <ThemeSwitcher />
         </div>
       </header>
 

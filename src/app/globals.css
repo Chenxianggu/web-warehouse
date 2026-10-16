@@ -4,6 +4,52 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Snapshot the entire page so gradients, clipped panels and canvas charts all
+   change together. Keep the old image opaque beneath the incoming one. */
+:root[data-theme-transition="snapshot"]::view-transition { pointer-events: none; }
+:root[data-theme-transition="snapshot"]::view-transition-group(root) { animation-duration: 360ms; }
+:root[data-theme-transition="snapshot"]::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root[data-theme-transition="snapshot"]::view-transition-new(root) {
+  animation: rz-theme-reveal 360ms ease-in-out both;
+  mix-blend-mode: normal;
+}
+
+/* The snapshot handles the animation; nested color transitions would otherwise
+   leave intermediate colors in the new snapshot and jump at its end. */
+:root[data-theme-transition="snapshot"],
+:root[data-theme-transition="snapshot"] *,
+:root[data-theme-transition="snapshot"] *::before,
+:root[data-theme-transition="snapshot"] *::after { transition: none !important; }
+
+/* Older browsers animate paint properties only during a user theme change. */
+:root[data-theme-transition="colors"],
+:root[data-theme-transition="colors"] *,
+:root[data-theme-transition="colors"] *::before,
+:root[data-theme-transition="colors"] *::after {
+  transition-property: background-color, color, border-color, outline-color, box-shadow, text-shadow, fill, stroke !important;
+  transition-duration: 360ms !important;
+  transition-timing-function: ease-in-out !important;
+  transition-delay: 0s !important;
+}
+
+@keyframes rz-theme-reveal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme-transition="snapshot"]::view-transition-group(root),
+  :root[data-theme-transition="snapshot"]::view-transition-old(root),
+  :root[data-theme-transition="snapshot"]::view-transition-new(root) { animation: none !important; }
+  :root[data-theme-transition="colors"],
+  :root[data-theme-transition="colors"] *,
+  :root[data-theme-transition="colors"] *::before,
+  :root[data-theme-transition="colors"] *::after { transition: none !important; }
+}
+
 :root,
 .dark {
   color-scheme: dark;
@@ -46,6 +92,90 @@
   --rz-magenta: #ff2d78;
   --rz-cyan: #66f7ff;
   --rz-ivory: #f2f2ec;
+  --rz-bg: var(--rz-black);
+  --rz-input-bg: #050506;
+  --rz-input-focus: #0a0a06;
+  --rz-gold-fill: #c9a96e;
+  --rz-on-gold: #030303;
+  --rz-edge: rgb(201 169 110 / 24%);
+  --rz-text-rgb: 242 242 236;
+  --rz-gold-rgb: 201 169 110;
+  --rz-cyan-rgb: 102 247 255;
+  --rz-magenta-rgb: 255 45 120;
+  --rz-highlight-rgb: 255 255 255;
+  --rz-bg-rgb: 3 3 3;
+  --rz-terminal-rgb: 8 8 10;
+  --rz-shade-rgb: 0 0 0;
+  --rz-text-alpha-min: 0%;
+  --rz-accent-alpha-min: 0%;
+  --rz-line-alpha-min: 0%;
+  --rz-shadow-strength: 1;
+  --rz-overlay-strength: 1;
+  --rz-error-bg: #10070b;
+  --rz-error-text: rgb(255 150 186);
+}
+
+:root.light {
+  color-scheme: light;
+  --background: #f5f6f8;
+  --foreground: #202328;
+  --card: #ffffff;
+  --card-foreground: #202328;
+  --popover: #ffffff;
+  --popover-foreground: #202328;
+  --primary: #c3a36c;
+  --primary-foreground: #202328;
+  --secondary: #eef0f3;
+  --secondary-foreground: #202328;
+  --muted: #eef0f3;
+  --muted-foreground: #626873;
+  --accent: #f3ede2;
+  --accent-foreground: #806329;
+  --destructive: #bc2458;
+  --border: #d9dde3;
+  --input: #b6bdc7;
+  --ring: #806329;
+  --chart-1: #806329;
+  --chart-2: #087c88;
+  --chart-3: #626873;
+  --chart-4: #bc2458;
+  --chart-5: #202328;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #202328;
+  --sidebar-primary: #c3a36c;
+  --sidebar-primary-foreground: #202328;
+  --sidebar-accent: #f3ede2;
+  --sidebar-accent-foreground: #806329;
+  --sidebar-border: #d9dde3;
+  --sidebar-ring: #806329;
+  /* Legacy names remain aliases so every existing RZ component participates. */
+  --rz-black: #f5f6f8;
+  --rz-panel: #ffffff;
+  --rz-panel-raised: #eef0f3;
+  --rz-gold: #806329;
+  --rz-gold-fill: #c3a36c;
+  --rz-on-gold: #202328;
+  --rz-magenta: #bc2458;
+  --rz-cyan: #087c88;
+  --rz-ivory: #202328;
+  --rz-input-bg: #ffffff;
+  --rz-input-focus: #fffdf8;
+  --rz-edge: #d9dde3;
+  --rz-text-rgb: 32 35 40;
+  --rz-gold-rgb: 128 99 41;
+  --rz-cyan-rgb: 8 124 136;
+  --rz-magenta-rgb: 188 36 88;
+  --rz-highlight-rgb: 32 35 40;
+  --rz-bg-rgb: 255 255 255;
+  --rz-terminal-rgb: 255 255 255;
+  --rz-shade-rgb: 255 255 255;
+  --rz-text-alpha-min: 72%;
+  --rz-accent-alpha-min: 100%;
+  --rz-line-alpha-min: 18%;
+  --rz-shadow-strength: .18;
+  --rz-overlay-strength: .45;
+  --rz-error-bg: #fff4f7;
+  --rz-error-text: #bc2458;
 }
 
 @theme inline {
@@ -112,8 +242,8 @@
 
 .rz-sonner [data-sonner-toast] {
   --rz-toast-bg: var(--rz-panel-raised);
-  --rz-toast-edge: rgb(201 169 110 / 30%);
-  --rz-toast-tint: rgb(201 169 110 / 8%);
+  --rz-toast-edge: rgb(var(--rz-gold-rgb) / 30%);
+  --rz-toast-tint: rgb(var(--rz-gold-rgb) / 8%);
   --rz-toast-accent: var(--rz-gold);
   --rz-toast-glow: transparent;
   --rz-toast-cut: 9px;
@@ -123,21 +253,21 @@
 }
 
 .rz-sonner [data-sonner-toast][data-type="success"] {
-  --rz-toast-edge: rgb(102 247 255 / 38%);
-  --rz-toast-tint: rgb(102 247 255 / 12%);
+  --rz-toast-edge: rgb(var(--rz-cyan-rgb) / 38%);
+  --rz-toast-tint: rgb(var(--rz-cyan-rgb) / 12%);
   --rz-toast-accent: var(--rz-cyan);
-  --rz-toast-glow: rgb(102 247 255 / 10%);
+  --rz-toast-glow: rgb(var(--rz-cyan-rgb) / 10%);
   --success-bg: var(--rz-toast-bg);
   --success-border: var(--rz-toast-edge);
   --success-text: var(--rz-ivory);
 }
 
 .rz-sonner [data-sonner-toast][data-type="error"] {
-  --rz-toast-bg: #10070b;
-  --rz-toast-edge: rgb(255 45 120 / 48%);
-  --rz-toast-tint: rgb(255 45 120 / 13%);
+  --rz-toast-bg: var(--rz-error-bg);
+  --rz-toast-edge: rgb(var(--rz-magenta-rgb) / 48%);
+  --rz-toast-tint: rgb(var(--rz-magenta-rgb) / 13%);
   --rz-toast-accent: var(--rz-magenta);
-  --rz-toast-glow: rgb(255 45 120 / 10%);
+  --rz-toast-glow: rgb(var(--rz-magenta-rgb) / 10%);
   --error-bg: var(--rz-toast-bg);
   --error-border: var(--rz-toast-edge);
   --error-text: var(--rz-ivory);
@@ -153,14 +283,14 @@
     linear-gradient(45deg, transparent calc(var(--rz-toast-cut) * 0.7071 - 1.2px), var(--rz-toast-edge) 0 calc(var(--rz-toast-cut) * 0.7071 + 0.4px), transparent 0) bottom left / var(--rz-toast-cut) var(--rz-toast-cut) no-repeat border-box,
     linear-gradient(90deg, var(--rz-toast-tint), transparent 58%),
     var(--rz-toast-bg);
-  box-shadow: 0 14px 38px rgb(0 0 0 / 64%), 0 0 20px var(--rz-toast-glow), inset 2px 0 0 var(--rz-toast-accent);
+  box-shadow: 0 14px 38px rgb(0 0 0 / calc(64% * var(--rz-shadow-strength))), 0 0 20px var(--rz-toast-glow), inset 2px 0 0 var(--rz-toast-accent);
   clip-path: polygon(0 0, calc(100% - var(--rz-toast-cut)) 0, 100% var(--rz-toast-cut), 100% 100%, var(--rz-toast-cut) 100%, 0 calc(100% - var(--rz-toast-cut)));
   color: var(--rz-ivory);
   font-family: var(--font-sans), sans-serif;
 }
 
 .rz-sonner [data-title] { font-size: 0.76rem; font-weight: 680; letter-spacing: 0.02em; }
-.rz-sonner [data-description] { color: rgb(242 242 236 / 58%); font-size: 0.64rem; }
+.rz-sonner [data-description] { color: rgb(var(--rz-text-rgb) / max(58%, var(--rz-text-alpha-min))); font-size: 0.64rem; }
 .rz-sonner [data-icon] svg { width: 18px; height: 18px; }
 .rz-sonner [data-sonner-toast][data-type="success"] [data-icon] { color: var(--rz-cyan); }
 .rz-sonner [data-sonner-toast][data-type="error"] [data-icon] { color: var(--rz-magenta); }
@@ -173,13 +303,16 @@
   border: 1px solid transparent;
   border-radius: 0;
   background: transparent;
-  color: rgb(242 242 236 / 46%);
+  color: rgb(var(--rz-text-rgb) / max(46%, var(--rz-text-alpha-min)));
   transform: translateY(-50%);
   transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
 }
 .rz-sonner[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-close-button]:hover {
   border-color: var(--rz-toast-edge);
-  background: rgb(242 242 236 / 5%);
+  background: rgb(var(--rz-text-rgb) / 5%);
   color: var(--rz-ivory);
 }
 .rz-sonner [data-close-button]:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }
+
+.light .rz-sonner [data-sonner-toast] { --rz-toast-bg: var(--rz-panel); --rz-toast-glow: transparent; }
+.light .rz-sonner [data-sonner-toast][data-type="error"] { --rz-toast-bg: var(--rz-error-bg); }

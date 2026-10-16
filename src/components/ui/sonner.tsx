@@ -2,8 +2,10 @@
 
 import { CircleAlert, CircleCheck, Info, LoaderCircle, TriangleAlert } from "lucide-react";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { useTheme } from "@/components/theme-provider";
 
 export function Toaster(props: ToasterProps) {
+  const { resolvedTheme } = useTheme();
   return (
     <Sonner
       className="rz-sonner"
@@ -18,7 +20,7 @@ export function Toaster(props: ToasterProps) {
       }}
       position="top-center"
       richColors
-      theme="dark"
+      theme={resolvedTheme}
       {...props}
     />
   );
