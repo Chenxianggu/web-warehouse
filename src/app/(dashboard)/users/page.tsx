@@ -1,4 +1,5 @@
 import { Activity, CircleAlert, KeyRound, ShieldCheck, UserCog } from "lucide-react";
+import Link from "next/link";
 import { UserRole } from "@/generated/prisma/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CreateUserDialog } from "@/components/create-user-dialog";
@@ -28,7 +29,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
   const [query, users] = await Promise.all([
     searchParams,
     getPrisma().user.findMany({
-      select: { id: true, username: true, role: true, isActive: true, createdAt: true },
+      select: { id: true, username: true, role: true, isActive: true, createdAt: true, menuPermission: { select: { userId: true } } },
       orderBy: [{ role: "asc" }, { createdAt: "desc" }],
     }),
   ]);
@@ -75,6 +76,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
                   <div className={styles.accountState}>
                     <span className={styles.roleBadge} data-admin={user.role === UserRole.SUPER_ADMIN || undefined}><ShieldCheck aria-hidden="true" />{roleLabel[user.role]}</span>
                     <span className={styles.statusBadge} data-active={user.isActive || undefined}><Activity aria-hidden="true" />{user.isActive ? "启用中" : "已停用"}</span>
+                    {user.role === UserRole.SALESPERSON && <Link className={styles.menuPermissionLink} href={`/menu-management?userId=${encodeURIComponent(user.id)}`}>菜单权限 · {user.menuPermission ? "单独配置" : "跟随默认"}</Link>}
                   </div>
                   {isCurrentUser ? <div className={styles.selfNotice}><KeyRound aria-hidden="true" /><span>请从侧栏“修改密码”更新当前账号</span></div> : (
                     <form action={resetUserPasswordAction} className={styles.resetForm}>

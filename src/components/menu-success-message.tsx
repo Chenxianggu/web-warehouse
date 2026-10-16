@@ -1,9 +1,9 @@
 import { FloatingSuccessMessage } from "./floating-success-message";
 
-export function MenuSuccessMessage({ duration = 3500 }: { duration?: number }) {
+export function MenuSuccessMessage({ duration = 3500, description = "菜单权限已生效" }: { duration?: number; description?: string }) {
   return (
     <FloatingSuccessMessage
-      description="新的菜单规则已对全体业务员生效"
+      description={description}
       duration={duration}
       title="权限配置已保存"
     />

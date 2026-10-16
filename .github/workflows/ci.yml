@@ -61,6 +61,11 @@ jobs:
         env:
           RUN_DATABASE_TESTS: "1"
 
+      - name: Test menu permissions
+        run: npm run test:menu-permissions && npm run test:menu-permissions:db
+        env:
+          RUN_DATABASE_TESTS: "1"
+
       - name: Lint
         run: npm run lint
 

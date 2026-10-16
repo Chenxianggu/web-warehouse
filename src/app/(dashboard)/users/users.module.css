@@ -66,6 +66,9 @@
 .identity strong { overflow: hidden; font-size: 0.78rem; font-weight: 660; text-overflow: ellipsis; white-space: nowrap; }
 .identity small { color: rgb(var(--rz-text-rgb) / max(30%, var(--rz-text-alpha-min))); font-size: 0.58rem; }
 .accountState { display: flex; flex-wrap: wrap; gap: 7px; }
+.menuPermissionLink { color: var(--rz-gold); font-size: 0.65rem; padding: 6px 8px; border: 1px solid rgb(var(--rz-gold-rgb) / 28%); }
+.menuPermissionLink:hover { background: rgb(var(--rz-gold-rgb) / 8%); }
+.menuPermissionLink:focus-visible { outline: 2px solid var(--rz-gold); outline-offset: 3px; }
 .roleBadge, .statusBadge { display: inline-flex; align-items: center; gap: 6px; width: max-content; border: 1px solid rgb(var(--rz-text-rgb) / max(11%, var(--rz-line-alpha-min))); padding: 6px 8px; color: rgb(var(--rz-text-rgb) / max(48%, var(--rz-text-alpha-min))); font-size: 0.58rem; }
 .roleBadge svg, .statusBadge svg { width: 12px; height: 12px; }
 .roleBadge[data-admin="true"] { border-color: rgb(var(--rz-gold-rgb) / 24%); color: rgb(var(--rz-gold-rgb) / max(78%, var(--rz-accent-alpha-min))); }

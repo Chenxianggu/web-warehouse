@@ -26,7 +26,7 @@ import styles from "./dashboard-shell.module.css";
 
 export default async function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const user = await requireUser();
-  const visibleNavigation = await getVisibleNavigation(user.role);
+  const visibleNavigation = await getVisibleNavigation(user.id, user.role);
 
   return (
     <SidebarProvider className={styles.shell} style={{ "--sidebar-width": "var(--rz-sidebar-width)" } as CSSProperties}>

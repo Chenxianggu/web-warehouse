@@ -4,6 +4,6 @@ import { HomeWorkbench } from "@/components/home-workbench";
 
 export default async function HomePage() {
   const user = await requireUser();
-  const visibleNavigation = await getVisibleNavigation(user.role);
+  const visibleNavigation = await getVisibleNavigation(user.id, user.role);
   return <HomeWorkbench groups={visibleNavigation} username={user.username} />;
 }

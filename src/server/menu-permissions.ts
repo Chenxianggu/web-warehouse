@@ -2,74 +2,52 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { navigation, type NavigationGroup, type NavigationItem } from "@/config/navigation";
 import { UserRole } from "@/generated/prisma/client";
+import { configurableMenuItems, filterNavigation, isMenuAllowed } from "@/features/identity/menu-permissions";
 import { getPrisma } from "@/server/db";
 import { requireUser } from "@/server/current-user";
 import { writeLog } from "@/server/logger";
 
-export const ADMIN_ONLY_MENU_PATHS = new Set(["/menu-management", "/users"]);
-
-export const configurableMenuItems = navigation
-  .flatMap((group) => group.items)
-  .filter((item) => item.href !== "/" && !ADMIN_ONLY_MENU_PATHS.has(item.href));
-
-const configurableMenuPaths = new Set(configurableMenuItems.map((item) => item.href));
+export { ADMIN_ONLY_MENU_PATHS, configurableMenuItems } from "@/features/identity/menu-permissions";
 
 export type MenuPermissionGroup = {
   title: string;
   items: Array<NavigationItem & { isVisible: boolean }>;
 };
 
-export const getVisibleNavigation = cache(async (role: UserRole): Promise<NavigationGroup[]> => {
-  if (role === UserRole.SUPER_ADMIN) return navigation;
-
-  const storedPermissions = await getPrisma().salespersonMenuPermission.findMany({
-    where: { menuKey: { in: configurableMenuItems.map((item) => item.href) } },
-    select: { menuKey: true, isVisible: true },
-  });
-  const visibility = new Map(storedPermissions.map((item) => [item.menuKey, item.isVisible]));
-
-  return navigation
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => {
-        if (item.href === "/") return true;
-        if (ADMIN_ONLY_MENU_PATHS.has(item.href)) return false;
-        return visibility.get(item.href) !== false;
-      }),
-    }))
-    .filter((group) => group.items.length > 0);
+// Request-local only: permission edits are read again on the next request.
+const getPermissionConfig = cache(async (userId?: string) => {
+  const db = getPrisma();
+  const [defaults, custom] = await Promise.all([
+    db.salespersonMenuPermission.findMany({ select: { menuKey: true, isVisible: true } }),
+    userId ? db.userMenuPermission.findUnique({ where: { userId }, select: { menuKeys: true } }) : null,
+  ]);
+  return { defaults, customMenuKeys: custom?.menuKeys ?? null };
 });
 
-export async function getMenuPermissionGroups(): Promise<MenuPermissionGroup[]> {
-  const storedPermissions = await getPrisma().salespersonMenuPermission.findMany({
-    where: { menuKey: { in: configurableMenuItems.map((item) => item.href) } },
-    select: { menuKey: true, isVisible: true },
-  });
-  const visibility = new Map(storedPermissions.map((item) => [item.menuKey, item.isVisible]));
+export const getVisibleNavigation = cache(async (userId: string, role: UserRole): Promise<NavigationGroup[]> => {
+  if (role === UserRole.SUPER_ADMIN) return navigation;
+  const { defaults, customMenuKeys } = await getPermissionConfig(userId);
+  return filterNavigation(role, defaults, customMenuKeys);
+});
 
-  return navigation
-    .map((group) => ({
-      title: group.title,
-      items: group.items
-        .filter((item) => configurableMenuPaths.has(item.href))
-        .map((item) => ({ ...item, isVisible: visibility.get(item.href) !== false })),
-    }))
-    .filter((group) => group.items.length > 0);
+export async function getMenuPermissionGroups(userId?: string) {
+  const { defaults, customMenuKeys } = await getPermissionConfig(userId);
+  const configurablePaths = new Set(configurableMenuItems.map((item) => item.href));
+  const groups: MenuPermissionGroup[] = navigation.map((group) => ({
+    title: group.title,
+    items: group.items.filter((item) => configurablePaths.has(item.href)).map((item) => ({
+      ...item,
+      isVisible: isMenuAllowed(UserRole.SALESPERSON, item.href, defaults, customMenuKeys),
+    })),
+  })).filter((group) => group.items.length > 0);
+  return { groups, isCustom: customMenuKeys !== null };
 }
 
 export async function requirePageAccess(href: string) {
   const user = await requireUser();
   if (user.role === UserRole.SUPER_ADMIN || href === "/" || href === "/settings/password") return user;
-  if (ADMIN_ONLY_MENU_PATHS.has(href) || !configurableMenuPaths.has(href)) {
-    await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "访问控制", action: "ACCESS_DENIED", message: "页面访问被权限规则拒绝", actor: user, metadata: { path: href } });
-    redirect("/access-denied");
-  }
-
-  const permission = await getPrisma().salespersonMenuPermission.findUnique({
-    where: { menuKey: href },
-    select: { isVisible: true },
-  });
-  if (permission?.isVisible === false) {
+  const { defaults, customMenuKeys } = await getPermissionConfig(user.id);
+  if (!isMenuAllowed(user.role, href, defaults, customMenuKeys)) {
     await writeLog({ category: "AUTH", level: "WARN", status: "FAILURE", module: "访问控制", action: "ACCESS_DENIED", message: "页面访问被菜单权限拒绝", actor: user, metadata: { path: href } });
     redirect("/access-denied");
   }

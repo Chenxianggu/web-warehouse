@@ -61,6 +61,21 @@
 
 .alert { margin-top: 18px; border-radius: 0; }
 
+.scopePanel { margin-top: 24px; padding: 18px; border: 1px solid rgb(var(--rz-gold-rgb) / 24%); background: var(--rz-panel); }
+.scopePanel h2 { font-size: 0.88rem; font-weight: 650; }
+.scopePanel p { margin-top: 8px; color: var(--muted-foreground); font-size: 0.72rem; line-height: 1.7; overflow-wrap: anywhere; }
+.editor { min-width: 0; margin: 0; padding: 0; border: 0; }
+.editor[aria-busy="true"] .permissionItem { cursor: wait; }
+.scopeForm { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px; margin-top: 16px; }
+.scopeForm label { color: var(--rz-gold); font-size: 0.75rem; }
+.scopeForm select { width: 100%; min-width: 0; height: 38px; border: 1px solid rgb(var(--rz-gold-rgb) / 36%); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); padding: 0 10px; font-size: 0.8rem; }
+.scopeForm select:focus-visible { outline: 2px solid var(--rz-gold); outline-offset: 3px; }
+.scopeForm button, .footerActions button { border-radius: 0; }
+.scopeHint strong { color: var(--rz-gold); }
+.permissionFields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.permissionFields:disabled .permissionItem { cursor: wait; }
+.footerActions { display: flex; flex-wrap: wrap; gap: 10px; flex-shrink: 0; }
+
 .fixedRules {
   display: grid;
   grid-template-columns: minmax(210px, 0.8fr) minmax(0, 2fr);
@@ -172,6 +187,9 @@
 .saveButton:hover { background: var(--rz-gold-fill); color: var(--rz-on-gold); filter: drop-shadow(-3px 0 0 var(--rz-magenta)) drop-shadow(3px 0 0 var(--rz-cyan)); }
 
 @media (max-width: 760px) {
+  .scopeForm { grid-template-columns: minmax(0, 1fr); }
+  .footerActions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .permissionCount { flex-wrap: wrap; overflow-wrap: anywhere; }
   .hero, .formToolbar, .formFooter { align-items: stretch; flex-direction: column; }
   .formFooter { position: static; }
   .scopeBadge { width: max-content; }

@@ -50,6 +50,7 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   plasticPriceEditor PlasticPriceEditor?
+  menuPermission UserMenuPermission?
 
   @@map("users")
 }
@@ -60,6 +61,17 @@ model SalespersonMenuPermission {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("salesperson_menu_permissions")
+}
+
+// An absent row inherits the global defaults; an empty menuKeys array denies
+// all configurable menus. A custom configuration is a complete allowlist.
+model UserMenuPermission {
+  userId    String   @id @map("user_id")
+  menuKeys  String[] @map("menu_keys")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_menu_permissions")
 }
 
 model Customer {
