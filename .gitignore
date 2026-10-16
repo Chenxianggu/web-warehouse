@@ -3,6 +3,7 @@ node_modules/
 out/
 coverage/
 .playwright-cli/
+/output/playwright/
 .env*
 !.env.example
 *.tsbuildinfo
