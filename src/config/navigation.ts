@@ -19,7 +19,6 @@ export const navigation: NavigationGroup[] = [
     items: [
       { label: "库存管理", href: "/stock", description: "查看当前库存与可用数量" },
       { label: "入库登记", href: "/inbound-orders", description: "登记到货与入库信息" },
-      { label: "发货出库", href: "/outbound-orders", description: "处理发货与库存扣减" },
       { label: "客户寄存", href: "/consignments", description: "管理客户寄存货物" },
     ],
   },
@@ -28,6 +27,7 @@ export const navigation: NavigationGroup[] = [
     items: [
       { label: "客户资料", href: "/customers", description: "维护客户档案与联系信息" },
       { label: "客户订单", href: "/customer-orders", description: "录入并跟进客户订单" },
+      { label: "发货出库", href: "/outbound-orders", description: "处理发货与库存扣减" },
       { label: "订单查询", href: "/order-search", description: "按条件检索订单记录" },
       { label: "应收账款", href: "/receivables", description: "查看客户应收与回款" },
     ],
