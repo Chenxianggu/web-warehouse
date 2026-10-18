@@ -68,7 +68,6 @@ export function buildDeliveryNote(order: OrderRecord, hidePrices: boolean) {
   }
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>订单发货单 - ${e(order.orderNo)}</title><style>${DELIVERY_NOTE_CSS}
     .print-table td { overflow-wrap:anywhere; }
-    @media screen { .print-page { min-height:140mm; padding-top:4mm; } .print-page + .print-page { border-top:1px dashed #777; } }
   </style></head><body>${pages.join("")}</body></html>`;
 }
 

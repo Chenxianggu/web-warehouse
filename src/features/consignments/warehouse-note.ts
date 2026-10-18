@@ -17,6 +17,6 @@ export function buildWarehouseNote(row: ConsignmentRecord, hidePrices: boolean) 
     <div class="print-notice-line">客户须知:本单据经收货单位或经手人签名即作为收款凭证!　白:存根　红:回单　黄:客户</div>
   </div></div></div>`;
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>寄存仓单 - ${row.id}</title><style>${DELIVERY_NOTE_CSS}
-  .print-table td { overflow-wrap:anywhere; } @media screen { .print-page { min-height:140mm; padding-top:4mm; } }
+  .print-table td { overflow-wrap:anywhere; }
   </style></head><body>${html}</body></html>`;
 }
