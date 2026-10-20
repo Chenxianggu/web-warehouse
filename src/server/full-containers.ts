@@ -1,8 +1,11 @@
-import { auditTransaction, type AuditActor } from "@/server/audit";
+import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
+
 import { Prisma, type FullContainerRecord } from "@/generated/prisma/client";
 import { containerFilterSchema, containerInputSchema, clearSupply, type ContainerFilter, type ContainerPage, type ContainerRecord } from "@/features/full-containers/schema";
 import { consignmentHistory } from "@/features/outbound/schema";
+
+const auditTransaction = businessTransaction("整柜销售");
 
 function serialize(row: FullContainerRecord): ContainerRecord {
   return { ...row, orderDate: row.orderDate.toISOString().slice(0, 10), quantity: Number(row.quantity), unitPrice: Number(row.unitPrice), amount: Number(row.amount), supplyUnitPrice: Number(row.supplyUnitPrice), supplyAmount: Number(row.supplyAmount), supplyOrderDate: row.supplyOrderDate?.toISOString().slice(0, 10) || "", deliveryDate: row.deliveryDate?.toISOString().slice(0, 10) || "", deliveryInfo: row.deliveryInfo || "", remark: row.remark || "", followStatus: row.followStatus || "", supplyRemark: row.supplyRemark || "", updatedAt: row.updatedAt.toISOString() };

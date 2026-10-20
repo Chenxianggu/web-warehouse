@@ -1,0 +1,27 @@
+# Run on a DIFFERENT host from the business application and its Grafana stack.
+name: warehouse-external-monitor
+services:
+  monitor:
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    command: ["node", "/opt/alerting/monitor.mjs"]
+    environment:
+      TARGET_HEALTH_URL: ${TARGET_HEALTH_URL:?Set the production HTTPS URL ending in /api/health}
+    secrets: [alert_channel]
+    volumes:
+      - ./ops/alerting:/opt/alerting:ro
+      - monitor_data:/var/lib/warehouse-alerts
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  monitor_data:
+
+secrets:
+  alert_channel:
+    file: ./ops/.secrets/alert_channel.json

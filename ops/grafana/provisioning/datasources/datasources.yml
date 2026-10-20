@@ -1,6 +1,13 @@
 apiVersion: 1
-datasources:
+# Provisioning matches existing sources by name. Remove legacy definitions before
+# recreating them with the same UIDs, preserving dashboard/rule references.
+deleteDatasources:
   - name: Warehouse runtime
+    orgId: 1
+  - name: Warehouse audit (read only)
+    orgId: 1
+datasources:
+  - name: 任仲塑料后台 · 运行日志
     uid: warehouse-loki
     type: loki
     access: proxy
@@ -9,7 +16,7 @@ datasources:
     editable: false
     jsonData:
       maxLines: 1000
-  - name: Warehouse audit (read only)
+  - name: 任仲塑料后台 · 操作审计（只读）
     uid: warehouse-audit
     type: grafana-postgresql-datasource
     access: proxy

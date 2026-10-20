@@ -1,0 +1,591 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "warehouse-production",
+      "folder": "任仲塑料后台 · 生产报警",
+      "interval": "30s",
+      "rules": [
+        {
+          "uid": "warehouse-db-unavailable",
+          "title": "数据库连接不可用",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "queryType": "instant",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "warehouse-loki",
+              "model": {
+                "datasource": {
+                  "type": "loki",
+                  "uid": "warehouse-loki"
+                },
+                "expr": "sum (count_over_time({application=\"warehouse\",environment=\"production\",service_name=\"app\",level=\"ERROR\"} | json | __error__=\"\" | action=\"DATABASE_UNAVAILABLE\" [2m])) or vector(0)",
+                "queryType": "instant",
+                "instant": true,
+                "refId": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "type": "query",
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "B"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    }
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                }
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "检测到数据库连接异常",
+            "description": "检查数据库容器、连接数和最近发布；外部健康检查会独立检测持续不可用。"
+          },
+          "labels": {
+            "application": "warehouse",
+            "environment": "production",
+            "severity": "critical"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "warehouse-mobile",
+            "group_by": [
+              "grafana_folder",
+              "alertname",
+              "environment",
+              "module"
+            ],
+            "group_wait": "10s",
+            "group_interval": "1m",
+            "repeat_interval": "30m"
+          }
+        },
+        {
+          "uid": "warehouse-log-storage",
+          "title": "认证日志保存失败",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "queryType": "instant",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "warehouse-loki",
+              "model": {
+                "datasource": {
+                  "type": "loki",
+                  "uid": "warehouse-loki"
+                },
+                "expr": "sum (count_over_time({application=\"warehouse\",environment=\"production\",service_name=\"app\",level=\"ERROR\"} | json | __error__=\"\" | action=\"LOG_STORAGE_FAILED\" [5m])) or vector(0)",
+                "queryType": "instant",
+                "instant": true,
+                "refId": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "type": "query",
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        0
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "B"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    }
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                }
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "认证日志无法保存至数据库",
+            "description": "原始认证事件仍在容器日志中，请检查数据库与日志表写入权限。"
+          },
+          "labels": {
+            "application": "warehouse",
+            "environment": "production",
+            "severity": "critical"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "warehouse-mobile",
+            "group_by": [
+              "grafana_folder",
+              "alertname",
+              "environment",
+              "module"
+            ],
+            "group_wait": "10s",
+            "group_interval": "1m",
+            "repeat_interval": "30m"
+          }
+        },
+        {
+          "uid": "warehouse-request-burst",
+          "title": "后台请求异常增多",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "queryType": "instant",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "warehouse-loki",
+              "model": {
+                "datasource": {
+                  "type": "loki",
+                  "uid": "warehouse-loki"
+                },
+                "expr": "sum (count_over_time({application=\"warehouse\",environment=\"production\",service_name=\"app\",level=\"ERROR\"} | json | __error__=\"\" | action=\"REQUEST_ERROR\" [5m])) or vector(0)",
+                "queryType": "instant",
+                "instant": true,
+                "refId": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "type": "query",
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        4
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "B"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    }
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                }
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "最近 5 分钟服务器请求异常达到 5 次",
+            "description": "在 Grafana 按 REQUEST_ERROR 筛选，结合版本、模块和关联编号排查。"
+          },
+          "labels": {
+            "application": "warehouse",
+            "environment": "production",
+            "severity": "warning"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "warehouse-mobile",
+            "group_by": [
+              "grafana_folder",
+              "alertname",
+              "environment",
+              "module"
+            ],
+            "group_wait": "10s",
+            "group_interval": "1m",
+            "repeat_interval": "30m"
+          }
+        },
+        {
+          "uid": "warehouse-business-burst",
+          "title": "业务写入连续异常",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "queryType": "instant",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "warehouse-loki",
+              "model": {
+                "datasource": {
+                  "type": "loki",
+                  "uid": "warehouse-loki"
+                },
+                "expr": "sum by (module) (count_over_time({application=\"warehouse\",environment=\"production\",service_name=\"app\",level=\"ERROR\"} | json | __error__=\"\" | action=\"BUSINESS_WRITE_FAILED\" [5m])) or vector(0)",
+                "queryType": "instant",
+                "instant": true,
+                "refId": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "type": "query",
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        2
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "B"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    }
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                }
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "某业务模块最近 5 分钟写入异常达到 3 次",
+            "description": "在 Grafana 按 BUSINESS_WRITE_FAILED 和模块筛选；普通校验和预期约束冲突不计入。"
+          },
+          "labels": {
+            "application": "warehouse",
+            "environment": "production",
+            "severity": "warning"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "warehouse-mobile",
+            "group_by": [
+              "grafana_folder",
+              "alertname",
+              "environment",
+              "module"
+            ],
+            "group_wait": "10s",
+            "group_interval": "1m",
+            "repeat_interval": "30m"
+          }
+        },
+        {
+          "uid": "warehouse-postgres-burst",
+          "title": "数据库错误增多",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "queryType": "instant",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "warehouse-loki",
+              "model": {
+                "datasource": {
+                  "type": "loki",
+                  "uid": "warehouse-loki"
+                },
+                "expr": "sum (count_over_time({application=\"warehouse\",environment=\"production\",service_name=\"db\",level=\"ERROR\"} [5m])) or vector(0)",
+                "queryType": "instant",
+                "instant": true,
+                "refId": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "type": "query",
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        2
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "B"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    }
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                }
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "最近 5 分钟 PostgreSQL 错误达到 3 次",
+            "description": "查看数据库容器日志，检查查询错误、资源、连接数及最近迁移。"
+          },
+          "labels": {
+            "application": "warehouse",
+            "environment": "production",
+            "severity": "warning"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "warehouse-mobile",
+            "group_by": [
+              "grafana_folder",
+              "alertname",
+              "environment",
+              "module"
+            ],
+            "group_wait": "10s",
+            "group_interval": "1m",
+            "repeat_interval": "30m"
+          }
+        },
+        {
+          "uid": "warehouse-auth-burst",
+          "title": "登录失败异常增多",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "queryType": "instant",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "warehouse-loki",
+              "model": {
+                "datasource": {
+                  "type": "loki",
+                  "uid": "warehouse-loki"
+                },
+                "expr": "sum (count_over_time({application=\"warehouse\",environment=\"production\",service_name=\"app\",category=\"AUTH\"} | json | __error__=\"\" | action=\"LOGIN_FAILED\" [5m])) or vector(0)",
+                "queryType": "instant",
+                "instant": true,
+                "refId": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 0,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "threshold",
+                "expression": "A",
+                "conditions": [
+                  {
+                    "type": "query",
+                    "evaluator": {
+                      "type": "gt",
+                      "params": [
+                        9
+                      ]
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "B"
+                      ]
+                    },
+                    "reducer": {
+                      "type": "last",
+                      "params": []
+                    }
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                }
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "最近 5 分钟登录失败达到 10 次",
+            "description": "检查是否存在集中失败或账号误用；单次输错密码不会单独报警。"
+          },
+          "labels": {
+            "application": "warehouse",
+            "environment": "production",
+            "severity": "warning"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "warehouse-mobile",
+            "group_by": [
+              "grafana_folder",
+              "alertname",
+              "environment",
+              "module"
+            ],
+            "group_wait": "10s",
+            "group_interval": "1m",
+            "repeat_interval": "30m"
+          }
+        }
+      ]
+    }
+  ],
+  "contactPoints": [
+    {
+      "orgId": 1,
+      "name": "warehouse-mobile",
+      "receivers": [
+        {
+          "uid": "warehouse-mobile-webhook",
+          "type": "webhook",
+          "disableResolveMessage": false,
+          "settings": {
+            "url": "http://notifier:8080/grafana",
+            "httpMethod": "POST",
+            "authorization_scheme": "Bearer",
+            "authorization_credentials": "$ALERT_WEBHOOK_TOKEN",
+            "maxAlerts": "20"
+          }
+        }
+      ]
+    }
+  ]
+}

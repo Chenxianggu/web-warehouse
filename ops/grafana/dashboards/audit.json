@@ -1,12 +1,12 @@
 {
   "uid": "warehouse-audit",
-  "title": "仁众 · 操作追溯",
+  "title": "任仲塑料后台 · 操作追溯",
   "tags": [
     "warehouse",
     "developer"
   ],
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "editable": false,
   "timezone": "Asia/Shanghai",
   "time": {

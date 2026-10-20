@@ -2,7 +2,7 @@ apiVersion: 1
 providers:
   - name: Warehouse operations
     orgId: 1
-    folder: 仁众开发运维
+    folder: 任仲塑料后台
     type: file
     disableDeletion: true
     editable: false

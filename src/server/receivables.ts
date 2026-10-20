@@ -1,8 +1,10 @@
-import { auditTransaction, type AuditActor } from "@/server/audit";
+import { businessTransaction, type AuditActor } from "@/server/audit";
 import { Prisma } from "@/generated/prisma/client";
 import { getPrisma } from "@/server/db";
 import { buildReceivables, currency, fullContainerCode, type OrderTotal } from "@/features/receivables/ledger";
 import { paymentSchema, type PaymentRecord, type ReceivableDetail } from "@/features/receivables/schema";
+
+const auditTransaction = businessTransaction("应收收款");
 
 // Keep sub-cent precision until the customer's total is calculated. Include
 // shipped and unshipped orders, and use today's material conversion as before.

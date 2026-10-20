@@ -1,8 +1,10 @@
-import { auditTransaction, type AuditActor } from "@/server/audit";
+import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { serializeCustomerOrders } from "@/server/customer-orders";
 import { Prisma } from "@/generated/prisma/client";
 import { allocateConsignment, consignmentHistory, outboundFilterSchema, type OutboundFilter, type OutboundPage } from "@/features/outbound/schema";
+
+const auditTransaction = businessTransaction("出库管理");
 
 export async function readOutboundOrders(input: OutboundFilter, all = false): Promise<OutboundPage> {
   const filter = outboundFilterSchema.parse(input);

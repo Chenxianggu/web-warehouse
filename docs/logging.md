@@ -2,6 +2,8 @@
 
 日志查看已移到独立的 Grafana。业务系统不再提供日志菜单、`/logs` 页面或 `/logs/export` 接口；业务超级管理员也没有运维后台账号。数据库审计采集继续工作。
 
+生产手机报警、钉钉配置、通知持久队列及外部存活监测见 [手机报警手册](./alerting.md)。首次和升级后均需运行密钥初始化，再启动 `notifier`；手机密钥未配置时不会发送通知。
+
 ## 组成与访问
 
 - **运行排错**：应用及数据库容器 → 仅开放读取操作的 Docker API 代理 → Alloy → Loki → Grafana。
@@ -40,7 +42,7 @@ docker compose --env-file .env.prod -f docker-compose.ops.yml \
 
 ```bash
 docker compose --env-file .env.prod -f docker-compose.ops.yml \
-  up -d grafana loki alloy docker-proxy
+  up -d grafana loki alloy docker-proxy notifier
 ```
 
 4. 在你自己的电脑建立隧道：
@@ -67,7 +69,7 @@ docker compose -f docker-compose.yml up -d db
 $env:POSTGRES_PASSWORD = 'warehouse'
 docker compose -f docker-compose.ops.yml run --rm audit-reader-init
 Remove-Item Env:POSTGRES_PASSWORD
-docker compose -f docker-compose.ops.yml up -d grafana loki alloy docker-proxy
+docker compose -f docker-compose.ops.yml up -d grafana loki alloy docker-proxy notifier
 ```
 
 然后打开 `http://localhost:3300`。本地 Next.js 通常直接运行在宿主机，此时不会经过 Docker 采集；本地数据库容器仍会被采集。开发期间要观察应用实时输出，可查看开发终端；使用生产 Compose 中的应用容器时会自动进入 Loki。
@@ -76,8 +78,8 @@ docker compose -f docker-compose.ops.yml up -d grafana loki alloy docker-proxy
 
 ## 两个看板
 
-- **仁众 · 运行排错**：环境、服务、日志级别、关键词或关联编号筛选；显示日志量、警告/错误数以及最近 1,000 条日志，支持详情和 Explore 查询。应用 JSON 中包含发布版本。
-- **仁众 · 操作追溯**：类型、结果、业务模块、操作人、日志/对象/关联编号筛选；按时间查询最近 1,000 条事件。快照与附加信息列可以打开查看，表格检查器支持导出数据。
+- **任仲塑料后台 · 运行排错**：环境、服务、日志级别、关键词或关联编号筛选；显示日志量、警告/错误数以及最近 1,000 条日志，支持详情和 Explore 查询。应用 JSON 中包含发布版本。
+- **任仲塑料后台 · 操作追溯**：类型、结果、业务模块、操作人、日志/对象/关联编号筛选；按时间查询最近 1,000 条事件。快照与附加信息列可以打开查看，表格检查器支持导出数据。
 
 看板与数据源自动预置，无需手动导入。看板配置在 `ops/grafana/dashboards/`，数据源凭据在 Grafana 内加密保存，接口不会返回明文密码。需要调整看板时修改配置文件，避免直接改容器内文件。
 
@@ -96,7 +98,7 @@ docker compose -f docker-compose.ops.yml up -d grafana loki alloy docker-proxy
 - Loki 默认保留 30 天，使用 TSDB、持久数据卷和 WAL。按时间清理，不会根据剩余磁盘容量自动删日志，需要关注磁盘空间。
 - PostgreSQL 审计与认证默认保留 180 天；清理脚本默认只预览，显式 `--apply` 才删除。当前不创建自动删除任务。
 - 应用、数据库和运维容器的标准输出启用 Docker 日志轮转。
-- 备份 PostgreSQL、`warehouse-ops_grafana_data`、`warehouse-ops_loki_data`、`warehouse-ops_alloy_data` 和 `ops/.secrets/`。Alloy 数据卷保存读取位置。
+- 备份 PostgreSQL、`warehouse-ops_grafana_data`、`warehouse-ops_loki_data`、`warehouse-ops_alloy_data`、`warehouse-ops_alert_data` 和 `ops/.secrets/`。Alloy 数据卷保存读取位置，alert 数据卷保存未发送通知。
 
 完整源码目录可以运行：
 

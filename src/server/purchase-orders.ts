@@ -1,8 +1,11 @@
-import { auditTransaction, type AuditActor } from "@/server/audit";
+import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
+
 import { Prisma } from "@/generated/prisma/client";
 import { shanghaiToday } from "@/features/customer-orders/schema";
 import { purchaseFilterSchema, purchaseInputSchema, deliveryInputSchema, deliveryStatus, type PurchaseFilter, type PurchasePage } from "@/features/purchase-orders/schema";
+
+const auditTransaction = businessTransaction("采购到货");
 
 type Row = Prisma.PurchaseOrderGetPayload<{ include: { deliveries: true } }>;
 function serialize(row: Row, today = shanghaiToday()) {

@@ -29,7 +29,7 @@ services:
       AUDIT_DB_NAME: ${POSTGRES_DB:-warehouse}
     ports:
       - "127.0.0.1:${GRAFANA_PORT:-3300}:3000"
-    secrets: [grafana_admin_password, grafana_secret_key, audit_reader_password]
+    secrets: [grafana_admin_password, grafana_secret_key, audit_reader_password, alert_webhook_token]
     volumes:
       - grafana_data:/var/lib/grafana
       - ./ops/grafana/entrypoint.sh:/etc/warehouse/grafana-entrypoint.sh:ro
@@ -49,6 +49,28 @@ services:
     networks: [backend]
     logging: *logging
     security_opt: [no-new-privileges:true]
+
+  notifier:
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    command: ["node", "/opt/alerting/server.mjs"]
+    secrets: [alert_webhook_token, alert_channel]
+    volumes:
+      - ./ops/alerting:/opt/alerting:ro
+      - alert_data:/var/lib/warehouse-alerts
+    ports:
+      - "127.0.0.1:${ALERT_PORT:-3310}:8080"
+    networks: [frontend]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   alloy:
     image: grafana/alloy:v1.20.1
@@ -80,6 +102,33 @@ services:
     logging: *logging
     security_opt: [no-new-privileges:true]
 
+  alert-test-sink:
+    image: node:22-bookworm-slim
+    profiles: [verification]
+    command: ["node", "/opt/alerting/test-sink.mjs"]
+    secrets: [alert_webhook_token]
+    volumes:
+      - ./ops/alerting:/opt/alerting:ro
+    tmpfs: [/tmp]
+    networks: [frontend]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logging
+
+  alert-persistence-check:
+    image: node:22-bookworm-slim
+    profiles: [verification]
+    entrypoint: ["node", "/opt/alerting/test-persistence.mjs"]
+    volumes:
+      - ./ops/alerting:/opt/alerting:ro
+      - alert_verification_data:/var/lib/warehouse-alerts
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logging
+
   # Explicit one-off setup; no database admin credentials reach Grafana/Alloy/Loki.
   audit-reader-init:
     image: postgres:17-alpine
@@ -110,6 +159,8 @@ volumes:
   grafana_data:
   loki_data:
   alloy_data:
+  alert_data:
+  alert_verification_data:
 
 secrets:
   grafana_admin_password:
@@ -118,3 +169,7 @@ secrets:
     file: ./ops/.secrets/grafana_secret_key
   audit_reader_password:
     file: ./ops/.secrets/audit_reader_password
+  alert_webhook_token:
+    file: ./ops/.secrets/alert_webhook_token
+  alert_channel:
+    file: ./ops/.secrets/alert_channel.json

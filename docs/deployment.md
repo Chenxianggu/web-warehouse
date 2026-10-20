@@ -70,6 +70,8 @@ Logging is available only in the separate developer Grafana console, bound to se
 
 Releases copy `ops/` and `docker-compose.ops.yml` to the application directory without touching `ops/.secrets/`. The operations stack uses its own Compose project, `warehouse-ops`; business deployments do not restart it. First deploy the business release and wait for migrations, then initialize and start the operations stack separately. Existing installations recreate the business containers once to join the audit network and enable log collection labels.
 
+Mobile alerting uses the separate `notifier` service and requires one-time DingTalk secret configuration. On upgrade, rerun `ops/init-secrets.mjs` to create the new secret files before recreating Grafana. See [mobile alerting](./alerting.md) for rules, persistent retries, phone acceptance tests, and deploying `docker-compose.monitor.yml` on a different host. The application health check now calls `/api/health`, including a read-only database probe. Business releases do not automatically activate or restart the monitoring stack.
+
 ## Rollback
 
 Open the **Deploy production** workflow in GitHub Actions, choose **Run workflow**, and provide a previously released tag such as `v1.0.0`. The workflow checks out that tag, rebuilds it on the server, and starts it.

@@ -1,7 +1,9 @@
-import { auditTransaction, type AuditActor } from "@/server/audit";
+import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { customerOrderSchema, orderDateSchema, type OrderRecord } from "@/features/customer-orders/schema";
 import type { Prisma } from "@/generated/prisma/client";
+
+const auditTransaction = businessTransaction("客户订单");
 
 // Server action entry points authorize page access before using these helpers.
 export async function readCustomerOrders(date: string, id?: number): Promise<OrderRecord[]> {

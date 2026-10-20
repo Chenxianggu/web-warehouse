@@ -1,9 +1,12 @@
-import { auditTransaction, type AuditActor } from "@/server/audit";
+import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
+
 import { Prisma } from "@/generated/prisma/client";
 import { consignmentHistory } from "@/features/outbound/schema";
 import { shanghaiToday } from "@/features/customer-orders/schema";
 import { consignmentFilterSchema, consignmentInputSchema, storageFee, type ConsignmentFilter, type ConsignmentPage } from "@/features/consignments/schema";
+
+const auditTransaction = businessTransaction("客户寄存");
 
 export async function readConsignments(input: ConsignmentFilter, all = false): Promise<ConsignmentPage> {
   const filter = consignmentFilterSchema.parse(input);
