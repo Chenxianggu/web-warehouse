@@ -2,6 +2,8 @@
 
 验收日期：2026-10-20（Asia/Shanghai）。范围为本地日志采集、规则评估、通知接收及持久队列，不包含生产部署或真实钉钉手机到达。
 
+后续生产部署与真实钉钉接口验收见 [生产部署记录](./alerting-production.md)。
+
 ## 环境恢复
 
 Docker Desktop 4.73.0 因失效的 `dockerInference`、`engine.sock` 临时 socket 无法启动。完整退出后，将仅包含 socket 的运行目录改名保留备份，确认新运行目录为空，再成功启动 Docker Engine 29.4.3。
