@@ -7,3 +7,5 @@
 - [应收账款](./receivables.md)：应收管理功能、金额口径、整柜关联与验证方式。
 - [价格趋势](./price-trends.md)：采购价格来源、图表规则与验证方式。
 - [开发者日志平台](./logging.md)：独立 Grafana、Loki、Alloy 部署，只读审计看板、SSH 隧道及日志保留策略。
+- [生产部署](./deployment.md)：服务器准备、GitHub 发布环境、版本发布与回滚。
+- [域名与 HTTPS](./nginx.md)：Nginx 配置模板、证书申请与续期、登录跳转配置及 502 排查。

@@ -18,11 +18,19 @@ POSTGRES_DB=warehouse
 POSTGRES_USER=warehouse
 POSTGRES_PASSWORD=replace-with-a-long-random-password
 AUTH_SECRET=replace-with-a-random-secret-at-least-32-characters-long
-AUTH_URL=https://warehouse.example.com
+AUTH_URL=https://yinfengsuliao.com
 IMAGE_REPOSITORY=warehouse-app
 ```
 
 Keep PostgreSQL private. The production Compose file only exposes the application on `127.0.0.1:3000`; terminate HTTPS through a reverse proxy such as Caddy or Nginx.
+
+## Domain and HTTPS
+
+The production URL is `https://yinfengsuliao.com`; `www.yinfengsuliao.com` also points to the server. Follow the [Nginx and HTTPS runbook](./nginx.md) for DNS, Ubuntu firewall rules, initial certificate issuance, renewal, configuration recovery, and authentication URL changes. The versioned templates are in `ops/nginx/`.
+
+Release deployments copy these templates into `/opt/warehouse/ops/nginx/` for reference. Installing them into `/etc/nginx/` is a separate server administration step. Existing Nginx configuration, Certbot certificates and renewal schedules, and `/opt/warehouse/.env.prod` are preserved during application releases.
+
+Keep certificate private keys and production environment files on the server, outside the repository. Updating `AUTH_URL` requires recreating the application container; restarting Nginx or restarting the existing container does not reload Compose environment values.
 
 ## GitHub production environment
 
@@ -31,7 +39,7 @@ Create an Actions environment named `production` and add:
 Environment variables:
 
 - `PROD_APP_DIR`: `/opt/warehouse`
-- `PROD_URL`: the public URL
+- `PROD_URL`: `https://yinfengsuliao.com` (set in GitHub Settings → Environments → production; this controls the deployment link, while the server's `AUTH_URL` controls authentication URLs)
 
 Environment secrets:
 
