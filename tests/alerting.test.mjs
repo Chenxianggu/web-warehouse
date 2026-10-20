@@ -115,7 +115,9 @@ test("corrupt, unwritable and full state must not be acknowledged or discarded",
   const box = await Outbox.open(path, { limit: 1 }); await box.enqueue({ key: "a", text: "a" });
   await assert.rejects(box.enqueue({ key: "b", text: "b" }), /OUTBOX_FULL/);
   assert.equal((await Outbox.open(path)).state.pending.length, 1);
-  const invalid = await Outbox.open(join(path, "child"));
+  // Exercise the write failure directly: Linux rejects this path during read
+  // with ENOTDIR, while Windows may report ENOENT and reach the write instead.
+  const invalid = new Outbox(join(path, "child"), { version: 1, pending: [], sent: {}, monitor: null });
   await assert.rejects(invalid.enqueue({ key: "x", text: "x" }));
   assert.equal(invalid.state.pending.length, 0); assert.equal(invalid.health(true).ok, false);
 });
