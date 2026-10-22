@@ -1,6 +1,7 @@
 import { mkdir, open, readFile, rename } from "node:fs/promises";
 import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
+import { validTask } from "./analysis.mjs";
 
 export async function readState(path) {
   try {
@@ -8,7 +9,9 @@ export async function readState(path) {
     if (state.version !== 1 || !Array.isArray(state.pending) || !state.sent || typeof state.sent !== "object" || Array.isArray(state.sent)
       || Object.values(state.sent).some((value) => !Number.isFinite(value))
       || state.pending.some((item) => !item || typeof item.id !== "string" || typeof item.key !== "string" || typeof item.text !== "string"
-        || !Number.isFinite(item.createdAt) || !Number.isFinite(item.nextAttemptAt) || !Number.isInteger(item.attempts) || item.attempts < 0)) throw new Error("INVALID_STATE");
+        || !Number.isFinite(item.createdAt) || !Number.isFinite(item.nextAttemptAt) || !Number.isInteger(item.attempts) || item.attempts < 0)
+      || (state.analysis !== undefined && (!Array.isArray(state.analysis.pending) || !Number.isInteger(state.analysis.dropped)
+        || state.analysis.pending.some((item) => !validTask(item.task) || !Number.isInteger(item.attempts) || item.attempts < 0 || !Number.isFinite(item.nextAttemptAt))))) throw new Error("INVALID_STATE");
     return state;
   } catch (error) {
     if (error.code === "ENOENT") return { version: 1, pending: [], sent: {}, monitor: null };
@@ -47,10 +50,19 @@ export class Outbox {
     this.tail = operation.catch(() => {});
     return operation;
   }
-  async enqueue(notice, monitor) {
+  async enqueue(notice, monitor, analysis = null) {
     return this.update((state) => {
       const now = this.now();
       if (monitor !== undefined) state.monitor = monitor;
+      if (analysis) {
+        if (!validTask(analysis)) throw new Error("INVALID_ANALYSIS_TASK");
+        state.analysis ??= { pending: [], dropped: 0 };
+        if (!state.analysis.pending.some((item) => item.task.key === analysis.key)) {
+          // Analysis saturation must never block the original mobile alert.
+          if (state.analysis.pending.length >= 100) state.analysis.dropped += 1;
+          else state.analysis.pending.push({ task: analysis, attempts: 0, nextAttemptAt: now });
+        }
+      }
       state.sent = Object.fromEntries(Object.entries(state.sent).filter(([, time]) => now - time < 86400000));
       if (!notice) return "state-only";
       if (state.pending.some((item) => item.key === notice.key) || (state.sent[notice.key] !== undefined && now - state.sent[notice.key] < this.cooldownMs)) return "duplicate";
@@ -62,7 +74,30 @@ export class Outbox {
   health(configured) {
     const oldest = this.state.pending[0];
     const ok = configured && !this.storageFailed && (!oldest || this.now() - oldest.createdAt < 900000);
-    return { ok, configured, pending: this.state.pending.length, storageFailed: this.storageFailed };
+    return { ok, configured, pending: this.state.pending.length, storageFailed: this.storageFailed,
+      analysisPending: this.state.analysis?.pending.length ?? 0, analysisDropped: this.state.analysis?.dropped ?? 0 };
+  }
+  async forwardOne(send) {
+    if (this.analysisBusy) return;
+    this.analysisBusy = true;
+    try {
+      const item = this.state.analysis?.pending[0];
+      if (!item || this.now() < item.nextAttemptAt) return;
+      let delivered = false;
+      const expired = this.now() - item.task.receivedAt > 86400000;
+      if (!expired) { try { await send(item.task); delivered = true; } catch { /* Retry independently of mobile delivery. */ } }
+      await this.update((state) => {
+        const current = state.analysis.pending[0];
+        if (current.task.key !== item.task.key) throw new Error("ANALYSIS_ORDER_CHANGED");
+        if (delivered || expired) {
+          state.analysis.pending.shift();
+          if (expired) state.analysis.dropped += 1;
+        } else {
+          current.attempts += 1;
+          current.nextAttemptAt = this.now() + Math.min(300000, 5000 * 2 ** Math.min(current.attempts - 1, 6));
+        }
+      });
+    } finally { this.analysisBusy = false; }
   }
   async processOne(send) {
     if (this.busy) return;

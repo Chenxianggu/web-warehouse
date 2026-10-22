@@ -2,6 +2,8 @@
 
 支持本地验证和按需生产部署。普通集成验证不发送手机消息；显式带 `--send` 的验收命令会发送真实钉钉消息。实施计划见 [alerting-plan.md](./alerting-plan.md)。
 
+可选 [只读诊断 Agent](./log-agent.md) 在原始报警落盘后异步分析，模型故障不会阻塞手机发送。升级需先重新运行密钥初始化，再重建通知服务；Agent 默认关闭。
+
 ## 消息模板与展示名称
 
 产品展示统一使用“任仲塑料后台”。钉钉报警/恢复消息模板在 `ops/alerting/notification.mjs` 的 `grafanaNotice`；独立存活监测消息在 `ops/alerting/monitor.mjs` 的 `transition`。修改模板后重新创建 `notifier`；外部监测主机需单独更新并重建 `monitor`。已经发送或保存到队列中的消息不会被追溯修改。

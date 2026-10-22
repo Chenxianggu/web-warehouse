@@ -64,6 +64,9 @@ jobs:
       - name: Test mobile alerting and external monitoring
         run: npm run test:alerting
 
+      - name: Test durable log agent with isolated model and Loki fixtures
+        run: npm run test:agent
+
       - name: Test menu permissions
         run: npm run test:menu-permissions && npm run test:menu-permissions:db
         env:
@@ -110,6 +113,8 @@ jobs:
         run: npm run ops:verify -- --restart-loki
       - name: Check production rules and isolated firing/recovery delivery
         run: npm run ops:verify-alerting
+      - name: Check log agent without external network or channel secrets
+        run: docker compose -f docker-compose.ops.yml run --rm agent-verification
       - name: Diagnostics
         if: failure()
         run: docker compose -f docker-compose.ops.yml logs --tail=100

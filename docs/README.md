@@ -8,6 +8,7 @@
 - [价格趋势](./price-trends.md)：采购价格来源、图表规则与验证方式。
 - [开发者日志平台](./logging.md)：独立 Grafana、Loki、Alloy 部署，只读审计看板、SSH 隧道及日志保留策略。
 - [钉钉手机报警](./alerting.md)：生产报警规则、持久通知队列、钉钉加签、独立主机存活监测和验收。
+- [报警诊断 Agent](./log-agent.md)：独立只读 AI 分析、持久任务、模型配置、费用限制及报告查看。
 - [生产报警验收](./alerting-production.md)：生产版本、真实通知验收和回退备份。
 - [生产部署](./deployment.md)：服务器准备、GitHub 发布环境、版本发布与回滚。
 - [域名与 HTTPS](./nginx.md)：Nginx 配置模板、证书申请与续期、登录跳转配置及 502 排查。

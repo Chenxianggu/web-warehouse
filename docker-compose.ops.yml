@@ -54,7 +54,9 @@ services:
     image: node:22-bookworm-slim
     restart: unless-stopped
     command: ["node", "/opt/alerting/server.mjs"]
-    secrets: [alert_webhook_token, alert_channel]
+    secrets: [alert_webhook_token, alert_channel, agent_webhook_token]
+    environment:
+      LOG_AGENT_ENABLED: ${LOG_AGENT_ENABLED:-false}
     volumes:
       - ./ops/alerting:/opt/alerting:ro
       - alert_data:/var/lib/warehouse-alerts
@@ -65,6 +67,29 @@ services:
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     mem_limit: 128m
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  agent:
+    image: node:22-bookworm-slim
+    profiles: [agent]
+    restart: unless-stopped
+    command: ["node", "/opt/agent/server.mjs"]
+    secrets: [agent_webhook_token, agent_model]
+    volumes:
+      - ./ops/agent:/opt/agent:ro
+      - ./ops/alerting:/opt/alerting:ro
+      - agent_data:/var/lib/warehouse-agent
+    networks: [frontend, backend]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    stop_grace_period: 100s
     logging: *logging
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -116,6 +141,21 @@ services:
     security_opt: [no-new-privileges:true]
     logging: *logging
 
+  agent-verification:
+    image: node:22-bookworm-slim
+    profiles: [verification]
+    command: ["node", "--test", "/tests/agent.test.mjs"]
+    volumes:
+      - ./ops/agent:/ops/agent:ro
+      - ./ops/alerting:/ops/alerting:ro
+      - ./tests/agent.test.mjs:/tests/agent.test.mjs:ro
+    network_mode: none
+    tmpfs: [/tmp]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    logging: *logging
+
   alert-persistence-check:
     image: node:22-bookworm-slim
     profiles: [verification]
@@ -161,6 +201,7 @@ volumes:
   alloy_data:
   alert_data:
   alert_verification_data:
+  agent_data:
 
 secrets:
   grafana_admin_password:
@@ -173,3 +214,7 @@ secrets:
     file: ./ops/.secrets/alert_webhook_token
   alert_channel:
     file: ./ops/.secrets/alert_channel.json
+  agent_webhook_token:
+    file: ./ops/.secrets/agent_webhook_token
+  agent_model:
+    file: ./ops/.secrets/agent_model.json
