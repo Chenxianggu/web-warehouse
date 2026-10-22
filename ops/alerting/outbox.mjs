@@ -8,6 +8,8 @@ export async function readState(path) {
     const state = JSON.parse(await readFile(path, "utf8"));
     if (state.version !== 1 || !Array.isArray(state.pending) || !state.sent || typeof state.sent !== "object" || Array.isArray(state.sent)
       || Object.values(state.sent).some((value) => !Number.isFinite(value))
+      || (state.dailySent !== undefined && (!state.dailySent || typeof state.dailySent !== "object" || Array.isArray(state.dailySent)
+        || Object.values(state.dailySent).some((value) => !Number.isFinite(value))))
       || state.pending.some((item) => !item || typeof item.id !== "string" || typeof item.key !== "string" || typeof item.text !== "string"
         || !Number.isFinite(item.createdAt) || !Number.isFinite(item.nextAttemptAt) || !Number.isInteger(item.attempts) || item.attempts < 0)
       || (state.analysis !== undefined && (!Array.isArray(state.analysis.pending) || !Number.isInteger(state.analysis.dropped)
@@ -64,7 +66,9 @@ export class Outbox {
         }
       }
       state.sent = Object.fromEntries(Object.entries(state.sent).filter(([, time]) => now - time < 86400000));
+      if (state.dailySent) state.dailySent = Object.fromEntries(Object.entries(state.dailySent).filter(([, time]) => now - time < 180 * 86400000));
       if (!notice) return "state-only";
+      if (notice.kind === "order-daily" && state.dailySent?.[notice.key] !== undefined) return "duplicate";
       if (state.pending.some((item) => item.key === notice.key) || (state.sent[notice.key] !== undefined && now - state.sent[notice.key] < this.cooldownMs)) return "duplicate";
       if (state.pending.length >= this.limit) throw new Error("OUTBOX_FULL");
       state.pending.push({ id: randomUUID(), ...notice, attempts: 0, createdAt: now, nextAttemptAt: now });
@@ -76,6 +80,11 @@ export class Outbox {
     const ok = configured && !this.storageFailed && (!oldest || this.now() - oldest.createdAt < 900000);
     return { ok, configured, pending: this.state.pending.length, storageFailed: this.storageFailed,
       analysisPending: this.state.analysis?.pending.length ?? 0, analysisDropped: this.state.analysis?.dropped ?? 0 };
+  }
+  dailyStatus(key) {
+    const deliveredAt = this.state.dailySent?.[key];
+    if (deliveredAt !== undefined) return { status: "delivered", deliveredAt };
+    return { status: this.state.pending.some((item) => item.key === key) ? "queued" : "missing" };
   }
   async forwardOne(send) {
     if (this.analysisBusy) return;
@@ -112,6 +121,7 @@ export class Outbox {
         if (current?.id !== item.id) throw new Error("OUTBOX_ORDER_CHANGED");
         if (sent) {
           state.pending.shift(); state.sent[item.key] = this.now();
+          if (item.kind === "order-daily") { state.dailySent ??= {}; state.dailySent[item.key] = this.now(); }
           const entries = Object.entries(state.sent).sort((a, b) => b[1] - a[1]).slice(0, 2000);
           state.sent = Object.fromEntries(entries);
         } else {
@@ -119,7 +129,7 @@ export class Outbox {
           current.nextAttemptAt = this.now() + Math.min(300000, 5000 * 2 ** Math.min(current.attempts - 1, 6));
         }
       });
-      console.info(JSON.stringify({ event: sent ? "ALERT_DELIVERED" : "ALERT_RETRY_SCHEDULED", notificationId: item.key, status: item.status ?? null, verificationId: item.verificationId ?? null, pending: this.state.pending.length }));
+      console.info(JSON.stringify({ event: sent ? "ALERT_DELIVERED" : "ALERT_RETRY_SCHEDULED", notificationId: item.key, status: item.status ?? null, reportDate: item.reportDate ?? null, verificationId: item.verificationId ?? null, pending: this.state.pending.length }));
     } finally { this.busy = false; }
   }
 }

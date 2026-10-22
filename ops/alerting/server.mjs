@@ -4,8 +4,9 @@ import { pathToFileURL } from "node:url";
 import { authorized, grafanaNotice, loadChannel, sendDingTalk } from "./notification.mjs";
 import { Outbox } from "./outbox.mjs";
 import { analysisTask, forwardAnalysis } from "./analysis.mjs";
+import { dailyKey, dailyNotice } from "./daily-notification.mjs";
 
-export function createAlertServer({ token, outbox, configured, analysisEnabled = false, maxBytes = 65536 }) {
+export function createAlertServer({ token, agentToken, outbox, configured, analysisEnabled = false, maxBytes = 65536 }) {
   return createServer(async (request, response) => {
     const reply = (status, value) => {
       response.writeHead(status, { "Content-Type": "application/json", "Cache-Control": "no-store" });
@@ -15,8 +16,16 @@ export function createAlertServer({ token, outbox, configured, analysisEnabled =
       const health = outbox.health(configured);
       reply(health.ok ? 200 : 503, health); return;
     }
-    if (request.method !== "POST" || request.url !== "/grafana") { reply(404, { error: "NOT_FOUND" }); request.resume(); return; }
-    if (!authorized(request.headers.authorization, token)) { reply(401, { error: "UNAUTHORIZED" }); request.resume(); return; }
+    const dailyStatus = request.method === "GET" && request.url.match(/^\/order-daily\/(development|production|testing)\/(\d{4}-\d{2}-\d{2})$/);
+    const dailyPost = request.method === "POST" && request.url === "/order-daily";
+    if (!dailyStatus && !dailyPost && (request.method !== "POST" || request.url !== "/grafana")) { reply(404, { error: "NOT_FOUND" }); request.resume(); return; }
+    const credential = dailyStatus || dailyPost ? agentToken : token;
+    if (!credential || !authorized(request.headers.authorization, credential)) { reply(401, { error: "UNAUTHORIZED" }); request.resume(); return; }
+    if (dailyStatus) {
+      try { reply(200, outbox.dailyStatus(dailyKey(dailyStatus[1], dailyStatus[2]))); }
+      catch { reply(400, { error: "INVALID_REPORT_DATE" }); }
+      return;
+    }
     let size = 0; const chunks = [];
     try {
       for await (const chunk of request) {
@@ -27,9 +36,9 @@ export function createAlertServer({ token, outbox, configured, analysisEnabled =
       let notice; let task = null;
       try {
         const payload = JSON.parse(Buffer.concat(chunks).toString("utf8"));
-        notice = grafanaNotice(payload);
+        notice = dailyPost ? dailyNotice(payload) : grafanaNotice(payload);
         // A malformed AI context may not suppress an otherwise valid alarm.
-        if (analysisEnabled) { try { task = analysisTask(payload); } catch { console.error("AGENT_CONTEXT_INVALID"); } }
+        if (!dailyPost && analysisEnabled) { try { task = analysisTask(payload); } catch { console.error("AGENT_CONTEXT_INVALID"); } }
       }
       catch { reply(400, { error: "INVALID_NOTIFICATION" }); return; }
       const result = await outbox.enqueue(notice, undefined, task);
@@ -50,7 +59,7 @@ export async function main() {
   if (agentToken.length < 32) throw new Error("INVALID_AGENT_TOKEN");
   // Check state storage at startup, before serving or acknowledging webhooks.
   await outbox.enqueue(null);
-  const server = createAlertServer({ token, outbox, configured: Boolean(config), analysisEnabled });
+  const server = createAlertServer({ token, agentToken, outbox, configured: Boolean(config), analysisEnabled });
   server.requestTimeout = 15000; server.headersTimeout = 10000;
   server.listen(Number(process.env.ALERT_PORT ?? 8080), "0.0.0.0");
   const tick = () => config && outbox.processOne((text) => sendDingTalk(config, text)).catch(() => console.error("ALERT_STORAGE_FAILURE"));

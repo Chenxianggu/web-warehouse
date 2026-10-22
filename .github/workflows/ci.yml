@@ -67,6 +67,11 @@ jobs:
       - name: Test durable log agent with isolated model and Loki fixtures
         run: npm run test:agent
 
+      - name: Test order daily reports and isolated SQL permissions
+        run: npm run test:order-daily && npm run test:order-daily:db
+        env:
+          RUN_DATABASE_TESTS: "1"
+
       - name: Test menu permissions
         run: npm run test:menu-permissions && npm run test:menu-permissions:db
         env:

@@ -75,16 +75,24 @@ services:
       retries: 3
 
   agent:
-    image: node:22-bookworm-slim
+    image: warehouse-log-agent:local
+    build: ./ops/agent
     profiles: [agent]
     restart: unless-stopped
     command: ["node", "/opt/agent/server.mjs"]
-    secrets: [agent_webhook_token, agent_model]
+    secrets: [agent_webhook_token, agent_model, order_reporter_password]
+    environment:
+      ORDER_DAILY_ENABLED: ${ORDER_DAILY_ENABLED:-false}
+      ORDER_DAILY_AT: ${ORDER_DAILY_AT:-08:00}
+      ORDER_DAILY_NOTIFY: ${ORDER_DAILY_NOTIFY:-true}
+      ORDER_DAILY_ENVIRONMENT: ${ORDER_DAILY_ENVIRONMENT:-development}
+      AUDIT_DB_HOST: ${AUDIT_DB_HOST:-warehouse-db}
+      AUDIT_DB_NAME: ${POSTGRES_DB:-warehouse}
     volumes:
       - ./ops/agent:/opt/agent:ro
       - ./ops/alerting:/opt/alerting:ro
       - agent_data:/var/lib/warehouse-agent
-    networks: [frontend, backend]
+    networks: [frontend, backend, audit]
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
@@ -144,11 +152,12 @@ services:
   agent-verification:
     image: node:22-bookworm-slim
     profiles: [verification]
-    command: ["node", "--test", "/tests/agent.test.mjs"]
+    command: ["node", "--test", "/tests/agent.test.mjs", "/tests/order-daily.test.mjs"]
     volumes:
       - ./ops/agent:/ops/agent:ro
       - ./ops/alerting:/ops/alerting:ro
       - ./tests/agent.test.mjs:/tests/agent.test.mjs:ro
+      - ./tests/order-daily.test.mjs:/tests/order-daily.test.mjs:ro
     network_mode: none
     tmpfs: [/tmp]
     read_only: true
@@ -170,6 +179,21 @@ services:
     logging: *logging
 
   # Explicit one-off setup; no database admin credentials reach Grafana/Alloy/Loki.
+  order-reporter-init:
+    image: postgres:17-alpine
+    profiles: [setup]
+    entrypoint: ["/bin/sh", "/setup/init-order-reporter.sh"]
+    environment:
+      PGHOST: ${AUDIT_DB_HOST:-warehouse-db}
+      PGDATABASE: ${POSTGRES_DB:-warehouse}
+      PGUSER: ${POSTGRES_USER:-warehouse}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-}
+    secrets: [order_reporter_password]
+    volumes:
+      - ./ops/postgres:/setup:ro
+    networks: [audit]
+    logging: *logging
+
   audit-reader-init:
     image: postgres:17-alpine
     profiles: [setup]
@@ -218,3 +242,5 @@ secrets:
     file: ./ops/.secrets/agent_webhook_token
   agent_model:
     file: ./ops/.secrets/agent_model.json
+  order_reporter_password:
+    file: ./ops/.secrets/order_reporter_password

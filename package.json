@@ -11,6 +11,8 @@
     "test:logs": "tsx --test tests/logs.test.ts",
     "test:alerting": "node --test tests/alerting.test.mjs && tsx --test tests/runtime-alerting.test.ts",
     "test:agent": "node --test tests/agent.test.mjs",
+    "test:order-daily": "node --test tests/order-daily.test.mjs",
+    "test:order-daily:db": "node --test tests/order-daily.integration.test.mjs",
     "alerts:test": "node ops/alerting/test-mobile.mjs",
     "test:menu-permissions": "tsx --test tests/menu-permissions.test.ts",
     "test:menu-permissions:db": "tsx --test tests/menu-permissions.integration.test.ts",
