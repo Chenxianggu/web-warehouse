@@ -20,6 +20,8 @@ function PopoverContent({
   className,
   align = "center",
   sideOffset = 4,
+  onWheel,
+  onTouchMove,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
   return (
@@ -33,6 +35,16 @@ function PopoverContent({
           className
         )}
         {...props}
+        // Portaled content sits outside Dialog.Content in the DOM. Keep its
+        // native scrolling from reaching the dialog's document scroll guard.
+        onWheel={(event) => {
+          onWheel?.(event)
+          event.stopPropagation()
+        }}
+        onTouchMove={(event) => {
+          onTouchMove?.(event)
+          event.stopPropagation()
+        }}
       />
     </PopoverPrimitive.Portal>
   )
