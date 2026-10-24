@@ -15,6 +15,7 @@ type Material = {
   name: string;
   packsPerTon: number;
   totalPack: number;
+  honghaiPack: number;
   exTaxAvgPrice: number | null;
   createdAt: string;
 };
@@ -163,7 +164,7 @@ export function InventoryWorkbench({ initialData }: { initialData: InventoryData
 
       <section className={styles.directory} aria-labelledby="inventory-directory-heading" aria-busy={pending}>
         <div className={styles.directoryHeader}>
-          <div><h2 id="inventory-directory-heading">塑料库存目录</h2><p>库存按入库记录汇总；吨数依据每种塑料的每吨包数换算。</p></div>
+          <div><h2 id="inventory-directory-heading">塑料库存目录</h2><p>本仓库与宏海仓分别计数；吨数依据每种塑料的每吨包数换算，×均价为本仓库成本。</p></div>
           <span className={styles.count}>PAGE {page} / {pages}</span>
         </div>
         <div className={styles.tableWrap}>
@@ -171,7 +172,7 @@ export function InventoryWorkbench({ initialData }: { initialData: InventoryData
             <div className={styles.empty}><Boxes aria-hidden="true" /><strong>暂无匹配的塑料记录</strong><span>调整搜索条件，或新增第一种塑料。</span></div>
           ) : (
             <table className={styles.table}>
-              <thead><tr><th>塑料编号</th><th>塑料名称</th><th>每吨包数</th><th>总包数</th><th>约（吨）</th>{initialData.canViewAveragePrice && <th>×均价</th>}<th>操作</th></tr></thead>
+              <thead><tr><th>塑料编号</th><th>塑料名称</th><th>每吨包数</th><th>本仓库（包）</th><th>约（吨）</th><th>宏海仓</th>{initialData.canViewAveragePrice && <th>×均价</th>}<th>操作</th></tr></thead>
               <tbody>{rows.map((row) => (
                 <tr key={row.id}>
                   <td className={styles.code}>{row.code}</td>
@@ -179,6 +180,7 @@ export function InventoryWorkbench({ initialData }: { initialData: InventoryData
                   <td className={styles.numeric}>{row.packsPerTon}</td>
                   <td className={styles.packCount}>{row.totalPack.toLocaleString("zh-CN", { maximumFractionDigits: 2 })}</td>
                   <td className={styles.numeric}>{formatTons(row)}</td>
+                  <td className={styles.packCount}>{row.honghaiPack.toLocaleString("zh-CN", { maximumFractionDigits: 2 })} 包<small className={styles.warehouseTons}>约 {(row.honghaiPack / (row.packsPerTon || 40)).toFixed(3)} 吨</small></td>
                   {initialData.canViewAveragePrice && <td className={styles.price}>{formatPrice(row.exTaxAvgPrice)}</td>}
                   <td><div className={styles.actions}><Button className={styles.secondaryButton} variant="outline" onClick={() => openEdit(row)}><Pencil size={13} />编辑</Button><Button className={styles.dangerButton} variant="outline" onClick={() => setDeleteTarget(row)}><Trash2 size={13} />删除</Button></div></td>
                 </tr>

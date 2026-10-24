@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/server/db";
 import { requirePageAccess } from "@/server/menu-permissions";
+import { summarizeStock } from "@/features/inventory/stock";
 
 const path = "/stock";
-const INBOUND_TAX_DIVISOR = 1.13;
 
 function text(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value.trim() : "";
@@ -52,7 +52,7 @@ export async function listMaterials(keyword = "", page = 1, pageSize = 10) {
   const inbound = materials.length
     ? await db.inboundRecord.findMany({
         where: { code: { in: materials.map((item) => item.code), mode: "insensitive" } },
-        select: { code: true, packCount: true, inboundUnitPrice: true, taxIncluded: true },
+        select: { code: true, packCount: true, inboundUnitPrice: true, taxIncluded: true, warehouse: true },
       })
     : [];
   const inboundByCode = new Map<string, typeof inbound>();
@@ -65,24 +65,14 @@ export async function listMaterials(keyword = "", page = 1, pageSize = 10) {
 
   const data = materials.map((material) => {
     const records = inboundByCode.get(material.code.trim().toLocaleLowerCase()) ?? [];
-    let totalPack = 0;
-    let pricedTons = 0;
-    let exTaxValue = 0;
-    for (const record of records) {
-      const packs = Number(record.packCount);
-      totalPack += packs;
-      if (record.inboundUnitPrice !== null) {
-        const tons = packs / material.packsPerTon;
-        const price = Number(record.inboundUnitPrice) / (record.taxIncluded ? INBOUND_TAX_DIVISOR : 1);
-        pricedTons += tons;
-        exTaxValue += tons * price;
-      }
-    }
     return {
       ...material,
       createdAt: material.createdAt.toISOString(),
-      totalPack,
-      exTaxAvgPrice: pricedTons > 0 ? exTaxValue / pricedTons : null,
+      ...summarizeStock(records.map((record) => ({
+        ...record,
+        packCount: Number(record.packCount),
+        inboundUnitPrice: record.inboundUnitPrice === null ? null : Number(record.inboundUnitPrice),
+      })), material.packsPerTon),
     };
   });
 

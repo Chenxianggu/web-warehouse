@@ -5,6 +5,7 @@ import { auditTransaction } from "@/server/audit";
 import { revalidatePath } from "next/cache";
 import { getPrisma } from "@/server/db";
 import { requirePageAccess } from "@/server/menu-permissions";
+import { warehouseSchema } from "@/features/inventory/warehouse";
 
 const path = "/inbound-orders";
 const SHANGHAI_OFFSET = "+08:00";
@@ -61,6 +62,7 @@ export async function listInboundRecords(startDate = "", endDate = "", page = 1,
         packCount: true,
         inboundUnitPrice: true,
         taxIncluded: true,
+        warehouse: true,
         createdAt: true,
       },
     }),
@@ -87,10 +89,12 @@ export async function createInboundRecord(formData: FormData) {
   const packCount = Number(text(formData.get("packCount")));
   const inboundUnitPrice = Number(text(formData.get("inboundUnitPrice")));
   const taxIncluded = text(formData.get("taxIncluded")) === "true";
+  const warehouse = warehouseSchema.safeParse(formData.get("warehouse") ?? "MAIN");
   const createdAtText = text(formData.get("createdAt"));
   const createdAt = createdAtText ? parseDateStart(createdAtText) : null;
 
   if (!code || !name) return { ok: false, message: "塑料编号和塑料名称不能为空" };
+  if (!warehouse.success) return { ok: false, message: "请选择本仓库或宏海仓" };
   if (!Number.isInteger(packCount) || packCount < 1) return { ok: false, message: "包数必须是大于零的整数" };
   if (!Number.isFinite(inboundUnitPrice) || inboundUnitPrice < 0) return { ok: false, message: "入库价格必须是有效的非负数" };
   if (createdAtText && !createdAt) return { ok: false, message: "入库日期格式不正确" };
@@ -102,6 +106,7 @@ export async function createInboundRecord(formData: FormData) {
       packCount,
       inboundUnitPrice,
       taxIncluded,
+      warehouse: warehouse.data,
       ...(createdAt ? { createdAt } : {}),
     },
   }));

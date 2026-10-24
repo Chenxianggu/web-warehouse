@@ -2,6 +2,7 @@ import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
 import { serializeCustomerOrders } from "@/server/customer-orders";
 import { Prisma } from "@/generated/prisma/client";
+import { warehouseSchema, warehouseLabel, type Warehouse } from "@/features/inventory/warehouse";
 import { allocateConsignment, consignmentHistory, outboundFilterSchema, type OutboundFilter, type OutboundPage } from "@/features/outbound/schema";
 
 const auditTransaction = businessTransaction("出库管理");
@@ -36,10 +37,11 @@ async function lockStock(tx: Prisma.TransactionClient, codes: string[]) {
   }
 }
 
-export async function shipCustomerOrder(id: number, actor?: AuditActor) {
+export async function shipCustomerOrder(id: number, actor?: AuditActor, warehouse?: Warehouse) {
   if (!Number.isSafeInteger(id) || id < 1) return { ok: false as const, message: "订单不存在" };
+  if (warehouse !== undefined && !warehouseSchema.safeParse(warehouse).success) return { ok: false as const, message: "请选择本仓库或宏海仓" };
   return auditTransaction(actor, async (tx) => {
-    const changed = await tx.customerOrder.updateMany({ where: { id, isShipped: false }, data: { isShipped: true } });
+    const changed = await tx.customerOrder.updateMany({ where: { id, isShipped: false }, data: { isShipped: true, ...(warehouse ? { warehouse } : {}) } });
     if (!changed.count) return { ok: false as const, message: "订单不存在或已出库，不能重复出库" };
     const order = await tx.customerOrder.findUniqueOrThrow({ where: { id }, include: { items: { orderBy: { id: "asc" } } } });
     if (!order.items.length) throw new Error("订单明细为空");
@@ -53,12 +55,12 @@ export async function shipCustomerOrder(id: number, actor?: AuditActor) {
     }
     const warnings: string[] = [];
     for (const [key, { code, packs }] of needs) {
-      const records = await tx.inboundRecord.findMany({ where: { code: { equals: code, mode: "insensitive" } }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] });
+      const records = await tx.inboundRecord.findMany({ where: { code: { equals: code, mode: "insensitive" }, warehouse: order.warehouse }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] });
       const available = records.reduce((sum, row) => sum.add(row.packCount), new Prisma.Decimal(0));
-      if (available.lt(packs)) warnings.push(`塑料 ${code} 库存不足，需要 ${packs} 包，但只有 ${available} 包`);
+      if (available.lt(packs)) warnings.push(`${warehouseLabel(order.warehouse)}塑料 ${code} 库存不足，需要 ${packs} 包，但只有 ${available} 包`);
       if (!records.length) {
         const material = await tx.material.findFirst({ where: { code: { equals: code, mode: "insensitive" } } });
-        await tx.inboundRecord.create({ data: { code, name: material?.name || code, packCount: packs.negated() } });
+        await tx.inboundRecord.create({ data: { code, name: material?.name || code, packCount: packs.negated(), warehouse: order.warehouse } });
       } else {
         let remaining = packs;
         for (const record of records) {
@@ -97,7 +99,7 @@ export async function unshipCustomerOrder(id: number, actor?: AuditActor) {
     const order = await tx.customerOrder.findUniqueOrThrow({ where: { id }, include: { items: true } });
     await lockStock(tx, order.items.map((item) => item.code));
     // The reference system restores stock as fresh, unpriced inbound rows.
-    await tx.inboundRecord.createMany({ data: order.items.map((item) => ({ code: item.code, name: item.name || item.code, packCount: item.packCount })) });
+    await tx.inboundRecord.createMany({ data: order.items.map((item) => ({ code: item.code, name: item.name || item.code, packCount: item.packCount, warehouse: order.warehouse })) });
     if (order.deductFutures) {
       const codes = [...new Set(order.items.map((item) => item.code))].sort();
       for (const code of codes) {

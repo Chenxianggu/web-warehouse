@@ -1,5 +1,6 @@
 import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
+import type { Warehouse } from "@/features/inventory/warehouse";
 
 import { Prisma } from "@/generated/prisma/client";
 import { shanghaiToday } from "@/features/customer-orders/schema";
@@ -13,7 +14,7 @@ function serialize(row: Row, today = shanghaiToday()) {
   const deliverySum = due.reduce((sum, d) => sum.add(d.quantity), new Prisma.Decimal(0)).toNumber();
   const last = due.map((d) => d.deliveryDate.toISOString().slice(0, 10)).sort().at(-1);
   return { id: row.id, updatedAt: row.updatedAt.toISOString(), orderDate: row.orderDate.toISOString().slice(0, 10), supplier: row.supplier || "", itemCode: row.itemCode, category: row.category,
-    quantity: Number(row.quantity), unitPrice: Number(row.unitPrice), amount: Number(row.amount), taxIncluded: row.taxIncluded,
+    quantity: Number(row.quantity), unitPrice: Number(row.unitPrice), amount: Number(row.amount), taxIncluded: row.taxIncluded, warehouse: row.warehouse,
     remittanceInCompany: row.remittanceInCompany || "", remittanceOutCompany: row.remittanceOutCompany || "", remittanceDate: row.remittanceDate?.toISOString().slice(0, 10) || "",
     deliveryInfo: row.deliveryInfo || "", arrivalDate: last && deliverySum >= Number(row.quantity) - .001 ? last : row.arrivalDate?.toISOString().slice(0, 10) || "",
     status: row.status === "finished" ? "finished" as const : "unfinished" as const, remark: row.remark || "", deliverySum,
@@ -29,14 +30,14 @@ async function lockPurchases(tx: Prisma.TransactionClient) {
 async function lockStock(tx: Prisma.TransactionClient, code: string) {
   await tx.$queryRaw`SELECT pg_advisory_xact_lock(73812, hashtext(${code.trim().toLowerCase()}))::text`;
 }
-async function inbound(tx: Prisma.TransactionClient, row: { itemCode: string; quantity: Prisma.Decimal; unitPrice: Prisma.Decimal; taxIncluded: boolean }, sourceType: string, sourceId: number) {
+async function inbound(tx: Prisma.TransactionClient, row: { itemCode: string; quantity: Prisma.Decimal; unitPrice: Prisma.Decimal; taxIncluded: boolean; warehouse: Warehouse }, sourceType: string, sourceId: number) {
   await lockStock(tx, row.itemCode);
   const material = await tx.material.findFirst({ where: { code: { equals: row.itemCode, mode: "insensitive" } } });
   const packs = Math.round(Number(row.quantity) * (material?.packsPerTon || 40));
   if (packs <= 0) return;
   const name = material?.name || row.itemCode;
   if (!material) await tx.material.create({ data: { code: row.itemCode, name } });
-  await tx.inboundRecord.create({ data: { code: row.itemCode, name, packCount: packs, inboundUnitPrice: row.unitPrice, taxIncluded: row.taxIncluded, sourceType, sourceId } });
+  await tx.inboundRecord.create({ data: { code: row.itemCode, name, packCount: packs, inboundUnitPrice: row.unitPrice, taxIncluded: row.taxIncluded, warehouse: row.warehouse, sourceType, sourceId } });
 }
 async function rollbackInbound(tx: Prisma.TransactionClient, code: string, sourceType: string, sourceId: number) {
   await lockStock(tx, code);
@@ -96,6 +97,15 @@ export async function persistPurchaseOrder(input: unknown, actor?: AuditActor) {
     await lockPurchases(tx);
     const current = id ? await tx.purchaseOrder.findUnique({ where: { id }, include: { deliveries: true } }) : null;
     if (id && (!current || current.updatedAt.toISOString() !== updatedAt)) return { ok: false as const, message: "记录已发生变化，请刷新后重试" };
+    if (current && current.warehouse !== fields.warehouse) {
+      // A consumed receipt cannot be moved to another warehouse by editing an order.
+      const received = current.status === "finished" || current.deliveries.some((d) => d.synced) ||
+        await tx.inboundRecord.count({ where: { OR: [
+          { sourceType: "purchase_order", sourceId: current.id },
+          { sourceType: "purchase_delivery", sourceId: { in: current.deliveries.map((d) => d.id) } },
+        ] } }) > 0;
+      if (received) return { ok: false as const, message: "已有入库记录，不能修改入库仓库" };
+    }
     if (current?.deliveries.length && current.deliveries.reduce((s, d) => s.add(d.quantity), new Prisma.Decimal(0)).gt(fields.quantity)) return { ok: false as const, message: "订货数量不能小于已登记分批总量" };
     if (current?.deliveries.some((d) => d.synced) && current.itemCode !== fields.itemCode) return { ok: false as const, message: "已有分批入库，不能修改货号" };
     const status = fields.arrivalDate && fields.arrivalDate <= shanghaiToday() ? "finished" : fields.status;

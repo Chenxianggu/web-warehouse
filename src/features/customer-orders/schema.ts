@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { warehouseSchema, type Warehouse } from "@/features/inventory/warehouse";
 
 export const orderDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
   const date = new Date(`${value}T00:00:00Z`);
@@ -14,6 +15,7 @@ export const customerOrderSchema = z.object({
   receiver: requiredText(255, "请输入收货单位"),
   orderDate: orderDateSchema,
   deductFutures: z.boolean(),
+  warehouse: warehouseSchema.default("MAIN"),
   items: z.array(z.object({
     code: requiredText(50, "明细的编号/名称/包数必填"),
     name: requiredText(255, "明细的编号/名称/包数必填"),
@@ -28,6 +30,7 @@ export type OrderItem = { code: string; name: string; packCount: number; unitPri
 export type OrderRecord = {
   id: number; orderNo: string; customerCode: string; customerName: string;
   receiver: string; orderDate: string; isShipped: boolean; deductFutures: boolean;
+  warehouse: Warehouse;
   createdAt: string; items: OrderItem[];
 };
 export type OrderOptions = {

@@ -5,15 +5,16 @@ import { AlertDialog, Dialog } from "radix-ui";
 import { ClipboardList, Plus, Save, Trash2, X, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/date-picker";
+import { warehouseLabel, warehouseOptions, type Warehouse } from "@/features/inventory/warehouse";
 import { lineSubtotal, type OrderOptions, type OrderRecord } from "@/features/customer-orders/schema";
 import { deleteCustomerOrder, getCustomerOrder, listCustomerOrders, listOrderReceivers, saveCustomerOrder } from "./actions";
 import { OrderCombobox } from "./order-combobox";
 import styles from "./orders.module.css";
 
 type DraftItem = { key: number; code: string; name: string; packCount: string; unitPrice: string; packsPerTon: number; remark: string };
-type Draft = { id: number | null; orderNo: string; orderDate: string; customerCode: string; customerName: string; receiver: string; deductFutures: boolean; items: DraftItem[] };
+type Draft = { id: number | null; orderNo: string; orderDate: string; customerCode: string; customerName: string; receiver: string; deductFutures: boolean; warehouse: Warehouse; items: DraftItem[] };
 const blankItem = (key: number): DraftItem => ({ key, code: "", name: "", packCount: "", unitPrice: "", packsPerTon: 40, remark: "" });
-const blankForm = (date: string, key: number): Draft => ({ id: null, orderNo: "", orderDate: date, customerCode: "", customerName: "", receiver: "", deductFutures: false, items: [blankItem(key)] });
+const blankForm = (date: string, key: number): Draft => ({ id: null, orderNo: "", orderDate: date, customerCode: "", customerName: "", receiver: "", deductFutures: false, warehouse: "MAIN", items: [blankItem(key)] });
 const money = (value: number) => `¥${value.toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export function OrdersWorkbench({ initialOrders, options, today }: { initialOrders: OrderRecord[]; options: OrderOptions; today: string }) {
@@ -97,11 +98,11 @@ export function OrdersWorkbench({ initialOrders, options, today }: { initialOrde
           <DatePicker id="orders-list-date" label="订单列表日期" value={listDate} onValueChange={changeDate} disabled={pending} />
         </header>
         {listError ? <div className={styles.empty}><p>订单列表加载失败</p><button className={styles.secondaryButton} disabled={pending} onClick={() => startTransition(async () => { await refresh(listDate); })}>重新加载</button></div> :
-        <div className={styles.listScroll}><table className={styles.orderTable}><thead><tr><th>订单号</th><th>客户编号</th><th>客户姓名</th><th>状态</th><th>操作</th></tr></thead>
+        <div className={styles.listScroll}><table className={styles.orderTable}><thead><tr><th>订单号</th><th>客户编号</th><th>客户姓名</th><th>出库仓库</th><th>状态</th><th>操作</th></tr></thead>
           <tbody>{orders.map((order) => <tr key={order.id} data-selected={form.id === order.id || undefined}
             onClick={(event) => { if (pending || (event.target as HTMLElement).closest("button")) return; const button = event.currentTarget.querySelector("button"); if (button) openOrder(order, button); }}>
             <td><button type="button" className={styles.orderLink} disabled={pending} onClick={(event) => openOrder(order, event.currentTarget)} aria-label={`${order.isShipped ? "查看" : "编辑"}订单 ${order.orderNo}`}>{order.orderNo}</button></td>
-            <td className={styles.code}>{order.customerCode}</td><td>{order.customerName}</td><td><span className={styles.status} data-shipped={order.isShipped}>{order.isShipped ? "已出库" : "未出库"}</span></td>
+            <td className={styles.code}>{order.customerCode}</td><td>{order.customerName}</td><td>{warehouseLabel(order.warehouse)}</td><td><span className={styles.status} data-shipped={order.isShipped}>{order.isShipped ? "已出库" : "未出库"}</span></td>
             <td>{order.isShipped ? <span className={styles.muted}>—</span> : <button type="button" className={styles.deleteButton} disabled={pending} aria-label={`删除订单 ${order.orderNo}`} onClick={() => setDeleteTarget(order)}><Trash2 aria-hidden="true" /><span>删除</span></button>}</td>
           </tr>)}</tbody></table>
           {!orders.length && <div className={styles.empty}><ClipboardList aria-hidden="true" /><strong>暂无订单</strong><p>在右侧录入并保存客户订单。</p></div>}
@@ -126,6 +127,7 @@ export function OrdersWorkbench({ initialOrders, options, today }: { initialOrde
               onChange={(receiver) => setForm((current) => ({ ...current, receiver }))} onSelect={({ code }) => setForm((current) => ({ ...current, receiver: code }))} />
               <label className={styles.checkbox}><input type="checkbox" checked={form.receiver === "自提"} onChange={(event) => setForm((current) => ({ ...current, receiver: event.target.checked ? "自提" : "" }))} />自提</label></div></div>
           </div>
+          <fieldset className={styles.warehouseField}><legend>出库仓库</legend><div>{warehouseOptions.map((option) => <label className={styles.checkbox} key={option.value}><input type="radio" name="warehouse" value={option.value} checked={form.warehouse === option.value} onChange={() => setForm((current) => ({ ...current, warehouse: option.value }))} />{option.label}</label>)}</div></fieldset>
           <label className={styles.checkbox}><input type="checkbox" checked={form.deductFutures} onChange={(event) => setForm((current) => ({ ...current, deductFutures: event.target.checked }))} />是否扣寄仓数量</label>
           <div className={styles.itemsHeader}><h3>订单明细</h3><button type="button" className={styles.secondaryButton} onClick={() => { const item = blankItem(nextKey.current++); setForm((current) => ({ ...current, items: [...current.items, item] })); }}><Plus aria-hidden="true" />添加塑料</button></div>
           <div className={styles.items}>
@@ -157,7 +159,7 @@ export function OrdersWorkbench({ initialOrders, options, today }: { initialOrde
     <Dialog.Root open={detail !== null} onOpenChange={(open) => { if (!open) setDetail(null); }}>
       <Dialog.Portal><Dialog.Overlay className={styles.backdrop} /><Dialog.Content className={styles.dialog} onCloseAutoFocus={(event) => { event.preventDefault(); lastRowButton.current?.focus(); }}>
         <header className={styles.detailHeader}><div><Dialog.Title className={styles.dialogTitle}>订单详情</Dialog.Title><Dialog.Description className={styles.dialogDescription}>已出库的订单仅供查看。</Dialog.Description></div><Dialog.Close asChild><button className={styles.iconButton} aria-label="关闭订单详情"><X aria-hidden="true" /></button></Dialog.Close></header>
-        {detail && <><dl className={styles.descriptions}><div><dt>订单号</dt><dd className={styles.code}>{detail.orderNo}</dd></div><div><dt>订单日期</dt><dd>{detail.orderDate}</dd></div><div><dt>客户编号</dt><dd>{detail.customerCode}</dd></div><div><dt>客户姓名</dt><dd>{detail.customerName}</dd></div><div><dt>收货单位</dt><dd>{detail.receiver}</dd></div><div><dt>创建时间</dt><dd>{new Date(detail.createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}</dd></div></dl>
+        {detail && <><dl className={styles.descriptions}><div><dt>订单号</dt><dd className={styles.code}>{detail.orderNo}</dd></div><div><dt>订单日期</dt><dd>{detail.orderDate}</dd></div><div><dt>客户编号</dt><dd>{detail.customerCode}</dd></div><div><dt>客户姓名</dt><dd>{detail.customerName}</dd></div><div><dt>收货单位</dt><dd>{detail.receiver}</dd></div><div><dt>出库仓库</dt><dd>{warehouseLabel(detail.warehouse)}</dd></div><div><dt>创建时间</dt><dd>{new Date(detail.createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}</dd></div></dl>
           <h3 className={styles.detailSubtitle}>订单明细</h3><div className={styles.detailScroll}><table className={styles.detailTable}><thead><tr><th>塑料编号</th><th>塑料名称</th><th>包数</th><th>单价</th><th>备注</th><th>小计</th></tr></thead><tbody>{detail.items.map((item, index) => <tr key={index}><td className={styles.code}>{item.code}</td><td>{item.name}</td><td>{item.packCount}</td><td>{money(item.unitPrice)}</td><td>{item.remark || "—"}</td><td>{money(lineSubtotal(item))}</td></tr>)}</tbody></table></div>
           <p className={styles.total}>合计：<strong>{money(detail.items.reduce((sum, item) => sum + lineSubtotal(item), 0))}</strong></p>
         </>}

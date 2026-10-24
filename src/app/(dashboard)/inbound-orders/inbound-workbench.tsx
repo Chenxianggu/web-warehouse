@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NumberInput } from "@/components/number-input";
 import { DatePicker, DateRangePicker, type DateRangeValue } from "@/components/date-picker";
+import { warehouseOptions, warehouseLabel, type Warehouse } from "@/features/inventory/warehouse";
 import { createInboundRecord, deleteInboundRecord, listInboundRecords } from "./actions";
 import styles from "./inbound.module.css";
 
@@ -20,6 +21,7 @@ type InboundRecord = {
   packCount: number;
   inboundUnitPrice: number | null;
   taxIncluded: boolean;
+  warehouse: Warehouse;
   createdAt: string;
 };
 type InboundData = { data: InboundRecord[]; total: number; page: number; pageSize: number };
@@ -29,6 +31,7 @@ const emptyForm = {
   packCount: "",
   inboundUnitPrice: "",
   taxIncluded: "false",
+  warehouse: "MAIN",
   createdAt: "",
 };
 
@@ -248,6 +251,12 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
             <label htmlFor="inbound-price">入库价格</label>
             <NumberInput id="inbound-price" name="inboundUnitPrice" label="入库价格" min={0} step={0.01} suffix="元 / 吨" value={form.inboundUnitPrice} onValueChange={(value) => setForm((current) => ({ ...current, inboundUnitPrice: value }))} placeholder="0.00" required />
           </div>
+          <fieldset className={styles.taxField} disabled={pending}>
+            <legend>入库仓库</legend>
+            <div className={styles.taxOptions}>
+              {warehouseOptions.map((option) => <label key={option.value} data-selected={form.warehouse === option.value || undefined}><input type="radio" name="warehouse" value={option.value} checked={form.warehouse === option.value} onChange={(event) => setForm((current) => ({ ...current, warehouse: event.target.value }))} /><span>{option.label}</span></label>)}
+            </div>
+          </fieldset>
           <fieldset className={styles.taxField}>
             <legend>是否含×</legend>
             <div className={styles.taxOptions}>
@@ -279,11 +288,12 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
             <div className={styles.empty}><PackageCheck aria-hidden="true" /><strong>暂无入库记录</strong><span>填写上方指令，或调整日期范围。</span></div>
           ) : (
             <table className={styles.table}>
-              <thead><tr><th>塑料编号</th><th>塑料名称</th><th>包数</th><th>入库价格</th><th>是否含×</th><th>时间</th><th>操作</th></tr></thead>
+              <thead><tr><th>塑料编号</th><th>塑料名称</th><th>仓库</th><th>包数</th><th>入库价格</th><th>是否含×</th><th>时间</th><th>操作</th></tr></thead>
               <tbody>{rows.map((row) => (
                 <tr key={row.id}>
                   <td className={styles.code}>{row.code}</td>
                   <td className={styles.materialName}>{row.name}</td>
+                  <td>{warehouseLabel(row.warehouse)}</td>
                   <td className={styles.packCount}>{row.packCount.toLocaleString("zh-CN", { maximumFractionDigits: 2 })}</td>
                   <td className={styles.price}>{formatPrice(row.inboundUnitPrice)}</td>
                   <td>{row.inboundUnitPrice === null ? <span className={styles.muted}>—</span> : <span className={styles.taxBadge} data-included={row.taxIncluded || undefined}>{row.taxIncluded ? "是" : "否"}</span>}</td>
@@ -311,7 +321,7 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
           <AlertDialog.Overlay className={styles.dialogBackdrop} />
           <AlertDialog.Content className={styles.confirmDialog}>
             <AlertDialog.Title className={styles.confirmTitle}>确认删除入库记录？</AlertDialog.Title>
-            <AlertDialog.Description className={styles.confirmDescription}>确定删除“{deleteTarget?.code} {deleteTarget?.name} {deleteTarget?.packCount} 包”吗？删除后对应库存会减少。</AlertDialog.Description>
+            <AlertDialog.Description className={styles.confirmDescription}>确定删除“{deleteTarget?.code} {deleteTarget?.name} {deleteTarget?.packCount} 包”吗？删除后{deleteTarget && warehouseLabel(deleteTarget.warehouse)}库存会减少。</AlertDialog.Description>
             <div className={styles.dialogFooter}><AlertDialog.Cancel asChild><Button type="button" className={styles.secondaryButton} variant="outline">取消</Button></AlertDialog.Cancel><AlertDialog.Action asChild><Button type="button" className={styles.dangerButton} onClick={confirmDelete}>确认删除</Button></AlertDialog.Action></div>
           </AlertDialog.Content>
         </AlertDialog.Portal>

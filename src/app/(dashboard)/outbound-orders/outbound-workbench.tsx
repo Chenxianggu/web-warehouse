@@ -5,6 +5,7 @@ import { AlertDialog, Dialog } from "radix-ui";
 import { Download, PackageCheck, Printer, Search, X, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/date-picker";
+import { warehouseLabel, warehouseOptions } from "@/features/inventory/warehouse";
 import { lineSubtotal, type OrderRecord } from "@/features/customer-orders/schema";
 import { buildDeliveryNote, openDeliveryPrint, triggerDeliveryPrint, ITEMS_PER_PAGE } from "@/features/outbound/delivery-note";
 import type { OutboundFilter, OutboundPage } from "@/features/outbound/schema";
@@ -84,13 +85,13 @@ function OutboundList({ shipped, today, initial, revision, onDetail, onPrint, on
       </div>
     </header>
     {error ? <div className={styles.empty}><strong>订单加载失败</strong><button className={styles.secondaryButton} disabled={pending} onClick={() => load(filter)}>重新加载</button></div> :
-      <div className={styles.tableGrow}><table className={styles.table}><thead><tr><th>订单号</th><th>客户编号</th><th>客户姓名</th><th>订单日期</th><th>状态</th><th>操作</th></tr></thead>
+      <div className={styles.tableGrow}><table className={styles.table}><thead><tr><th>订单号</th><th>客户编号</th><th>客户姓名</th><th>订单日期</th><th>出库仓库</th><th>状态</th><th>操作</th></tr></thead>
         <tbody>{result.data.map((order) => <tr key={order.id} onClick={(event) => {
           if (pending || busy || (event.target as HTMLElement).closest("button")) return;
           const button = event.currentTarget.querySelector("button"); if (button) onDetail(order, button);
         }}>
           <td><button className={styles.orderLink} disabled={pending || busy} onClick={(event) => onDetail(order, event.currentTarget)} aria-label={`查看订单 ${order.orderNo}`}>{order.orderNo}</button></td>
-          <td className={styles.code}>{order.customerCode}</td><td>{order.customerName}</td><td className={styles.date}>{order.orderDate}</td>
+          <td className={styles.code}>{order.customerCode}</td><td>{order.customerName}</td><td className={styles.date}>{order.orderDate}</td><td>{warehouseLabel(order.warehouse)}</td>
           <td><span className={styles.status} data-shipped={shipped}>{shipped ? "已出库" : "未出库"}</span></td>
           <td><div className={styles.rowActions}><button className={styles.secondaryButton} disabled={pending || busy} aria-label={`打印订单 ${order.orderNo}`} onClick={(event) => onPrint(order, event.currentTarget)}><Printer aria-hidden="true" />打印</button>
           {shipped && <button className={styles.dangerButton} disabled={pending || busy} aria-label={`取消出库 ${order.orderNo}`} onClick={() => onUnship(order)}>取消出库</button>}</div></td>
@@ -140,7 +141,7 @@ export function OutboundWorkbench({ today, initialPending, initialShipped }: { t
       let shipped = order.isShipped;
       try {
         if (!shipped) {
-          const result = await shipOrder(order.id);
+          const result = await shipOrder(order.id, order.warehouse);
           if (!result.ok) { printWindow?.close(); toast.error(result.message); closePrint(); setRevision((value) => value + 1); return; }
           shipped = true;
           setRevision((value) => value + 1);
@@ -179,7 +180,7 @@ export function OutboundWorkbench({ today, initialPending, initialShipped }: { t
 
     <Dialog.Root open={detail !== null} onOpenChange={(open) => { if (!open) setDetail(null); }}><Dialog.Portal><Dialog.Overlay className={styles.backdrop} /><Dialog.Content className={styles.dialog} onCloseAutoFocus={(event) => { event.preventDefault(); triggerRef.current?.focus(); }}>
       <header className={styles.dialogHeader}><div><Dialog.Title className={styles.dialogTitle}>订单详情</Dialog.Title><Dialog.Description className={styles.dialogDescription}>{detail?.isShipped ? "已出库" : "未出库"} · 核对客户与塑料明细。</Dialog.Description></div><Dialog.Close asChild><button className={styles.iconButton} aria-label="关闭订单详情"><X aria-hidden="true" /></button></Dialog.Close></header>
-      {detail && <><dl className={styles.descriptions}><div><dt>订单号</dt><dd className={styles.code}>{detail.orderNo}</dd></div><div><dt>订单日期</dt><dd>{detail.orderDate}</dd></div><div><dt>客户编号</dt><dd>{detail.customerCode}</dd></div><div><dt>客户姓名</dt><dd>{detail.customerName}</dd></div><div><dt>收货单位</dt><dd>{detail.receiver}</dd></div><div><dt>创建时间</dt><dd>{new Date(detail.createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}</dd></div></dl>
+      {detail && <><dl className={styles.descriptions}><div><dt>订单号</dt><dd className={styles.code}>{detail.orderNo}</dd></div><div><dt>订单日期</dt><dd>{detail.orderDate}</dd></div><div><dt>客户编号</dt><dd>{detail.customerCode}</dd></div><div><dt>客户姓名</dt><dd>{detail.customerName}</dd></div><div><dt>收货单位</dt><dd>{detail.receiver}</dd></div><div><dt>出库仓库</dt><dd>{warehouseLabel(detail.warehouse)}</dd></div><div><dt>创建时间</dt><dd>{new Date(detail.createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}</dd></div></dl>
         <h3 className={styles.detailSubtitle}>订单明细</h3><div className={styles.detailScroll}><table className={styles.detailTable}><thead><tr><th>塑料编号</th><th>塑料名称</th><th>包数</th><th>单价</th><th>小计</th></tr></thead><tbody>{detail.items.map((item, index) => <tr key={index}><td className={styles.code}>{item.code}</td><td>{item.name}</td><td>{item.packCount}</td><td>{money(item.unitPrice)}</td><td>{money(lineSubtotal(item))}</td></tr>)}</tbody></table></div>
         <p className={styles.total}>合计：<strong>{money(detail.items.reduce((sum, item) => sum + lineSubtotal(item), 0))}</strong></p></>}
       <footer className={styles.dialogFooter}><Dialog.Close asChild><button className={styles.primaryButton}>关闭</button></Dialog.Close></footer>
@@ -187,6 +188,7 @@ export function OutboundWorkbench({ today, initialPending, initialShipped }: { t
 
     <Dialog.Root open={printOrder !== null} onOpenChange={(open) => { if (!open && !busy) closePrint(); }}><Dialog.Portal><Dialog.Overlay className={styles.backdrop} /><Dialog.Content className={`${styles.dialog} ${styles.printDialog}`} onInteractOutside={(event) => event.preventDefault()} onEscapeKeyDown={(event) => { if (busy) event.preventDefault(); }} onCloseAutoFocus={(event) => { event.preventDefault(); triggerRef.current?.focus(); }}>
       <header className={styles.dialogHeader}><div><Dialog.Title className={styles.dialogTitle}>{printOrder?.isShipped ? "打印出货单（已出库·仅打印）" : "打印订单"}</Dialog.Title><Dialog.Description className={styles.dialogDescription}>{printOrder?.orderNo} · 每张最多 5 种塑料，超出自动分页。</Dialog.Description></div><button className={styles.iconButton} disabled={busy} aria-label="关闭打印预览" onClick={closePrint}><X aria-hidden="true" /></button></header>
+      <fieldset className={styles.warehouseField} disabled={busy || printOrder?.isShipped}><legend>出库仓库</legend><div>{warehouseOptions.map((option) => <label className={styles.checkbox} key={option.value}><input type="radio" name="ship-warehouse" checked={printOrder?.warehouse === option.value} onChange={() => setPrintOrder((current) => current ? { ...current, warehouse: option.value } : current)} />{option.label}</label>)}</div></fieldset>
       <div className={styles.zoomToolbar}><span>预览缩放</span><button className={styles.iconButton} disabled={zoom <= 50 || busy} aria-label="缩小预览" onClick={() => setZoom((value) => Math.max(50, value - 10))}><ZoomOut aria-hidden="true" /></button><button className={styles.iconButton} disabled={zoom >= 250 || busy} aria-label="放大预览" onClick={() => setZoom((value) => Math.min(250, value + 10))}><ZoomIn aria-hidden="true" /></button><output aria-live="polite">{zoom}%</output><button className={styles.textButton} disabled={busy} onClick={() => setZoom(110)}>重置</button></div>
       <div className={styles.previewScroll}><div className={styles.previewCanvas} style={{ width: 920 * zoom / 100, height: frameHeight * zoom / 100 }}>
         <iframe title="出货单打印预览" sandbox="allow-same-origin" srcDoc={previewHtml} style={{ width: 920, height: frameHeight, transform: `scale(${zoom / 100})` }}
@@ -200,7 +202,7 @@ export function OutboundWorkbench({ today, initialPending, initialShipped }: { t
     </Dialog.Content></Dialog.Portal></Dialog.Root>
 
     <AlertDialog.Root open={unshipTarget !== null} onOpenChange={(open) => { if (!open && !busy) setUnshipTarget(null); }}><AlertDialog.Portal><AlertDialog.Overlay className={styles.backdrop} /><AlertDialog.Content className={`${styles.dialog} ${styles.confirmDialog}`}>
-      <AlertDialog.Title className={styles.dialogTitle}>确认取消出库</AlertDialog.Title><AlertDialog.Description className={styles.dialogDescription}>确定要将订单 {unshipTarget?.orderNo} 取消出库吗？取消后将回滚库存和该订单的寄仓扣减，订单可重新调整。</AlertDialog.Description>
+      <AlertDialog.Title className={styles.dialogTitle}>确认取消出库</AlertDialog.Title><AlertDialog.Description className={styles.dialogDescription}>确定要将订单 {unshipTarget?.orderNo} 取消出库吗？取消后将回补{unshipTarget && warehouseLabel(unshipTarget.warehouse)}库存并回滚该订单的寄仓扣减，订单可重新调整。</AlertDialog.Description>
       <footer className={styles.dialogFooter}><AlertDialog.Cancel asChild><button className={styles.secondaryButton} disabled={busy}>取消</button></AlertDialog.Cancel><button className={styles.dangerButton} disabled={busy} onClick={confirmUnship}>{busy ? "处理中…" : "确定取消出库"}</button></footer>
     </AlertDialog.Content></AlertDialog.Portal></AlertDialog.Root>
   </div>;

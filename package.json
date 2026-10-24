@@ -22,6 +22,8 @@
     "ops:verify": "node scripts/verify-observability.mjs",
     "ops:verify-alerting": "node scripts/verify-alerting.mjs",
     "test:orders": "tsx --test tests/customer-orders.test.ts",
+    "test:warehouses": "tsx --test tests/warehouses.test.ts",
+    "test:warehouses:db": "tsx --test tests/warehouses.integration.test.ts",
     "test:orders:db": "tsx --test tests/customer-orders.integration.test.ts",
     "test:outbound": "tsx --test tests/outbound.test.ts",
     "test:outbound:db": "tsx --test tests/outbound.integration.test.ts",

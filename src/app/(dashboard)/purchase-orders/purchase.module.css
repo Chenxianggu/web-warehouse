@@ -3,7 +3,7 @@
 .editor > form > div:last-child { position: sticky; z-index: 3; bottom: 0; background: var(--rz-panel); }
 .table tr[data-delivered] td { background: color-mix(in srgb, var(--rz-cyan) 9%, var(--rz-panel)); }
 .table tr[data-delivered] td:first-child { box-shadow: inset 3px 0 var(--rz-cyan); }
-.table tr[data-delivered] td:nth-child(11) { color: var(--rz-cyan); font-weight: 650; }
+.table tr[data-delivered] td:nth-child(12) { color: var(--rz-cyan); font-weight: 650; }
 .table tr[data-delivered]:hover td { background: color-mix(in srgb, var(--rz-cyan) 15%, var(--rz-panel)); }
 .summary { color: var(--rz-gold); font-size: .78rem; }
 .batchScroll { overflow: auto; }

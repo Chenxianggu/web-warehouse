@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { warehouseSchema } from "@/features/inventory/warehouse";
 import { orderDateSchema } from "@/features/customer-orders/schema";
 const optionalDate = z.union([z.literal(""), orderDateSchema]);
 const quantity = z.number().min(0).max(999999999.999).refine((n) => Math.abs(n * 1000 - Math.round(n * 1000)) < .001, "数量最多保留三位小数");
@@ -12,6 +13,7 @@ export const purchaseInputSchema = z.object({
   supplier: z.string().trim().min(1, "请输入供货方").max(255), itemCode: z.string().trim().min(1, "请输入货号").max(100), category: z.string().trim().max(100),
   quantity, unitPrice: z.number().min(0).max(9999999999.99).refine((n) => Math.abs(n * 100 - Math.round(n * 100)) < .001, "单价最多保留两位小数"),
   taxIncluded: z.boolean(), remittanceInCompany: z.string().trim().max(255), remittanceOutCompany: z.string().trim().max(255), remittanceDate: optionalDate,
+  warehouse: warehouseSchema.default("MAIN"),
   deliveryInfo: z.string().trim().max(255), arrivalDate: optionalDate, status: z.enum(["unfinished", "finished"]), remark: z.string().trim().max(10000),
 }).superRefine((value, ctx) => {
   if (value.id !== null && !value.updatedAt) ctx.addIssue({ code: "custom", message: "请重新打开记录后保存" });

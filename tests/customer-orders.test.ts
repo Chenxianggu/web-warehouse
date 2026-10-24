@@ -13,6 +13,9 @@ test("accepts manual customer/material codes, optional zero price and trimmed re
   assert.equal(result.items[0].unitPrice, 0);
   assert.equal(result.items[0].remark, "自提备注");
   assert.equal(result.deductFutures, true);
+  assert.equal(result.warehouse, "MAIN", "legacy requests default to the original warehouse");
+  assert.equal(customerOrderSchema.parse({ ...valid, warehouse: "HONGHAI" }).warehouse, "HONGHAI");
+  assert.equal(customerOrderSchema.safeParse({ ...valid, warehouse: "unknown" }).success, false);
 });
 
 test("rejects invalid dates, while allowing leap day", () => {

@@ -8,7 +8,7 @@ import type { OrderRecord } from "../src/features/customer-orders/schema";
 
 const order: OrderRecord = {
   id: 1, orderNo: "20261014001", customerCode: "C1", customerName: "测试客户", receiver: "自提", orderDate: "2026-10-14",
-  isShipped: true, deductFutures: true, createdAt: "2026-10-14T00:00:00Z",
+  isShipped: true, deductFutures: true, warehouse: "MAIN", createdAt: "2026-10-14T00:00:00Z",
   items: Array.from({ length: 6 }, (_, index) => ({ code: `PP${index}`, name: `塑料${index}`, packCount: 20, unitPrice: 8000, packsPerTon: 50, remark: index ? "" : "备注<script>alert(1)</script>" })),
 };
 
@@ -61,4 +61,8 @@ test("Excel export contains every line and preserves numeric prices and subtotal
   assert.equal(sheet.getCell("C2").value, 20);
   assert.equal(sheet.getCell("D2").value, 8000);
   assert.equal(sheet.getCell("E2").value, 3200);
+  assert.equal(sheet.getCell("F2").value, "本仓库");
+  const honghai = new ExcelJS.Workbook();
+  await honghai.xlsx.load(await buildOutboundWorkbook([{ ...order, warehouse: "HONGHAI" }]));
+  assert.equal(honghai.getWorksheet("已出库订单")!.getCell("F2").value, "宏海仓");
 });

@@ -40,6 +40,11 @@ enum UserRole {
   SALESPERSON
 }
 
+enum Warehouse {
+  MAIN
+  HONGHAI
+}
+
 model User {
   id             String   @id @default(uuid())
   username       String   @unique @db.VarChar(50)
@@ -118,6 +123,7 @@ model InboundRecord {
   code             String   @db.VarChar(100)
   name             String   @db.VarChar(255)
   packCount        Decimal  @map("pack_count") @db.Decimal(12, 2)
+  warehouse        Warehouse @default(MAIN)
   inboundUnitPrice Decimal? @map("inbound_unit_price") @db.Decimal(14, 4)
   taxIncluded      Boolean  @default(false) @map("tax_included")
   createdAt        DateTime @default(now()) @map("created_at")
@@ -158,6 +164,7 @@ model CustomerOrder {
   orderDate     DateTime            @map("order_date") @db.Date
   isShipped     Boolean             @default(false) @map("is_shipped")
   deductFutures Boolean             @default(false) @map("deduct_futures")
+  warehouse     Warehouse           @default(MAIN)
   createdAt     DateTime            @default(now()) @map("created_at")
   items         CustomerOrderItem[]
 
@@ -261,6 +268,7 @@ model PurchaseOrder {
   unitPrice            Decimal   @default(0) @map("unit_price") @db.Decimal(12, 2)
   amount               Decimal   @default(0) @db.Decimal(12, 2)
   taxIncluded          Boolean   @default(false) @map("tax_included")
+  warehouse            Warehouse @default(MAIN)
   arrivalDate          DateTime? @map("arrival_date") @db.Date
   remittanceInCompany  String?   @map("remittance_in_company") @db.VarChar(255)
   remittanceOutCompany String?   @map("remittance_out_company") @db.VarChar(255)
