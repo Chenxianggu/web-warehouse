@@ -104,15 +104,10 @@
 
 .brandGlyph {
   display: grid;
-  width: 46px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
   place-items: center;
-  background: var(--rz-gold-fill);
-  clip-path: polygon(0 0, 100% 0, 100% 72%, 78% 100%, 0 100%);
-  color: var(--rz-on-gold);
-  font-size: 0.9rem;
-  font-weight: 900;
-  letter-spacing: -0.08em;
 }
 
 .brand > span:last-child {

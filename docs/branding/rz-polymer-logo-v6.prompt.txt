@@ -1,0 +1,14 @@
+Generation method: built-in image_gen edit, transparent_background=true.
+Reference: public/brand/rz-polymer-logo-v5-wordmark.png
+Asset: public/brand/rz-polymer-logo-v6-square.png
+
+Use case: logo-brand edit.
+Image 1 is the previous horizontal brand logo. REDESIGN its layout into ONE small compact SQUARE emblem while preserving its milky semi-transparent PLASTIC RESIN material and restrained ice-blue edge refraction. The user explicitly wants a small square logo, not a horizontal wordmark.
+Create a 1:1 square canvas with ONE tightly unified square brand seal centered, with a square overall silhouette. The actual logo's width and height MUST be approximately equal. The brand is 任仲塑料, exact characters 任 仲 塑 料. Set these four characters as a compact TWO-BY-TWO arrangement:
+top row 任仲
+bottom row 塑料
+Use bold highly legible custom geometric Chinese sans-serif forms with broad substantial strokes, even spacing, large counters and very shallow molded polymer relief. Each character occupies one quadrant, creating one strong compact seal. Text must be precise and clear, no extra writing. Do not use a single horizontal line of four characters.
+Make the symbol feel like a precision injection-molded polymer identity: frosted milky-white faces, near-clear resin cut edges, subtle cold cyan refraction, no metal. The characters should be the brightest, clearest visual focus. Surround them with a SINGLE very restrained squared resin contour with small clipped corners, closely hugging the 2x2 arrangement. Integrate two tiny recognizably cylindrical plastic resin pellets into the lower-left contour itself, flush with the emblem rather than hanging outside. This provides a plastics-industry cue without clutter. No separate large swoosh, no separate icon beside the seal. One unified square signet.
+Style: contemporary premium materials brand, clean and strong silhouette at 48-64px, very restrained 3D depth, front-on orthographic viewpoint, sophisticated and simple, no excessive surface streaks, no glare covering strokes. Preserve clear negative space between strokes. Avoid literal warehouse imagery.
+Composition: square image; square emblem fills about 75% of both width and height, generous equal transparent margin on all four sides. Genuine transparent alpha background, including the interior negative spaces. Optimized for dark black UI; no black background plate, no floor, no shadow outside the object.
+Only this one finished square emblem. No horizontal lockup, no slogan, no English, no explanatory typography, no mockup, no presentation grid, no extra versions, no watermark. Do not stretch or cram the old horizontal design: create a fresh compact 2x2 square composition.

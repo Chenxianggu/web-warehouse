@@ -1,0 +1,11 @@
+Generation method: built-in image_gen, transparent_background=true.
+Asset: public/brand/rz-polymer-logo-v2.png
+
+Use case: logo-brand.
+Create ONE original, exceptionally refined contemporary flat graphic logo symbol for 仁众塑料 (Renzhong), a plastic-materials warehouse application. The user rejected a previous heavy gold 3D cube monogram as tacky. This is a completely different creative direction: editorial Swiss modernism meets experimental Japanese technology identity, cool through intelligent geometry and simplicity.
+Core idea: one continuous broad polymer film strip folded into an abstract angular RZ ligature. Use two or three bold interlocking flat planes and an ingenious negative-space diagonal. Subtle suggestion of precisely stacked plastic sheets / organized material flow; not a literal warehouse building or box. Make a striking memorable compact silhouette with an unmistakable authored visual idea. Dynamic forward diagonal, highly deliberate optical balance, excellent recognition at small app-icon sizes.
+Rendering: STRICTLY flat vector-like solid fills, sharp contours, large clean negative spaces, 45-degree chamfer cuts. No 3D perspective, no bevel, no metallic material, no gold foil, no texture, no gradient, no shadows, no glow. Restrained premium graphic design.
+Palette: dominant cool ivory #F2F2EC, with a single smaller muted champagne gold #C9A96E plane occupying no more than 15 percent of the symbol. Exactly these two flat colors only. Empty negative spaces must be genuinely transparent. The graphic will sit on a near-black website, so use ivory as its main silhouette.
+Layout: square canvas, ONE standalone isolated symbol centered with generous transparent margin; mark occupies approximately 65 percent of canvas width. No presentation board, no background panel, no border frame, no extra variants, no mockup.
+Text: none. No Chinese or English wordmark, no captions, no slogans. RZ should be fused abstractly into the custom symbol's geometry, not typeset.
+Avoid: gold luxury monograms, generic esports badges, diamond or shield enclosure, generic isometric cubes, recycling arrows, leaves, bottles, warehouse roof silhouettes, circuitry, tiny decorative fragments, cyberpunk clichés, cyan or magenta edges, stock logo appearance. Clean actual transparent alpha background.

@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoginForm } from "./login-form";
 import { FloatingSuccessMessage } from "@/components/floating-success-message";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { BrandLogo } from "@/components/brand-logo";
 import styles from "./login.module.css";
 
 export default async function LoginPage({
@@ -30,7 +31,7 @@ export default async function LoginPage({
 
       <header className={styles.topbar}>
         <div className={styles.brand}>
-          <span className={styles.brandGlyph}>RZ</span>
+          <span className={styles.brandGlyph}><BrandLogo /></span>
           <span>
             <strong>任仲塑料</strong>
             <small>仓储管理系统</small>

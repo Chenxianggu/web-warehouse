@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import { KeyRound, LogOut, Warehouse } from "lucide-react";
+import { KeyRound, LogOut } from "lucide-react";
 import { signOut } from "@/auth";
 import { UserRole } from "@/generated/prisma/client";
 import { requireUser } from "@/server/current-user";
@@ -8,6 +8,7 @@ import { getVisibleNavigation } from "@/server/menu-permissions";
 import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { PageTransition } from "@/components/page-transition";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -34,10 +35,10 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
         <SidebarHeader className={styles.brandHeader}>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild className={styles.brandLink} size="lg" tooltip="仁众塑料">
-                <Link href="/">
+              <SidebarMenuButton asChild className={styles.brandLink} size="lg" tooltip="任仲塑料">
+                <Link href="/" aria-label="任仲塑料首页">
                   <span className={styles.brandMark}>
-                    <Warehouse aria-hidden="true" />
+                    <BrandLogo />
                   </span>
                   <span className={styles.brandCopy}>
                     <strong>任仲塑料</strong>
