@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import { ChevronDown, PackageCheck, RotateCcw, Save, Trash2 } from "lucide-react";
 import { AlertDialog } from "radix-ui";
@@ -306,7 +307,7 @@ export function InboundWorkbench({ initialData, materials }: { initialData: Inbo
         </div>
         <div className={styles.pager}>
           <span className={styles.total}>共 {total} 条</span>
-          <label className={styles.pageSize}>每页<select value={pageSize} onChange={(event) => { const size = Number(event.target.value); setPageSize(size); refresh(1, size, startDate, endDate); }} aria-label="每页显示条数">{[10, 20, 50, 100].map((size) => <option value={size} key={size}>{size}</option>)}</select></label>
+          <label className={styles.pageSize}>每页<Select value={pageSize} onValueChange={(value) => { const size = Number(value); setPageSize(size); refresh(1, size, startDate, endDate); }} aria-label="每页显示条数" size="sm">{[10, 20, 50, 100].map((size) => <SelectOption value={size} key={size}>{size}</SelectOption>)}</Select></label>
           <nav className={styles.pageButtons} aria-label="入库记录分页">
             <button onClick={() => goToPage(page - 1)} disabled={page <= 1} aria-label="上一页">‹</button>
             {visiblePages.map((number) => <button key={number} data-current={number === page || undefined} aria-current={number === page ? "page" : undefined} onClick={() => goToPage(number)}>{number}</button>)}

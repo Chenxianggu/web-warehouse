@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import dynamic from "next/dynamic";
 import { useRef, useState, useTransition } from "react";
 import { ChartNoAxesCombined, Search } from "lucide-react";
@@ -49,7 +50,7 @@ export function PriceTrendsWorkbench({ initialCodes, initialPoints, initialError
     <section className={styles.panel} aria-label="货号价格趋势" aria-busy={loading}>
       <form className={styles.controls} onSubmit={(event) => { event.preventDefault(); load(query, true); }}>
         <div className={styles.field}><label htmlFor="trend-item-code">货号</label><ItemCodeSelect value={query.itemCode} options={codes} onChange={(itemCode) => load({ ...query, itemCode })} /></div>
-        <div className={`${styles.field} ${styles.yearField}`}><label htmlFor="trend-year">年份</label><select id="trend-year" value={query.year} onChange={(event) => load({ ...query, year: Number(event.target.value) })}>{years.map((year) => <option key={year} value={year}>{year} 年</option>)}</select></div>
+        <div className={`${styles.field} ${styles.yearField}`}><label htmlFor="trend-year">年份</label><Select id="trend-year" value={query.year} onValueChange={(value) => load({ ...query, year: Number(value) })}>{years.map((year) => <SelectOption key={year} value={year}>{year} 年</SelectOption>)}</Select></div>
         <button className={styles.primaryButton} disabled={loading}><Search aria-hidden="true" />{loading ? "查询中…" : "查询"}</button>
       </form>
       <div className={styles.chartHeader}><h2>货号价格趋势</h2><span>{query.itemCode ? `${query.itemCode} · ${query.year} 年` : "单价（元/吨）"}</span></div>

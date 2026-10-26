@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { AlertDialog, Dialog } from "radix-ui";
 import { Download, PackageCheck, Printer, Search, X, ZoomIn, ZoomOut } from "lucide-react";
@@ -97,7 +98,7 @@ function OutboundList({ shipped, today, initial, revision, onDetail, onPrint, on
           {shipped && <button className={styles.dangerButton} disabled={pending || busy} aria-label={`取消出库 ${order.orderNo}`} onClick={() => onUnship(order)}>取消出库</button>}</div></td>
         </tr>)}</tbody>
       </table>{!result.data.length && <div className={styles.empty}><PackageCheck aria-hidden="true" /><strong>暂无{shipped ? "已出库" : "待出库"}订单</strong><span>可调整日期或客户搜索条件。</span></div>}</div>}
-    <footer className={styles.pager}><span className={styles.totalCount}>共 {result.total} 笔</span><label>每页 <select aria-label={`${title}每页条数`} value={filter.pageSize} disabled={pending || busy} onChange={(event) => load({ ...filter, page: 1, pageSize: Number(event.target.value) as OutboundFilter["pageSize"] })}>{[10, 20, 50, 100].map((size) => <option value={size} key={size}>{size}</option>)}</select> 笔</label>
+    <footer className={styles.pager}><span className={styles.totalCount}>共 {result.total} 笔</span><label>每页 <Select aria-label={`${title}每页条数`} value={filter.pageSize} disabled={pending || busy} onValueChange={(value) => load({ ...filter, page: 1, pageSize: Number(value) as OutboundFilter["pageSize"] })} size="sm">{[10, 20, 50, 100].map((size) => <SelectOption value={size} key={size}>{size}</SelectOption>)}</Select> 笔</label>
       <nav aria-label={`${title}分页`}><button disabled={pending || busy || result.page <= 1} aria-label={`${title}上一页`} onClick={() => load({ ...filter, page: result.page - 1 })}>‹</button>
       {numbers.map((page) => <button key={page} disabled={pending || busy} aria-current={page === result.page ? "page" : undefined} onClick={() => load({ ...filter, page })}>{page}</button>)}
       <button disabled={pending || busy || result.page >= pages} aria-label={`${title}下一页`} onClick={() => load({ ...filter, page: result.page + 1 })}>›</button></nav>

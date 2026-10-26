@@ -24,7 +24,7 @@
 .primaryButton:hover, .secondaryButton:hover, .dangerButton:hover { filter: brightness(1.15); }
 .page button, .dialog button { cursor: pointer; }
 .page button:disabled, .dialog button:disabled, .fields:disabled { opacity: .45; cursor: not-allowed; }
-.page button:focus-visible, .page select:focus-visible, .page input:focus-visible, .dialog button:focus-visible, .dialog input:focus-visible, .dialog textarea:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
+.page button:focus-visible, .page [data-slot="select-trigger"]:focus-visible, .page input:focus-visible, .dialog button:focus-visible, .dialog input:focus-visible, .dialog textarea:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
 .error { padding: 14px 20px; color: var(--rz-magenta); font-size: .76rem; border-bottom: 1px solid color-mix(in srgb, var(--rz-magenta) 25%, transparent); }
 .tableScroll { min-height: 260px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .table, .detailTable { width: 100%; border-collapse: collapse; text-align: left; }
@@ -47,7 +47,7 @@
 .pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 13px; padding: 14px 20px; border-top: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min))); color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); font-size: .7rem; }
 .count { margin-right: auto; }
 .pager label, .pager form, .pager nav { display: flex; align-items: center; gap: 6px; }
-.pager select, .pager input, .pager button { height: 29px; min-width: 30px; padding: 0 7px; border: 1px solid color-mix(in srgb, var(--rz-gold) 30%, transparent); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-gold); }
+.pager [data-slot="select-trigger"], .pager input, .pager button { height: 29px; min-width: 30px; padding: 0 7px; border: 1px solid color-mix(in srgb, var(--rz-gold) 30%, transparent); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-gold); }
 .pager input { width: 50px; color: var(--rz-ivory); }
 .pager button[aria-current="page"] { background: var(--rz-gold-fill); color: var(--rz-on-gold); }
 .backdrop { position: fixed; z-index: 50; inset: 0; background: rgb(0 0 0 / calc(80% * var(--rz-overlay-strength))); }

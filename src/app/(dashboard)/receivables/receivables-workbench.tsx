@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import { useMemo, useRef, useState, useTransition, type FormEvent } from "react";
 import { AlertDialog, Dialog, Tabs } from "radix-ui";
 import { Plus, RefreshCw, Search, X } from "lucide-react";
@@ -131,7 +132,7 @@ export function ReceivablesWorkbench({ initial }: { initial: Snapshot }) {
       </div>
       <div className={styles.pager}>
         <span className={styles.count}>共 {filtered.length} 条</span>
-        <label>每页<select aria-label="每页条数" value={pageSize} onChange={(event) => { setPageSize(Number(event.target.value)); resetPage(); }}>{[10, 20, 50, 100].map((size) => <option key={size} value={size}>{size} 条</option>)}</select></label>
+        <label>每页<Select aria-label="每页条数" value={pageSize} onValueChange={(value) => { setPageSize(Number(value)); resetPage(); }} size="sm">{[10, 20, 50, 100].map((size) => <SelectOption key={size} value={size}>{size} 条</SelectOption>)}</Select></label>
         <nav aria-label="账款分页"><button aria-label="上一页" disabled={currentPage === 1} onClick={() => goToPage(currentPage - 1)}>‹</button>
           {pageNumbers.map((number) => <button key={number} aria-label={`第 ${number} 页`} aria-current={currentPage === number ? "page" : undefined} onClick={() => goToPage(number)}>{number}</button>)}
           <button aria-label="下一页" disabled={currentPage === pages} onClick={() => goToPage(currentPage + 1)}>›</button></nav>

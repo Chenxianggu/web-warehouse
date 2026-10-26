@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { Boxes, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { AlertDialog, Dialog } from "radix-ui";
@@ -191,9 +192,9 @@ export function InventoryWorkbench({ initialData }: { initialData: InventoryData
         <div className={styles.pager}>
           <span className={styles.total}>共 {total} 条</span>
           <label className={styles.pageSize}>每页
-            <select value={pageSize} onChange={(event) => setPageSize(Number(event.target.value))} aria-label="每页显示条数">
-              {[10, 20, 50, 100].map((size) => <option value={size} key={size}>{size}</option>)}
-            </select>
+            <Select value={pageSize} onValueChange={(value) => setPageSize(Number(value))} aria-label="每页显示条数" size="sm">
+              {[10, 20, 50, 100].map((size) => <SelectOption value={size} key={size}>{size}</SelectOption>)}
+            </Select>
           </label>
           <nav className={styles.pageButtons} aria-label="库存列表分页">
             <button onClick={() => goToPage(page - 1)} disabled={page <= 1} aria-label="上一页">‹</button>

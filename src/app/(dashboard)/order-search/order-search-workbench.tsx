@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import { useRef, useState, useTransition } from "react";
 import { Dialog } from "radix-ui";
 import { ClipboardList, RotateCcw, Search, X } from "lucide-react";
@@ -86,10 +87,10 @@ export function OrderSearchWorkbench({ initial }: { initial: OrderSearchPage }) 
         </tr>)}</tbody></table>
         {!result.data.length && <div className={styles.empty}><ClipboardList aria-hidden="true" /><strong>暂无匹配订单</strong><span>可调整查询条件，或重置查看全部订单。</span></div>}
       </div>}
-      <footer className={styles.pager}><span className={styles.totalCount}>共 {result.total} 笔</span><label>每页 <select aria-label="订单查询每页条数" value={pageSize} disabled={busy} onChange={(event) => {
-        const size = Number(event.target.value) as OrderSearchFilter["pageSize"];
+      <footer className={styles.pager}><span className={styles.totalCount}>共 {result.total} 笔</span><label>每页 <Select aria-label="订单查询每页条数" value={pageSize} disabled={busy} onValueChange={(value) => {
+        const size = Number(value) as OrderSearchFilter["pageSize"];
         setPageSize(size); load({ ...filters, page: 1, pageSize: size });
-      }}>{[10, 20, 50, 100].map((size) => <option key={size} value={size}>{size}</option>)}</select> 笔</label>
+      }} size="sm">{[10, 20, 50, 100].map((size) => <SelectOption key={size} value={size}>{size}</SelectOption>)}</Select> 笔</label>
         <nav aria-label="订单查询分页"><button aria-label="订单查询上一页" disabled={busy || result.page <= 1} onClick={() => load({ ...filters, page: result.page - 1, pageSize })}>‹</button>
           {pageNumbers.map((page) => <button key={page} aria-current={page === result.page ? "page" : undefined} disabled={busy} onClick={() => load({ ...filters, page, pageSize })}>{page}</button>)}
           <button aria-label="订单查询下一页" disabled={busy || result.page >= pages} onClick={() => load({ ...filters, page: result.page + 1, pageSize })}>›</button></nav>

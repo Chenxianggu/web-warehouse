@@ -22,8 +22,8 @@
 .primary:focus-visible { filter: drop-shadow(0 0 5px var(--rz-gold)); }
 .filters { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; padding: 20px; }
 .filters > label { display: grid; gap: 7px; width: 155px; color: rgb(var(--rz-text-rgb) / max(65%, var(--rz-text-alpha-min))); font-size: .72rem; }
-.filters input, .filters select, .fields input, .fields select, .fields textarea, .pagination input, .pagination select { width: 100%; min-width: 0; min-height: 40px; border: 1px solid rgb(var(--rz-text-rgb) / max(20%, var(--rz-line-alpha-min))); border-radius: 0; padding: 9px 11px; background: var(--rz-input-bg); color: var(--rz-ivory); font: inherit; }
-.filters input:focus-visible, .filters select:focus-visible, .fields input:focus-visible, .fields select:focus-visible, .fields textarea:focus-visible, .pagination input:focus-visible, .pagination select:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 1px; border-color: var(--rz-gold); }
+.filters input, .filters [data-slot="select-trigger"], .fields input, .fields [data-slot="select-trigger"], .fields textarea, .pagination input, .pagination [data-slot="select-trigger"] { width: 100%; min-width: 0; min-height: 40px; border: 1px solid rgb(var(--rz-text-rgb) / max(20%, var(--rz-line-alpha-min))); border-radius: 0; padding: 9px 11px; background: var(--rz-input-bg); color: var(--rz-ivory); font: inherit; }
+.filters input:focus-visible, .filters [data-slot="select-trigger"]:focus-visible, .fields input:focus-visible, .fields [data-slot="select-trigger"]:focus-visible, .fields textarea:focus-visible, .pagination input:focus-visible, .pagination [data-slot="select-trigger"]:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 1px; border-color: var(--rz-gold); }
 .tableScroll { min-height: 200px; overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; }
 .tableScroll:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: -1px; }
 .table { width: 100%; min-width: 1480px; border-collapse: collapse; text-align: left; }
@@ -45,7 +45,7 @@
 .pagination > span { margin-right: auto; color: rgb(var(--rz-text-rgb) / max(60%, var(--rz-text-alpha-min))); }
 .pagination label, .pagination form { display: flex; align-items: center; gap: 8px; }
 .pagination input { width: 60px; }
-.pagination select { width: 72px; }
+.pagination [data-slot="select-trigger"] { width: 72px; }
 .pagination button { min-height: 34px; border: 1px solid color-mix(in srgb, var(--rz-gold) 30%, transparent); background: var(--rz-black); color: var(--rz-gold); padding: 5px 10px; }
 .error { margin: 0 20px 16px; padding: 12px; border-left: 2px solid var(--rz-magenta); background: color-mix(in srgb, var(--rz-magenta) 6%, var(--rz-panel)); color: var(--rz-magenta); font-size: .8rem; }
 .error button { margin-left: 12px; color: var(--rz-ivory); }
@@ -59,7 +59,7 @@
 .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 25px; padding: 24px; margin: 0; border: 0; min-width: 0; }
 .fields > label, .field { display: grid; align-content: start; gap: 7px; min-width: 0; color: rgb(var(--rz-text-rgb) / max(75%, var(--rz-text-alpha-min))); font-size: .78rem; }
 .fields > label > button { width: 100%; }
-.fields input:disabled, .fields select:disabled { opacity: .55; }
+.fields input:disabled, .fields [data-slot="select-trigger"]:disabled { opacity: .55; }
 .fields output { display: block; padding: 11px; border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 22%, transparent); background: var(--rz-input-bg); color: var(--rz-gold); font-size: 1rem; }
 .fields small { color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); font-size: .69rem; line-height: 1.6; }
 .fields textarea { resize: vertical; }

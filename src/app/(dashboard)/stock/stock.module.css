@@ -13,7 +13,7 @@
 .secondaryButton { background: transparent; color: var(--rz-gold); }
 .dangerButton { border-color: rgb(var(--rz-magenta-rgb) / 48%); background: transparent; color: var(--rz-magenta); }
 .primaryButton:hover, .secondaryButton:hover { filter: brightness(1.18); }
-.primaryButton:focus-visible, .secondaryButton:focus-visible, .dangerButton:focus-visible, .linkButton:focus-visible, .pager button:focus-visible, .pager select:focus-visible, .jump input:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }
+.primaryButton:focus-visible, .secondaryButton:focus-visible, .dangerButton:focus-visible, .linkButton:focus-visible, .pager button:focus-visible, .pager [data-slot="select-trigger"]:focus-visible, .jump input:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }
 .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
 .searchBox { position: relative; display: flex; align-items: center; min-width: 0; flex: 1; }
 .searchBox > svg { position: absolute; z-index: 1; top: 0; bottom: 0; left: 13px; width: 15px; height: 15px; margin: auto 0; color: var(--rz-gold); pointer-events: none; }
@@ -46,8 +46,8 @@
 .pager { display: flex; justify-content: flex-end; align-items: center; gap: 10px; min-height: 58px; padding: 12px 19px; border-top: 1px solid rgb(var(--rz-text-rgb) / max(8%, var(--rz-line-alpha-min))); color: rgb(var(--rz-text-rgb) / max(52%, var(--rz-text-alpha-min))); font-size: .7rem; }
 .total { margin-right: auto; }
 .pageSize { display: flex; align-items: center; gap: 6px; }
-.pageSize select, .jump input { height: 29px; border: 1px solid rgb(var(--rz-gold-rgb) / 27%); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); outline: none; }
-.pageSize select { padding: 0 23px 0 8px; }
+.pageSize [data-slot="select-trigger"], .jump input { height: 29px; border: 1px solid rgb(var(--rz-gold-rgb) / 27%); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); outline: none; }
+.pageSize [data-slot="select-trigger"] { padding: 0 23px 0 8px; }
 .pageButtons { display: flex; gap: 5px; }
 .pager button { min-width: 30px; height: 29px; border: 1px solid rgb(var(--rz-gold-rgb) / 30%); border-radius: 0; background: transparent; color: var(--rz-gold); }
 .pager button[data-current] { border-color: var(--rz-gold); background: var(--rz-gold-fill); color: var(--rz-on-gold); font-weight: 750; }

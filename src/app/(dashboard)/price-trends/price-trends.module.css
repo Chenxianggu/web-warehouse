@@ -10,7 +10,7 @@
 .field { display: grid; width: 260px; min-width: 0; gap: 8px; }
 .field label { color: rgb(var(--rz-text-rgb) / max(65%, var(--rz-text-alpha-min))); font-size: .72rem; }
 .yearField { width: 140px; }
-.field select { width: 100%; height: 44px; padding: 0 12px; border: 1px solid rgb(var(--rz-text-rgb) / max(18%, var(--rz-line-alpha-min))); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); font-size: .78rem; }
+.field [data-slot="select-trigger"] { width: 100%; height: 44px; padding: 0 12px; border: 1px solid rgb(var(--rz-text-rgb) / max(18%, var(--rz-line-alpha-min))); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); font-size: .78rem; }
 .selectControl { display: flex; align-items: center; height: 44px; border: 1px solid rgb(var(--rz-text-rgb) / max(18%, var(--rz-line-alpha-min))); background: var(--rz-input-bg); }
 .selectControl:focus-within { border-color: var(--rz-gold); }
 .selectControl input { min-width: 0; width: 100%; height: 100%; padding: 0 12px; outline: none; border: 0; background: transparent; color: var(--rz-ivory); font-size: .78rem; }
@@ -25,7 +25,7 @@
 .primaryButton svg { width: 15px; height: 15px; }
 .page button { cursor: pointer; }
 .page button:disabled { opacity: .45; cursor: not-allowed; }
-.page button:focus-visible, .page input:focus-visible, .page select:focus-visible, .chart:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
+.page button:focus-visible, .page input:focus-visible, .page [data-slot="select-trigger"]:focus-visible, .chart:focus-visible { outline: 1px solid var(--rz-gold); outline-offset: 3px; }
 .chartHeader { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px 0; }
 .chartHeader h2 { margin: 0; font-size: .9rem; font-weight: 600; }
 .chartHeader > span { color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); font-size: .72rem; overflow-wrap: anywhere; }

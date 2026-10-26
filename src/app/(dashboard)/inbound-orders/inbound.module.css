@@ -66,8 +66,8 @@
 .pager { display: flex; justify-content: flex-end; align-items: center; gap: 10px; min-height: 58px; padding: 12px 19px; border-top: 1px solid rgb(var(--rz-text-rgb) / max(8%, var(--rz-line-alpha-min))); color: rgb(var(--rz-text-rgb) / max(52%, var(--rz-text-alpha-min))); font-size: .7rem; }
 .total { margin-right: auto; }
 .pageSize { display: flex; align-items: center; gap: 6px; }
-.pageSize select, .jump input { height: 29px; border: 1px solid rgb(var(--rz-gold-rgb) / 27%); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); outline: none; }
-.pageSize select { padding: 0 23px 0 8px; }
+.pageSize [data-slot="select-trigger"], .jump input { height: 29px; border: 1px solid rgb(var(--rz-gold-rgb) / 27%); border-radius: 0; background: var(--rz-input-bg); color: var(--rz-ivory); outline: none; }
+.pageSize [data-slot="select-trigger"] { padding: 0 23px 0 8px; }
 .pageButtons { display: flex; gap: 5px; }
 .pager button { min-width: 30px; height: 29px; border: 1px solid rgb(var(--rz-gold-rgb) / 30%); border-radius: 0; background: transparent; color: var(--rz-gold); }
 .pager button[data-current] { border-color: var(--rz-gold); background: var(--rz-gold-fill); color: var(--rz-on-gold); font-weight: 750; }
@@ -79,7 +79,7 @@
 .confirmTitle { margin: 0; color: var(--rz-ivory); font-size: 1rem; }
 .confirmDescription { margin-top: 9px; color: rgb(var(--rz-text-rgb) / max(55%, var(--rz-text-alpha-min))); font-size: .75rem; line-height: 1.65; }
 .dialogFooter { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; padding-top: 17px; border-top: 1px solid rgb(var(--rz-text-rgb) / max(10%, var(--rz-line-alpha-min))); }
-.primaryButton:focus-visible, .secondaryButton:focus-visible, .dangerButton:focus-visible, .pager button:focus-visible, .pager select:focus-visible, .jump input:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }
+.primaryButton:focus-visible, .secondaryButton:focus-visible, .dangerButton:focus-visible, .pager button:focus-visible, .pager [data-slot="select-trigger"]:focus-visible, .jump input:focus-visible { outline: 1px solid var(--rz-cyan); outline-offset: 2px; }
 @keyframes dialogIn { from { opacity: 0; transform: translate(-50%, calc(-50% - 10px)) scale(.985); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes statusPulse { 50% { opacity: .42; box-shadow: 0 0 3px currentColor; } }

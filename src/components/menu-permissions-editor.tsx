@@ -1,5 +1,6 @@
 "use client";
 
+import { Select, SelectOption } from "@/components/ui/select";
 import { useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { MenuPermissionGroup } from "@/server/menu-permissions";
@@ -34,10 +35,10 @@ export function MenuPermissionsEditor({ users, userId, groups, isCustom, invalid
         </div>
         <div className={styles.scopeForm}>
           <label htmlFor="permission-user">选择配置对象</label>
-          <select id="permission-user" value={targetUser?.id ?? ""} onChange={(event) => changeUser(event.target.value)} aria-describedby="permission-scope-status">
-            <option value="">全体业务员 · 默认权限</option>
-            {users.map((user) => <option key={user.id} value={user.id}>{user.username} · {user.hasCustomPermissions ? "单独配置" : "跟随默认"}{!user.isActive ? " · 已停用" : ""}</option>)}
-          </select>
+          <Select id="permission-user" value={targetUser?.id ?? ""} onValueChange={(value) => changeUser(value)} aria-describedby="permission-scope-status">
+            <SelectOption value="">全体业务员 · 默认权限</SelectOption>
+            {users.map((user) => <SelectOption key={user.id} value={user.id}>{user.username} · {user.hasCustomPermissions ? "单独配置" : "跟随默认"}{!user.isActive ? " · 已停用" : ""}</SelectOption>)}
+          </Select>
         </div>
         <p className={styles.scopeHint} id="permission-scope-status" role="status">
           {pending ? "正在切换配置对象，请稍候…" : invalidTarget ? "请选择有效的配置对象。" : targetUser ? <>
