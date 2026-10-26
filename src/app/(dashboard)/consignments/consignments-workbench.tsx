@@ -3,7 +3,7 @@
 import { Select, SelectOption } from "@/components/ui/select";
 import { SearchCombobox } from "@/components/search-combobox";
 import { useRef, useState, useTransition } from "react";
-import { AlertDialog, Dialog } from "radix-ui";
+import { AlertDialog, Dialog } from "@/components/ui/dialog";
 import { ArchiveRestore, Download, Plus, Printer, Search, X, ZoomIn, ZoomOut } from "lucide-react";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/date-picker";

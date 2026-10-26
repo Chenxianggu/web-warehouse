@@ -1,5 +1,6 @@
 .page { max-width: 1800px; }
-.filters .dateRange { width: 290px; }
+.filters .dateRange { width: 310px; min-width: 0; max-width: 100%; grid-template-columns: minmax(0, 1fr); }
+.filters .dateRange > button { width: 100%; min-width: 0; height: 40px; }
 .table { min-width: 2400px; }
 .table thead tr:first-child th { top: 0; z-index: 3; right: auto; height: 36px; padding: 0 16px; border-block: 0; line-height: 36px; background: var(--rz-panel); text-align: center; }
 .table thead tr:first-child th:last-child { right: 0; z-index: 4; height: auto; padding-block: 0; line-height: inherit; }

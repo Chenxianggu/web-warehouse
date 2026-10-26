@@ -36,7 +36,7 @@ export function Select({ value, onValueChange, children, name, placeholder = "è¯
         <SelectPrimitive.Icon className={styles.icon}><ChevronDown aria-hidden="true" /></SelectPrimitive.Icon>
       </SelectPrimitive.Trigger>
       <SelectPrimitive.Portal>
-        <SelectPrimitive.Content className={styles.content} position="popper" align="start" sideOffset={5} collisionPadding={12}>
+        <SelectPrimitive.Content data-rz-motion="floating" className={styles.content} position="popper" align="start" sideOffset={5} collisionPadding={12}>
           <SelectPrimitive.ScrollUpButton className={styles.scrollButton}><ChevronUp aria-hidden="true" /></SelectPrimitive.ScrollUpButton>
           <SelectPrimitive.Viewport className={styles.viewport}>{children}</SelectPrimitive.Viewport>
           <SelectPrimitive.ScrollDownButton className={styles.scrollButton}><ChevronDown aria-hidden="true" /></SelectPrimitive.ScrollDownButton>

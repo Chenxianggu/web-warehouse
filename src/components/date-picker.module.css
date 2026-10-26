@@ -48,7 +48,6 @@
 
 .heading { border-bottom: 1px solid color-mix(in srgb, var(--rz-gold) 18%, transparent); padding: 0 0 10px; color: var(--rz-gold); font-size: .76rem; font-weight: 650; line-height: 1.4; }
 /* Return focus before another date picker opens. */
-.content[data-state="closed"] { animation: none; }
 .heading small { display: block; margin-top: 5px; color: rgb(var(--rz-text-rgb) / max(58%, var(--rz-text-alpha-min))); font-size: .65rem; font-weight: 400; }
 .calendar { --cell-radius: 0px; --cell-size: 36px; width: 100%; background: transparent; padding: 12px 0; }
 .calendar :global(.rdp-month) { gap: 12px; }

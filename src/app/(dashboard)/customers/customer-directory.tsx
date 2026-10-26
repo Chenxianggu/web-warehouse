@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { ContactRound, Pencil, Plus, Search, Trash2, X } from "lucide-react";
-import { AlertDialog, Dialog } from "radix-ui";
+import { AlertDialog, Dialog } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

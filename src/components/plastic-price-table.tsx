@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState, useTransition } from "react";
 import { ArrowLeft, ArrowRight, Pencil, Plus, RefreshCw, Save, ShieldCheck, Table2, Trash2, X } from "lucide-react";
-import { Dialog } from "radix-ui";
+import { Dialog } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { MaterialCodeCombobox } from "@/components/material-code-combobox";
 import { createClientId } from "@/lib/create-client-id";

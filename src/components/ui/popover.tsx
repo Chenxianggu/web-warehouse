@@ -3,11 +3,13 @@
 import * as React from "react"
 import { cn } from "cn"
 import { Popover as PopoverPrimitive } from "radix-ui"
+import { PopupOpenContext, useExitSnapshot, usePopupState } from "./popup-motion"
 
 function Popover({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />
+  const state = usePopupState(props)
+  return <PopupOpenContext value={state.open}><PopoverPrimitive.Root data-slot="popover" {...props} {...state} /></PopupOpenContext>
 }
 
 function PopoverTrigger({
@@ -17,6 +19,7 @@ function PopoverTrigger({
 }
 
 function PopoverContent({
+  children,
   className,
   align = "center",
   sideOffset = 4,
@@ -24,10 +27,13 @@ function PopoverContent({
   onTouchMove,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+  const open = React.useContext(PopupOpenContext)
+  const content = useExitSnapshot(children, open)
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
         data-slot="popover-content"
+        data-rz-motion="floating"
         align={align}
         sideOffset={sideOffset}
         className={cn(
@@ -35,6 +41,7 @@ function PopoverContent({
           className
         )}
         {...props}
+        inert={!open || props.inert}
         // Portaled content sits outside Dialog.Content in the DOM. Keep its
         // native scrolling from reaching the dialog's document scroll guard.
         onWheel={(event) => {
@@ -45,7 +52,7 @@ function PopoverContent({
           onTouchMove?.(event)
           event.stopPropagation()
         }}
-      />
+      >{content}</PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
   )
 }

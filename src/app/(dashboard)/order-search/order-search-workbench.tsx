@@ -2,7 +2,7 @@
 
 import { Select, SelectOption } from "@/components/ui/select";
 import { useRef, useState, useTransition } from "react";
-import { Dialog } from "radix-ui";
+import { Dialog } from "@/components/ui/dialog";
 import { ClipboardList, RotateCcw, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { DateRangePicker } from "@/components/date-picker";

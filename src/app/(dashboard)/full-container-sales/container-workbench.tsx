@@ -1,7 +1,7 @@
 "use client";
 import { Select, SelectOption } from "@/components/ui/select";
 import { useRef, useState, useTransition } from "react";
-import { Dialog, AlertDialog } from "radix-ui";
+import { Dialog, AlertDialog } from "@/components/ui/dialog";
 import { Container, Plus, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { DatePicker, DateRangePicker } from "@/components/date-picker";

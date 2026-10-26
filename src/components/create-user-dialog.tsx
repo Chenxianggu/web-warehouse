@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { Dialog } from "radix-ui";
+import { Dialog } from "@/components/ui/dialog";
 import { ShieldCheck, UserPlus, UsersRound, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateUserButton } from "@/components/user-form-buttons";

@@ -3,7 +3,7 @@
 import { Select, SelectOption } from "@/components/ui/select";
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
 import { ChevronDown, PackageCheck, RotateCcw, Save, Trash2 } from "lucide-react";
-import { AlertDialog } from "radix-ui";
+import { AlertDialog } from "@/components/ui/dialog";
 import { pinyin } from "pinyin-pro";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";

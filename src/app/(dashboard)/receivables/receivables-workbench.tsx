@@ -2,7 +2,8 @@
 
 import { Select, SelectOption } from "@/components/ui/select";
 import { useMemo, useRef, useState, useTransition, type FormEvent } from "react";
-import { AlertDialog, Dialog, Tabs } from "radix-ui";
+import { Tabs } from "radix-ui";
+import { AlertDialog, Dialog } from "@/components/ui/dialog";
 import { Plus, RefreshCw, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { DatePicker, DateRangePicker, type DateRangeValue } from "@/components/date-picker";
