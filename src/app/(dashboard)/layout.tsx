@@ -9,6 +9,7 @@ import { DashboardNavigation } from "@/components/dashboard-navigation";
 import { PageTransition } from "@/components/page-transition";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { BrandLogo } from "@/components/brand-logo";
+import { IcpFooter } from "@/components/icp-footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -85,6 +86,7 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
         <div className={styles.content}>
           <PageTransition>{children}</PageTransition>
         </div>
+        <IcpFooter />
       </SidebarInset>
     </SidebarProvider>
   );

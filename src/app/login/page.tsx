@@ -10,6 +10,7 @@ import { LoginForm } from "./login-form";
 import { FloatingSuccessMessage } from "@/components/floating-success-message";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { BrandLogo } from "@/components/brand-logo";
+import { IcpFooter } from "@/components/icp-footer";
 import styles from "./login.module.css";
 
 export default async function LoginPage({
@@ -117,18 +118,21 @@ export default async function LoginPage({
         </div>
       </section>
 
-      <footer className={styles.ticker}>
-        <div className={styles.tickerTrack}>
-          <span><PackageOpen /> 批次追踪</span>
-          <span>库存同步</span>
-          <span>入库管理</span>
-          <span>出库管理</span>
-          <span><PackageOpen /> 批次追踪</span>
-          <span>库存同步</span>
-          <span>入库管理</span>
-          <span>出库管理</span>
+      <div className={styles.footer}>
+        <div className={styles.ticker}>
+          <div className={styles.tickerTrack}>
+            <span><PackageOpen /> 批次追踪</span>
+            <span>库存同步</span>
+            <span>入库管理</span>
+            <span>出库管理</span>
+            <span><PackageOpen /> 批次追踪</span>
+            <span>库存同步</span>
+            <span>入库管理</span>
+            <span>出库管理</span>
+          </div>
         </div>
-      </footer>
+        <IcpFooter />
+      </div>
     </main>
   );
 }

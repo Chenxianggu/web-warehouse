@@ -1,0 +1,27 @@
+.footer {
+  flex-shrink: 0;
+  padding: 10px 16px max(10px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--rz-edge);
+  background: var(--rz-bg);
+  color: rgb(var(--rz-text-rgb) / max(62%, var(--rz-text-alpha-min)));
+  text-align: center;
+  font-size: 12px;
+  line-height: 24px;
+}
+
+.footer a {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: var(--rz-gold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.footer a:focus-visible {
+  outline: 2px solid var(--rz-gold);
+  outline-offset: 4px;
+}

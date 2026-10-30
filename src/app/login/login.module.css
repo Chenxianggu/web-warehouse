@@ -150,7 +150,7 @@
   min-height: 100svh;
   margin: 0 auto;
   gap: clamp(4rem, 8vw, 8rem);
-  padding: 105px 0 95px;
+  padding: 105px 0 calc(140px + env(safe-area-inset-bottom));
 }
 
 .hero {
@@ -636,12 +636,15 @@
 
 .accessNote svg { width: 12px; }
 
-.ticker {
+.footer {
   position: absolute;
   z-index: 8;
   right: 0;
   bottom: 0;
   left: 0;
+}
+
+.ticker {
   height: 36px;
   overflow: hidden;
   border-top: 1px solid rgb(var(--rz-gold-rgb) / 26%);
@@ -752,7 +755,7 @@
     grid-template-columns: 1fr;
     width: min(560px, calc(100% - 42px));
     gap: 36px;
-    padding: 112px 0 88px;
+    padding: 112px 0 calc(133px + env(safe-area-inset-bottom));
   }
 
   .hero { text-align: center; }
@@ -773,7 +776,7 @@
   .composition {
     width: min(100% - 28px, 440px);
     gap: 27px;
-    padding: 96px 0 70px;
+    padding: 96px 0 calc(115px + env(safe-area-inset-bottom));
   }
 
   .brand small { display: none; }
