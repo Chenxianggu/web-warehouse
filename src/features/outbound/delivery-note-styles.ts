@@ -158,7 +158,7 @@ export const DELIVERY_NOTE_CSS = `
                 text-align: right;
               }
               .print-notice-line {
-                text-align: center;
+                text-align: left;
                 margin-top: 1mm;
                 font-size: 10pt;
                 font-weight: 600;
