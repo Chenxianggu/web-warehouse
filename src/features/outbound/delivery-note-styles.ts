@@ -8,8 +8,12 @@ export const DELIVERY_NOTE_CSS = `
                 font-family: "SimSun", "宋体", "NSimSun", serif;
                 font-variant-numeric: tabular-nums;
                 font-size: 12pt;
-                font-weight: 500;
+                font-weight: 700;
                 color: #000;
+                /* SimSun only has regular / synthetic bold. Weight alone plateaus;
+                   stroke thickens glyphs a bit more for LQ-615K print. */
+                -webkit-text-stroke: 0.85px currentColor;
+                paint-order: stroke fill;
                 padding: 0;
                 margin: 0 auto;
                 width: 241mm;
@@ -49,7 +53,7 @@ export const DELIVERY_NOTE_CSS = `
                 width: 100%;
                 margin-bottom: 0;
                 font-size: 12pt;
-                font-weight: 600;
+                font-weight: 700;
                 line-height: 1.25;
               }
               .company-left {
@@ -81,7 +85,7 @@ export const DELIVERY_NOTE_CSS = `
                 border-collapse: collapse;
                 margin-top: 0;
                 font-size: 15pt;
-                font-weight: 600;
+                font-weight: 700;
                 table-layout: fixed;
               }
               .print-table th, .print-table td {
@@ -89,7 +93,7 @@ export const DELIVERY_NOTE_CSS = `
                 padding: 2mm 1.5mm;
                 font-family: "SimSun", "宋体", "NSimSun", serif;
                 color: #000;
-                font-weight: 600;
+                font-weight: 700;
               }
               .print-table th {
                 background-color: #fff;
@@ -124,7 +128,7 @@ export const DELIVERY_NOTE_CSS = `
                 height: 11mm;
                 vertical-align: middle;
               }
-              .print-tfoot-strong { font-weight: 600; }
+              .print-tfoot-strong { font-weight: 700; }
               .print-table tfoot td.print-tfoot-rmb-zh {
                 text-align: left;
                 padding-left: 3mm;
@@ -134,7 +138,7 @@ export const DELIVERY_NOTE_CSS = `
                 width: 100%;
                 margin-top: 2mm;
                 font-size: 11pt;
-                font-weight: 600;
+                font-weight: 700;
                 color: #000;
               }
               .signature-left {
@@ -161,7 +165,7 @@ export const DELIVERY_NOTE_CSS = `
                 text-align: left;
                 margin-top: 1mm;
                 font-size: 10pt;
-                font-weight: 600;
+                font-weight: 700;
                 color: #000;
                 line-height: 1.35;
                 overflow-wrap: anywhere;
@@ -170,7 +174,7 @@ export const DELIVERY_NOTE_CSS = `
                 text-align: center;
                 margin-top: 4mm;
                 font-size: 10pt;
-                font-weight: 500;
+                font-weight: 700;
                 color: #333;
               }
               @media print {
