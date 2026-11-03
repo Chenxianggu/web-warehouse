@@ -16,7 +16,7 @@ export const DELIVERY_NOTE_CSS = `
                 background: #fff;
               }
               .print-page {
-                min-height: 140mm;
+                min-height: 139.7mm;
                 /* Center the same 200mm content in the on-screen preview. */
                 padding: 6mm 20.5mm;
               }
@@ -184,7 +184,7 @@ export const DELIVERY_NOTE_CSS = `
                 .print-title { font-size: 24pt; font-weight: 700; }
                 .print-page {
                   page-break-inside: avoid;
-                  min-height: 140mm;
+                  min-height: 139.7mm;
                   padding: 6mm 37mm 6mm 4mm;
                 }
                 .print-page:not(.print-page-last) {
@@ -194,7 +194,7 @@ export const DELIVERY_NOTE_CSS = `
                   page-break-before: always;
                 }
                 @page {
-                  size: 241mm 140mm;
+                  size: 241mm 139.7mm;
                   margin: 0;
                 }
               }

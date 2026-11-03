@@ -28,7 +28,7 @@ test("print template paginates every five items, escapes data, and hides all mon
   assert.ok(html.includes("&lt;script&gt;"));
   assert.ok(!html.includes("<script>"));
   assert.ok(html.includes("19200.00"));
-  assert.ok(html.includes("241mm 140mm"));
+  assert.ok(html.includes("241mm 139.7mm"));
   const hidden = buildDeliveryNote(order, true);
   assert.ok(!hidden.includes("19200.00"));
   assert.ok(!hidden.includes("3200.00"));
