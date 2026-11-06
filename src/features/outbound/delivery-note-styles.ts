@@ -5,14 +5,13 @@
 export const DELIVERY_NOTE_CSS = `
               * { margin: 0; padding: 0; box-sizing: border-box; }
               body {
-                font-family: "SimSun", "宋体", "NSimSun", serif;
+                font-family: "Microsoft YaHei", "微软雅黑", sans-serif;
                 font-variant-numeric: tabular-nums;
                 font-size: 12pt;
                 font-weight: 700;
                 color: #000;
-                /* SimSun only has regular / synthetic bold. Weight alone plateaus;
-                   stroke thickens glyphs a bit more for LQ-615K print. */
-                -webkit-text-stroke: 0.85px currentColor;
+                /* Thicken glyphs a bit more for LQ-615K print. */
+                -webkit-text-stroke: 0.65px currentColor;
                 paint-order: stroke fill;
                 padding: 0;
                 margin: 0 auto;
@@ -91,7 +90,7 @@ export const DELIVERY_NOTE_CSS = `
               .print-table th, .print-table td {
                 border: 1px solid #000;
                 padding: 2mm 1.5mm;
-                font-family: "SimSun", "宋体", "NSimSun", serif;
+                font-family: inherit;
                 color: #000;
                 font-weight: 700;
               }

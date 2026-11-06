@@ -67,6 +67,10 @@ export function buildDeliveryNote(order: OrderRecord, hidePrices: boolean) {
     </div></div></div>`);
   }
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>订单发货单 - ${e(order.orderNo)}</title><style>${DELIVERY_NOTE_CSS}
+    /* Use a lighter stroke for both delivery preview and paper printing. */
+    body { -webkit-text-stroke: 0.25px currentColor; }
+    /* Override shared weights, including print media, for a uniform note. */
+    body, body * { font-weight: 500 !important; }
     .print-table td { overflow-wrap:anywhere; }
   </style></head><body>${pages.join("")}</body></html>`;
 }

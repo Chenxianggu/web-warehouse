@@ -1,5 +1,6 @@
 import { businessTransaction, type AuditActor } from "@/server/audit";
 import { getPrisma } from "@/server/db";
+import { outboundTotal } from "@/features/consignments/schema";
 import { serializeCustomerOrders } from "@/server/customer-orders";
 import { Prisma } from "@/generated/prisma/client";
 import { warehouseSchema, warehouseLabel, type Warehouse } from "@/features/inventory/warehouse";
@@ -79,7 +80,7 @@ export async function shipCustomerOrder(id: number, actor?: AuditActor, warehous
       });
       const material = await tx.material.findFirst({ where: { code: { equals: code, mode: "insensitive" } }, select: { packsPerTon: true } });
       const tons = packs.div(material?.packsPerTon || 40).toNumber();
-      for (const allocation of allocateConsignment(rows.map((row) => ({ id: row.id, quantity: Number(row.quantity), outboundQuantity: Number(row.outboundQuantity) })), tons)) {
+      for (const allocation of allocateConsignment(rows.map((row) => ({ id: row.id, quantity: Number(row.quantity), outboundQuantity: outboundTotal({ outboundHistory: consignmentHistory(row.outboundHistory), outboundQuantity: Number(row.outboundQuantity) }) })), tons)) {
         const row = rows.find((value) => value.id === allocation.id)!;
         await tx.customerConsignment.update({ where: { id: row.id }, data: {
           outboundQuantity: { increment: allocation.quantity },
