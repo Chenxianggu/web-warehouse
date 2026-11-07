@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { DatePicker } from "@/components/date-picker";
 import { warehouseLabel, warehouseOptions } from "@/features/inventory/warehouse";
 import { lineSubtotal, type OrderRecord } from "@/features/customer-orders/schema";
-import { buildDeliveryNote, openDeliveryPrint, triggerDeliveryPrint, ITEMS_PER_PAGE } from "@/features/outbound/delivery-note";
+import { buildDeliveryNote, fitDeliveryProductNames, openDeliveryPrint, triggerDeliveryPrint, ITEMS_PER_PAGE } from "@/features/outbound/delivery-note";
 import type { OutboundFilter, OutboundPage } from "@/features/outbound/schema";
 import { getOutboundOrder, listOutboundOrders, shipOrder, unshipOrder } from "./actions";
 import styles from "./outbound.module.css";
@@ -193,7 +193,15 @@ export function OutboundWorkbench({ today, initialPending, initialShipped }: { t
       <div className={styles.zoomToolbar}><span>预览缩放</span><button className={styles.iconButton} disabled={zoom <= 50 || busy} aria-label="缩小预览" onClick={() => setZoom((value) => Math.max(50, value - 10))}><ZoomOut aria-hidden="true" /></button><button className={styles.iconButton} disabled={zoom >= 250 || busy} aria-label="放大预览" onClick={() => setZoom((value) => Math.min(250, value + 10))}><ZoomIn aria-hidden="true" /></button><output aria-live="polite">{zoom}%</output><button className={styles.textButton} disabled={busy} onClick={() => setZoom(110)}>重置</button></div>
       <div className={styles.previewScroll}><div className={styles.previewCanvas} style={{ width: 920 * zoom / 100, height: frameHeight * zoom / 100 }}>
         <iframe title="出货单打印预览" sandbox="allow-same-origin" srcDoc={previewHtml} style={{ width: 920, height: frameHeight, transform: `scale(${zoom / 100})` }}
-          onLoad={(event) => { const doc = event.currentTarget.contentDocument; if (doc) setFrameHeight(Math.max(560, doc.documentElement.scrollHeight, doc.body.scrollHeight)); }} />
+          onLoad={async (event) => {
+            const frame = event.currentTarget;
+            const doc = frame.contentDocument;
+            if (!doc) return;
+            await doc.fonts.ready;
+            if (!frame.isConnected || frame.contentDocument !== doc) return;
+            fitDeliveryProductNames(doc);
+            setFrameHeight(Math.max(560, doc.documentElement.scrollHeight, doc.body.scrollHeight));
+          }} />
       </div></div>
       <footer className={styles.printFooter}><label className={styles.checkbox}><input type="checkbox" checked={hidePrices} disabled={busy} onChange={(event) => setHidePrices(event.target.checked)} />不显示单价和金额（含合计）</label><div className={styles.footerActions}>
         <button className={styles.secondaryButton} disabled={busy} onClick={closePrint}>{printOrder?.isShipped ? "关闭" : "取消"}</button>

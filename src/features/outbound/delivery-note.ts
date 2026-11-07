@@ -52,14 +52,14 @@ export function buildDeliveryNote(order: OrderRecord, hidePrices: boolean) {
     const last = start + ITEMS_PER_PAGE >= order.items.length;
     const rows = items.map((item, index) => {
       const remark = order.deductFutures && start + index === 0 ? `${item.remark ? item.remark + " " : ""}提以往库存` : item.remark;
-      return `<tr><td>${start + index + 1}</td><td>${e(item.name)}</td><td>${Math.round(item.packCount)}</td><td>${lineWeightKg(item).toFixed(0)}</td><td>${hidePrices ? "" : (item.unitPrice / 1000).toFixed(2)}</td><td>${hidePrices ? "" : lineSubtotal(item).toFixed(2)}</td><td>${e(remark)}</td></tr>`;
+      return `<tr><td>${start + index + 1}</td><td><span class="print-product-name">${e(item.name)}</span></td><td>${Math.round(item.packCount)}</td><td>${lineWeightKg(item).toFixed(0)}</td><td>${hidePrices ? "" : (item.unitPrice / 1000).toFixed(2)}</td><td>${hidePrices ? "" : lineSubtotal(item).toFixed(2)}</td><td>${e(remark)}</td></tr>`;
     }).join("") + Array.from({ length: ITEMS_PER_PAGE - items.length }, () => "<tr>" + "<td>&nbsp;</td>".repeat(7) + "</tr>").join("");
     pages.push(`<div class="print-page${last ? " print-page-last" : ""}"><div class="print-wrapper"><div class="print-main">
       <div class="print-header"><h1 class="print-title">任仲塑料出货单</h1><div class="print-company-info">
         <div class="company-left"><p>地址:澄海区莲下镇槐泽大围头工业区</p><p class="company-line-phone">电话:13502748817/13902709817/15018376376</p><p>客户名称:${e(order.customerName)}</p></div>
         <div class="company-right"><p>送货单号:${e(order.orderNo)}</p><p>送货日期: ${e(order.orderDate)}</p><p>送货地址:${e(order.receiver)}</p></div>
       </div></div>
-      <table class="print-table"><colgroup>${[8, 18, 13, 13, 11, 15, 22].map((width) => `<col style="width:${width}%">`).join("")}</colgroup>
+      <table class="print-table"><colgroup>${[7, 20, 12, 13, 11, 15, 22].map((width) => `<col style="width:${width}%">`).join("")}</colgroup>
         <thead><tr>${["序号", "商品名称", "数量(包)", "重量(kg)", "单价/kg", "金额", "备注"].map((label) => `<th>${label}</th>`).join("")}</tr></thead>
         <tbody>${rows}</tbody>${last ? `<tfoot><tr><td class="print-tfoot-strong">合计</td><td colspan="4" class="print-tfoot-strong print-tfoot-rmb-zh">${hidePrices ? "" : "人民币:" + numberToChinese(total)}</td><td class="print-tfoot-strong">${hidePrices ? "" : total.toFixed(2)}</td><td>&nbsp;</td></tr></tfoot>` : ""}
       </table>
@@ -72,7 +72,19 @@ export function buildDeliveryNote(order: OrderRecord, hidePrices: boolean) {
     /* Override shared weights, including print media, for a uniform note. */
     body, body * { font-weight: 500 !important; }
     .print-table td { overflow-wrap:anywhere; }
+    .print-product-name { display: block; }
   </style></head><body>${pages.join("")}</body></html>`;
+}
+
+export function fitDeliveryProductNames(doc: Document) {
+  for (const name of doc.querySelectorAll<HTMLElement>(".print-product-name")) {
+    name.style.removeProperty("font-size");
+    name.style.whiteSpace = "nowrap";
+    for (let size = 14.5; size >= 10 && name.scrollWidth > name.clientWidth; size -= 0.5) {
+      name.style.fontSize = `${size}pt`;
+    }
+    name.style.removeProperty("white-space");
+  }
 }
 
 export function openDeliveryPrint(documentHtml: string) {
@@ -86,6 +98,8 @@ export function openDeliveryPrint(documentHtml: string) {
 export async function triggerDeliveryPrint(target: Window) {
   if (target.closed) return false;
   await target.document.fonts.ready;
+  if (target.closed) return false;
+  fitDeliveryProductNames(target.document);
   target.focus();
   target.addEventListener("afterprint", () => target.close(), { once: true });
   target.print();
