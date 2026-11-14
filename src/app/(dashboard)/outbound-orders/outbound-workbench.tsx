@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { DatePicker } from "@/components/date-picker";
 import { warehouseLabel, warehouseOptions } from "@/features/inventory/warehouse";
 import { lineSubtotal, type OrderRecord } from "@/features/customer-orders/schema";
-import { buildDeliveryNote, fitDeliveryProductNames, openDeliveryPrint, triggerDeliveryPrint, ITEMS_PER_PAGE } from "@/features/outbound/delivery-note";
+import { buildDeliveryNote, fitDeliveryCellText, openDeliveryPrint, triggerDeliveryPrint, ITEMS_PER_PAGE } from "@/features/outbound/delivery-note";
 import type { OutboundFilter, OutboundPage } from "@/features/outbound/schema";
 import { getOutboundOrder, listOutboundOrders, shipOrder, unshipOrder } from "./actions";
 import styles from "./outbound.module.css";
@@ -199,7 +199,7 @@ export function OutboundWorkbench({ today, initialPending, initialShipped }: { t
             if (!doc) return;
             await doc.fonts.ready;
             if (!frame.isConnected || frame.contentDocument !== doc) return;
-            fitDeliveryProductNames(doc);
+            fitDeliveryCellText(doc);
             setFrameHeight(Math.max(560, doc.documentElement.scrollHeight, doc.body.scrollHeight));
           }} />
       </div></div>

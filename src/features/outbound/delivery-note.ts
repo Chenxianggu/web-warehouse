@@ -52,7 +52,7 @@ export function buildDeliveryNote(order: OrderRecord, hidePrices: boolean) {
     const last = start + ITEMS_PER_PAGE >= order.items.length;
     const rows = items.map((item, index) => {
       const remark = order.deductFutures && start + index === 0 ? `${item.remark ? item.remark + " " : ""}提以往库存` : item.remark;
-      return `<tr><td>${start + index + 1}</td><td><span class="print-product-name">${e(item.name)}</span></td><td>${Math.round(item.packCount)}</td><td>${lineWeightKg(item).toFixed(0)}</td><td>${hidePrices ? "" : (item.unitPrice / 1000).toFixed(2)}</td><td>${hidePrices ? "" : lineSubtotal(item).toFixed(2)}</td><td>${e(remark)}</td></tr>`;
+      return `<tr><td>${start + index + 1}</td><td><span class="print-fit-text">${e(item.name)}</span></td><td>${Math.round(item.packCount)}</td><td>${lineWeightKg(item).toFixed(0)}</td><td>${hidePrices ? "" : (item.unitPrice / 1000).toFixed(2)}</td><td>${hidePrices ? "" : lineSubtotal(item).toFixed(2)}</td><td><span class="print-fit-text">${e(remark)}</span></td></tr>`;
     }).join("") + Array.from({ length: ITEMS_PER_PAGE - items.length }, () => "<tr>" + "<td>&nbsp;</td>".repeat(7) + "</tr>").join("");
     pages.push(`<div class="print-page${last ? " print-page-last" : ""}"><div class="print-wrapper"><div class="print-main">
       <div class="print-header"><h1 class="print-title">任仲塑料出货单</h1><div class="print-company-info">
@@ -72,18 +72,18 @@ export function buildDeliveryNote(order: OrderRecord, hidePrices: boolean) {
     /* Override shared weights, including print media, for a uniform note. */
     body, body * { font-weight: 500 !important; }
     .print-table td { overflow-wrap:anywhere; }
-    .print-product-name { display: block; }
+    .print-fit-text { display: block; }
   </style></head><body>${pages.join("")}</body></html>`;
 }
 
-export function fitDeliveryProductNames(doc: Document) {
-  for (const name of doc.querySelectorAll<HTMLElement>(".print-product-name")) {
-    name.style.removeProperty("font-size");
-    name.style.whiteSpace = "nowrap";
-    for (let size = 14.5; size >= 10 && name.scrollWidth > name.clientWidth; size -= 0.5) {
-      name.style.fontSize = `${size}pt`;
+export function fitDeliveryCellText(doc: Document) {
+  for (const text of doc.querySelectorAll<HTMLElement>(".print-fit-text")) {
+    text.style.removeProperty("font-size");
+    text.style.whiteSpace = "nowrap";
+    for (let size = 14.5; size >= 10 && text.scrollWidth > text.clientWidth; size -= 0.5) {
+      text.style.fontSize = `${size}pt`;
     }
-    name.style.removeProperty("white-space");
+    text.style.removeProperty("white-space");
   }
 }
 
@@ -99,7 +99,7 @@ export async function triggerDeliveryPrint(target: Window) {
   if (target.closed) return false;
   await target.document.fonts.ready;
   if (target.closed) return false;
-  fitDeliveryProductNames(target.document);
+  fitDeliveryCellText(target.document);
   target.focus();
   target.addEventListener("afterprint", () => target.close(), { once: true });
   target.print();
