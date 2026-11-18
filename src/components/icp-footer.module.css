@@ -1,4 +1,8 @@
 .footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 16px;
   flex-shrink: 0;
   padding: 10px 16px max(10px, env(safe-area-inset-bottom));
   border-top: 1px solid var(--rz-edge);
@@ -10,7 +14,9 @@
 }
 
 .footer a {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: inherit;
   text-decoration: none;
 }
